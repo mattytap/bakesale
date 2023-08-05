@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# File: /usr/lib/bakesale/create_post_include_user_set.sh
+# File: /usr/lib/bakesale/post_include_user_set.sh
 
 # Source helper scripts
 . /usr/lib/bakesale/common_helper.sh

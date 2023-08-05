@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# File: /usr/lib/bakesale/create_post_include.sh
+# File: /usr/lib/bakesale/post_include.sh
 
 # Called by: /usr/lib/bakesale/bakesale.sh
 
 # Source helper scripts
-. /usr/lib/bakesale/create_post_include_user_set.sh
-. /usr/lib/bakesale/create_post_include_rules.sh
+. /usr/lib/bakesale/post_include_user_set.sh
+. /usr/lib/bakesale/post_include_rules.sh
 
 config_foreach_reverse() {
 	local list
