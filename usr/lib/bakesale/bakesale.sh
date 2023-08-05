@@ -2,6 +2,10 @@
 
 # Script: /usr/lib/bakesale/bakesale.sh
 
+# Source helper scripts
+. /usr/lib/bakesale/pre_include.sh
+. /usr/lib/bakesale/post_include.sh
+
 # Function for logging
 log() {
     local priority="$1"
