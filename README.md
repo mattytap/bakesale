@@ -48,7 +48,7 @@ chmod +x "/usr/lib/bakesale/post_include_rules.sh"
 
 ## Development Journey - using a repository such as jeverley/dscpclassify
 
-BakeSale is a fork of the excellent [jeverley/dscpclassify](https://github.com/jeverley/dscpclassify) nftables based service for applying DSCP classifications to connections. It provides a simplified approach focused on IPV4 only, with no sets, no negation, and no error checking or parsing. We owe a lot to their initial work and the foundation they provided.
+BakeSale is a fork of the excellent [jeverley/dscpclassify](https://github.com/jeverley/dscpclassify) nftables based service for applying DSCP classifications to connections. The BakeSale fork provides a simplified approach focused on IPV4 only, with no sets, no negation, and no error checking or parsing. We owe a lot to their initial work and the foundation DSCPClassify provided.
 
 ### DSCPClassify Overview
 
