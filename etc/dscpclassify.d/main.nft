@@ -1,0 +1,152 @@
+#!/usr/sbin/nft -f
+
+## Masks for extracting/storing data in the conntrack mark
+define ct_dscp = 0x0000003f
+define ct_dyn = 0x00000080
+define ct_dyn_static_dscp = 0x000000ff
+define ct_static = 0x00000040
+define ct_unused = 0xffffff00
+define ct_unused_dscp = 0xffffff3f
+define ct_unused_dyn = 0xffffff80
+
+## DSCP classification values as per firure-1 RFC8325/RFC8622
+
+#BE UP=0
+#Standard. also used for DF
+define cs0 = 0
+
+#BK UP=1
+#aka le (RFC8622 Lower-Effort Per Hop Behaviors)
+define lephb = 1
+#Low-Priority Data (legacy)
+define cs1 = 8
+
+#BK UP=2
+
+#BE UP=0
+#High Throughput Data
+define af11 = 10
+define af12 = 12
+define af13 = 14
+#OAM (Operations, Administration, and Management) SNMP, TFTP, FTP, Telnet, COPS
+define cs2 = 16
+
+#BE UP=3
+#Low-Latency Data
+define af21 = 18
+define af22 = 20
+define af23 = 22
+
+#VI UP=4
+#Broadcast Video
+define cs3 = 24
+define af31 = 26
+define af32 = 28
+define af33 = 30
+#Real-Time Interactive
+define cs4 = 32
+#Multimedia Conferencing
+define af41 = 34
+define af42 = 36
+define af43 = 38
+
+#VI UP=5
+#Signaling
+define cs5 = 40
+
+#VO UP=6
+#Voice-Admit
+define va = 44
+#Telephony
+define ef = 46
+
+#BE UP=0 - to be ignored
+#Network Control
+define cs6 = 48
+#Network Control (reserved for future use)
+define cs7 = 56
+
+## Include variable table content
+include "/tmp/etc/bakesale-pre.include"
+
+table inet bakesale {
+    ## Classify connections to the router
+    chain input {
+        type filter hook input priority mangle + 2 ; policy accept
+        meta iifname "lo" return
+        ct mark and $ct_dyn_static_dscp == 0 ct direction original jump static_classify
+        ct mark and $ct_dyn == $ct_dyn jump dynamic_classify
+    }
+
+    ## Classify and DSCP mark connections from/forwarded via the router
+    chain postrouting {
+        type filter hook postrouting priority mangle + 2; policy accept
+        meta oifname "lo" return
+        ct mark and $ct_dyn_static_dscp == 0 ct direction original jump static_classify
+        ct mark and $ct_dyn == $ct_dyn jump dynamic_classify
+
+        ## DSCP marking rules are added here by the init script
+    }
+
+    chain static_classify {
+        ## User defined rules in '/etc/config/bakesale' are inserted here by the init script
+
+        ## Non TCP/UDP unclassified connections are Best Effort (CS0)
+        meta l4proto != { tcp, udp } goto ct_set_cs0
+
+        ## Set the dynamic conntrack bit on unclassified connections
+        ct mark set ct mark and $ct_unused or $ct_dyn
+    }
+
+    chain dynamic_classify {
+        ## Unreplied connections are ignored by dynamic classification logic
+        ct status and seen-reply != seen-reply return
+
+        ## Handle connection replies
+        ct direction reply goto dynamic_classify_reply
+
+        ## Assess threaded client connections (i.e. P2P) for classification
+        ip saddr . th sport . meta l4proto @threaded_clients goto threaded_client
+
+        ## Assess threaded service connections for classification
+        ip saddr . ip daddr and 255.255.255.0 . th dport . meta l4proto @threaded_services goto threaded_service
+
+        ## Dynamic rules are added here by the init script
+    }
+
+    chain dynamic_classify_reply {
+        ## Established connection
+        ct reply packets 1 jump established_connection
+
+        ## Assess threaded client connections (i.e. P2P) for classification
+        ip daddr . th dport . meta l4proto @threaded_clients goto threaded_client_reply
+
+        ## Assess threaded service connections for classification
+        ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto @threaded_services goto threaded_service_reply
+
+        ## Dynamic rules are added here by the init script
+    }
+
+    chain established_connection {
+        ## Threaded service and multi-connection client rules are added here by the init script
+    }
+
+    chain threaded_client {
+        ## Threaded client rules are added here by the init script
+    }
+
+    chain threaded_client_reply {
+        ## Threaded client rules are added here by the init script
+    }
+
+    chain threaded_service {
+        ## Threaded service rules are added here by the init script
+    }
+
+    chain threaded_service_reply {
+        ## Threaded service rules are added here by the init script
+    }
+}
+
+## Include configurable rules
+include "/tmp/etc/bakesale-post.include"
