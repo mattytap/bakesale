@@ -21,7 +21,7 @@ Create a bash process that can be copied and pasted from [link here].
 For example, you can use the following script:
 
 ```bash
-repo="https://raw.githubusercontent.com/mattytap/bakesale/bakesale"
+repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 mkdir -p "/etc/bakesale.d"
 wget "$repo/etc/config/bakesale" -O "/etc/config/bakesale"
 wget "$repo/etc/bakesale.d/main.nft" -O "/etc/bakesale.d/main.nft"
