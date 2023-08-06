@@ -3,7 +3,7 @@
 # File: /usr/lib/bakesale/post_include_user_set.sh
 
 # Source helper scripts
-. /usr/lib/bakesale/common_helper.sh
+. /usr/lib/bakesale/bakesale.sh
 
 check_uint() {
 	[ "$1" -ge 0 ] 2>/dev/null && return 0
