@@ -1,5 +1,5 @@
-*** IPV4 ONLY ***
 # DSCP's BakeSale
+
 An nftables based service for applying DSCP classifications to connections, compatible with OpenWrt's firewall4 for dynamically setting DSCP packet marks (this only works in OpenWrt 22.03 and above).
 
 Combined Luci, FW4, SQM, AQM, Cake, DSCP, AutoRate, WireGuard + PBR use case. Currently in development.
@@ -14,33 +14,43 @@ Once the use case is configured and installed, it becomes a part of my standard 
 
 ## Installation
 
+Assuming that SQM is already installed and running, you will then need to install the following and then configure /etc/config/sqm to use the new cake_ct script:
+
+```bash
+repo="https://raw.githubusercontent.com/mattytap/dscpclassify/bakesale"
+opkg update
+opkg install kmod-sched-ctinfo
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos" -O "/usr/lib/sqm/layer_cake_ct.qos"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos.help" -O "/usr/lib/sqm/layer_cake_ct.qos.help"
+```
+
 To install the BakeSale use case, please follow these steps:
-
-Create a bash process that can be copied and pasted from [link here].
-
-For example, you can use the following script:
 
 ```bash
 repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
-mkdir -p "/etc/bakesale.d"
-mkdir -p "/usr/lib/bakesale"
 wget "$repo/etc/config/bakesale" -O "/etc/config/bakesale"
+
+mkdir -p "/etc/bakesale.d"
 wget "$repo/etc/bakesale.d/main.nft" -O "/etc/bakesale.d/main.nft"
 wget "$repo/etc/bakesale.d/maps.nft" -O "/etc/bakesale.d/maps.nft"
 wget "$repo/etc/bakesale.d/verdicts.nft" -O "/etc/bakesale.d/verdicts.nft"
+
 wget "$repo/etc/hotplug.d/iface/21-bakesale" -O "/etc/hotplug.d/iface/21-bakesale"
 wget "$repo/etc/init.d/bakesale" -O "/etc/init.d/bakesale"
+chmod +x "/etc/init.d/bakesale"
+
+mkdir -p "/usr/lib/bakesale"
 wget "$repo/usr/lib/bakesale/bakesale.sh" -O "/usr/lib/bakesale/bakesale.sh"
 wget "$repo/usr/lib/bakesale/pre_include.sh" -O "/usr/lib/bakesale/pre_include.sh"
 wget "$repo/usr/lib/bakesale/post_include.sh" -O "/usr/lib/bakesale/post_include.sh"
 wget "$repo/usr/lib/bakesale/post_include_user_set.sh" -O "/usr/lib/bakesale/post_include_user_set.sh"
 wget "$repo/usr/lib/bakesale/post_include_rules.sh" -O "/usr/lib/bakesale/post_include_rules.sh"
-chmod +x "/etc/init.d/bakesale"
 chmod +x "/usr/lib/bakesale/bakesale.sh"
 chmod +x "/usr/lib/bakesale/pre_include.sh"
 chmod +x "/usr/lib/bakesale/post_include.sh"
 chmod +x "/usr/lib/bakesale/post_include_user_set.sh"
 chmod +x "/usr/lib/bakesale/post_include_rules.sh"
+
 /etc/init.d/bakesale enable
 /etc/init.d/bakesale start
 
