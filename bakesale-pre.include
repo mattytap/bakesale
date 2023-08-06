@@ -1,7 +1,0 @@
-define lan = { "br-lan", "br-swlan", "eth2" }
-define wan = { "eth0", "eth5" }
-add table inet bakesale
-add set inet bakesale threaded_clients { type ipv4_addr . inet_service . inet_proto; flags timeout; }
-add set inet bakesale threaded_services { type ipv4_addr . ipv4_addr . inet_service . inet_proto; flags timeout; }
-include "/etc/bakesale.d/verdicts.nft"
-include "/etc/bakesale.d/maps.nft"
