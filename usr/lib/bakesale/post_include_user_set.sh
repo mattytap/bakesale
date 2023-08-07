@@ -145,7 +145,7 @@ create_user_set() {
 					;;
 				esac
 			done
-			type=$(mklist "$type" " . ")
+			type=$(formatListString "$type" " . ")
 		fi
 	fi
 
@@ -164,7 +164,7 @@ create_user_set() {
 		flags="$flags timeout"
 	}
 	if [ -n "$flags" ]; then
-		flags="$(mklist "$flags" ", ")"
+		flags="$(formatListString "$flags" ", ")"
 	fi
 
 	# Check set against existing
@@ -174,6 +174,6 @@ create_user_set() {
 	}
 
 	# Add element if not null
-	[ -n "$entry$element" ] && echo "add element inet bakesale $name { $(mklist "$entry $element" ", ") }" >>"/tmp/etc/bakesale-post.include"
+	[ -n "$entry$element" ] && echo "add element inet bakesale $name { $(formatListString "$entry $element" ", ") }" >>"/tmp/etc/bakesale-post.include"
 	return 0
 }

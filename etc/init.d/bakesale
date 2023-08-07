@@ -1,33 +1,22 @@
 #!/bin/bash /etc/rc.common
 
-# Script Name: /etc/init.d/bakesale
+START=21
+USE_PROCD=1
+DEBUG=1
 
-START=21  # Start priority
-USE_PROCD=1  # Use process management daemon (Procd)
-DEBUG=1  # Default to debugging mode
-
-# Source helper scripts
 . /usr/lib/bakesale/bakesale.sh
 
-run_service() {
-	local action="$1"
-	local message="$2"
-
-	if setup "$action"; then
-		log notice "Service $message"
-	else
-		log error "Service $message failed"
-		[ "$DEBUG" != 1 ] && {
-			rm -f "/tmp/etc/bakesale-pre.include"
-			rm -f "/tmp/etc/bakesale-post.include"
-			nft delete table inet bakesale 2>/dev/null
-		}
-		return 1
-	fi
+handle_error() {
+	log error "$1"
+	[ "$DEBUG" -ne 1 ] && {
+		cleanup_files
+		nft delete table inet bakesale 2>/dev/null
+	}
+	return 1
 }
 
 start_service() {
-	run_service start started
+	setup start && log notice "Service started" || handle_error "Service start failed"
 }
 
 reload_service() {
@@ -35,13 +24,15 @@ reload_service() {
 		echo "The bakesale service does not appear to be loaded."
 		return 1
 	}
-
-	run_service reload reloaded
+	setup reload && log notice "Service reloaded" || handle_error "Service reload failed"
 }
 
 stop_service() {
-	rm -f "/tmp/etc/bakesale-pre.include"
-	rm -f "/tmp/etc/bakesale-post.include"
+	cleanup_files
 	nft delete table inet bakesale 2>/dev/null
 	log notice "Service stopped successfully"
+}
+
+service_triggers() {
+	procd_add_reload_trigger "firewall" "sqm" "bakesale"
 }

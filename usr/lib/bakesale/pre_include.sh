@@ -1,33 +1,35 @@
 #!/bin/bash
 
-# File: /usr/lib/bakesale/pre_include.sh
+append_set_if_not_exists() {
+    local setName="$1"
+    local setType="$2"
 
-# Called by: /usr/lib/bakesale/bakesale.sh
+    # Check if the set exists in nftables
+    nft list set inet bakesale "$setName" &>/dev/null || {
+        # If the set does not exist, append the appropriate 'add set' command
+        echo "add set inet bakesale $setName { type $setType; flags timeout; }" >> "/tmp/etc/bakesale-pre.include"
+    }
+}
 
 create_pre_include() {
-    # Define lan and wan using mklist function and add them into bakesale-pre.include
-	echo "define lan = { $(mklist "$lan" ", " "\"") }" >> "/tmp/etc/bakesale-pre.include"
-	echo "define wan = { $(mklist "$wan" ", " "\"") }" >> "/tmp/etc/bakesale-pre.include"
+    # Using a block to append multiple lines to 'bakesale-pre.include' for efficiency
+    {
+        # Define lan and wan based on formatted strings
+        echo "define lan = { $(formatListString "$lan" ", " "\"") }"
+        echo "define wan = { $(formatListString "$wan" ", " "\"") }"
 
-    # Add new table to bakesale-pre.include
-	echo "add table inet bakesale" >> "/tmp/etc/bakesale-pre.include"
+        # Add the main bakesale table to nftables
+        echo "add table inet bakesale"
 
-    # Check if the threaded_clients set exists and add it into bakesale-pre.include if not
-	nft -t list set inet bakesale threaded_clients &>/dev/null
-	if [ $? -ne 0 ]; then
-		echo "add set inet bakesale threaded_clients { type ipv4_addr . inet_service . inet_proto; flags timeout; }" >> "/tmp/etc/bakesale-pre.include"
-	fi
+        # Check for the existence of sets and append creation commands if necessary
+        append_set_if_not_exists "threaded_clients" "ipv4_addr . inet_service . inet_proto"
+        append_set_if_not_exists "threaded_services" "ipv4_addr . ipv4_addr . inet_service . inet_proto"
 
-    # Check if the threaded_services set exists and add it into bakesale-pre.include if not
-	nft -t list set inet bakesale threaded_services &>/dev/null
-	if [ $? -ne 0 ]; then
-		echo "add set inet bakesale threaded_services { type ipv4_addr . ipv4_addr . inet_service . inet_proto; flags timeout; }" >> "/tmp/etc/bakesale-pre.include"
-	fi
+        # Include the static nftables DSCP/CT/WMM mappings
+        echo "include \"/etc/bakesale.d/verdicts.nft\""
+        echo "include \"/etc/bakesale.d/maps.nft\""
+    } >> "/tmp/etc/bakesale-pre.include"
 
-    # Include verdicts.nft and maps.nft into bakesale-pre.include
-	echo "include \"/etc/bakesale.d/verdicts.nft\"" >> "/tmp/etc/bakesale-pre.include"
-	echo "include \"/etc/bakesale.d/maps.nft\"" >> "/tmp/etc/bakesale-pre.include"
-
-    # Log a notice message
-	log notice "created pre_include"
+    # Log a notice that the pre_include file has been created
+    log notice "created pre_include"
 }

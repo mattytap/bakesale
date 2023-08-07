@@ -6,12 +6,12 @@
 
 rule_oifname() {
 	[ -n "$1" ] || return 0
-	oifname="oifname { $(mklist "$1" ", " "\"") }"
+	oifname="oifname { $(formatListString "$1" ", " "\"") }"
 }
 
 rule_iifname() {
 	[ -n "$1" ] || return 0
-	iifname="iifname { $(mklist "$1" ", " "\"") }"
+	iifname="iifname { $(formatListString "$1" ", " "\"") }"
 }
 
 rule_zone() {
@@ -91,8 +91,8 @@ rule_addr() {
 		return 1
 	fi
 
-	[ -n "$ipv4" ] && rule="ip $xaddr { $(mklist "$ipv4" ", ") }"
-	[ -n "$ipv4_negate" ] && rule="$rule ip $xaddr != { $(mklist "$ipv4_negate" ", ") }"
+	[ -n "$ipv4" ] && rule="ip $xaddr { $(formatListString "$ipv4" ", ") }"
+	[ -n "$ipv4_negate" ] && rule="$rule ip $xaddr != { $(formatListString "$ipv4_negate" ", ") }"
 
 	[ -n "$ipset$ipset_negate" ] && case "$3" in
 	ipv4)
@@ -151,11 +151,11 @@ rule_port() {
 	done
 
 	if [ -n "$port" ] ; then
-		rule="th $xport { $(mklist "$port" ", ") }"
+		rule="th $xport { $(formatListString "$port" ", ") }"
 	fi
 
 	if [ -n "$port_negate" ] ; then
-		rule="$rule th $xport != { $(mklist "$port_negate" ", ") }"
+		rule="$rule th $xport != { $(formatListString "$port_negate" ", ") }"
 	fi
 
 	eval "$xport"='$rule'
