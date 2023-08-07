@@ -2,16 +2,9 @@
 
 # Script Name: /etc/hotplug.d/bakesale
 
-has_zone() {
-	fw4 -q network "$INTERFACE" >/dev/null && return 0
-    eval "$(ubus call "network.interface.$INTERFACE" status | jsonfilter -e 'ZONE=@.data.zone')"
-	fw4 -q zone "$ZONE" >/dev/null
-}
+# Main execution
+[ "$ACTION" = "ifup" ] && /etc/init.d/bakesale enabled && \
+logger -t bakesale -p "daemon.notice" "HOTPLUG TRIGGERED RELOAD" && \
+/etc/init.d/bakesale reload || \
+logger -t bakesale -p "daemon.err" "Exiting due to failed condition"
 
-[ "$ACTION" = ifup ] || exit 0
-
-/etc/init.d/bakesale enabled || exit 0
-
-has_zone || exit 0
-
-/etc/init.d/bakesale reload
