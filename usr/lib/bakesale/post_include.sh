@@ -8,16 +8,21 @@
 . /usr/lib/bakesale/post_include_user_set.sh
 . /usr/lib/bakesale/post_include_rules.sh
 
+# Function to append values to the list
+append_to_list() {
+    list+=("$1" "$2")
+}
+
 # Reverse config_foreach and call the given function on each configuration item
 config_foreach_reverse() {
 	local list=()
 	local item
 
 	# Retrieve and append configuration items.
-	config_foreach list+=("$1" "$2")
+	config_foreach append_to_list "$1" "$2"
 
 	# Reverse sort the list
-	list=($(echo "${list[@]}" | sort -r))
+	list=($(echo "${list[@]}" | tr ' ' '\n' | sort -r))
 
 	for item in "${list[@]}"; do
 		"$1" "$3"
