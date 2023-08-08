@@ -1,33 +1,32 @@
 #!/bin/bash
 
 # Filename: /usr/lib/bakesale/post_include_rules.sh
+LIB_BAKESALE="/usr/lib/bakesale"
 
 # Called by: /usr/lib/bakesale/bakesale.sh
 
 rule_oifname() {
-	[ -n "$1" ] || return 0
-	oifname="oifname { $(formatListString "$1" ", " "\"") }"
+	[[ -n "$1" ]] || return 0
+	local oifname="oifname { $(formatListString "$1" ", " "\"") }"
 }
 
 rule_iifname() {
-	[ -n "$1" ] || return 0
-	iifname="iifname { $(formatListString "$1" ", " "\"") }"
+	[[ -n "$1" ]] || return 0
+	local iifname="iifname { $(formatListString "$1" ", " "\"") }"
 }
 
 rule_zone() {
-	local device dev
+	local device dev direction="$1" zone_name="$2"
 
-	[ -n "$2" ] || return 0
+	[[ -n "$zone_name" ]] || return 0
 
-	dev="$(fw4 -q zone "$2" | sort -u)"
-	[ -n "$dev" ] || {
-		log warning "Rule '$name' contains an invalid $1 zone"
+	dev="$(fw4 -q zone "$zone_name" | sort -u)"
+	[[ -n "$dev" ]] && device="$dev" || {
+		log warning "Rule '$name' contains an invalid $direction zone"
 		return 1
 	}
 
-	device="$dev"
-
-	case "$1" in
+	case "$direction" in
 	src) rule_iifname "$device" ;;
 	dest) rule_oifname "$device" ;;
 	*)
@@ -42,9 +41,7 @@ rule_zone() {
 # $2: IP or IP set
 # $3: The IP family (ipv4)
 rule_addr() {
-	local rule xaddr
-	local ipv4 ipset
-	local ipv4_negate ipset_negate
+	local rule xaddr ipv4="" ipset="" ipv4_negate="" ipset_negate=""
 
 	# Set xaddr based on the direction of traffic
 	case "$1" in
@@ -57,24 +54,24 @@ rule_addr() {
 	esac
 
 	# Return if second argument is empty
-	[ -n "$2" ] || return 0
+	[[ -n "$2" ]] || return 0
 
 	# Log warning and return 1 if third argument is not ipv4
-	if [ -n "$3" ] && [ "$3" != "ipv4" ]; then
+	[[ -n "$3" && "$3" != "ipv4" ]] && {
 		log warning "Rule '$name' contains an invalid family"
 		return 1
-	fi
+	}
 
 	# Iterate over IPs or IP sets
 	for i in $2; do
 		# If IP matches regex, add to the appropriate list
-		echo "$i" | grep -q -E -e "^!?(([2]([0-4][0-9]|[5][0-5])|[0-1]?[0-9]?[0-9])[.]){3}(([2]([0-4][0-9]|[5][0-5])|[0-1]?[0-9]?[0-9]))(/([0-9]|[12][0-9]|3[0-2]))?$" && {
+		if [[ "$i" =~ ^!?(([2]([0-4][0-9]|[5][0-5])|[0-1]?[0-9]?[0-9])[.]){3}(([2]([0-4][0-9]|[5][0-5])|[0-1]?[0-9]?[0-9]))(/([0-9]|[12][0-9]|3[0-2]))?$ ]]; then
 			case "$i" in
 			"!"*) ipv4_negate="$ipv4_negate ${i#*!}" ;;
 			*) ipv4="$ipv4 $i" ;;
 			esac
 			continue
-		}
+		fi
 
 		# If IP set matches regex, add to the appropriate list
 		echo "$i" | grep -q -E -e "^!?@\w+$" && {
@@ -86,24 +83,26 @@ rule_addr() {
 		}
 		return 1
 	done
-	if [ "$(echo "$ipset" | wc -w)" -gt 1 ] || [ "$(echo "$ipset_negate" | wc -w)" -gt 1 ]; then
+
+	[[ $(echo "$ipset" | wc -w) -gt 1 || $(echo "$ipset_negate" | wc -w) -gt 1 ]] && {
 		log warning "Rules must not contain more than one set for the $1_ip option"
 		return 1
-	fi
+	}
 
-	[ -n "$ipv4" ] && rule="ip $xaddr { $(formatListString "$ipv4" ", ") }"
-	[ -n "$ipv4_negate" ] && rule="$rule ip $xaddr != { $(formatListString "$ipv4_negate" ", ") }"
-
-	[ -n "$ipset$ipset_negate" ] && case "$3" in
+	[[ -n "$ipv4" ]] && rule="ip $xaddr { $(formatListString "$ipv4" ", ") }"
+	[[ -n "$ipv4_negate" ]] && rule="$rule ip $xaddr != { $(formatListString "$ipv4_negate" ", ") }"
+	[[ -n "$ipset$ipset_negate" ]] && {
+case "$3" in
 	ipv4)
-		[ -n "$ipset" ] && rule="$rule ip $xaddr $ipset"
-		[ -n "$ipset_negate" ] && rule="$rule ip $xaddr != $ipset_negate"
+		[[ -n "$ipset" ]] && rule="$rule ip $xaddr $ipset"
+		[[ -n "$ipset_negate" ]] && rule="$rule ip $xaddr != $ipset_negate"
 		;;
 	*)
 		log warning "Rules must contain the family option when a set is present in the $1_ip option"
 		return 1
 		;;
 	esac
+	}
 
 	eval "$xaddr"='$rule'
 	return 0
@@ -127,7 +126,7 @@ rule_port() {
 	esac
 
 	# Return if second argument is empty
-	[ -n "$2" ] || return 0
+	[[ -n "$2" ]] || return 0
 
 	# This is the code moved from parse_rule_ports function
 	for i in $2; do
@@ -141,22 +140,15 @@ rule_port() {
 
 	# Validate protocol
 	for proto in $3; do
-		case "$proto" in
-		tcp | udp) ;;
-		*)
+		[[ "$proto" =~ ^(tcp|udp)$ ]] || {
 			log warning "Rules cannot combine a $1_port with protocols other than 'tcp' or 'udp'"
 			return 1
-		;;
-		esac
+		}
 	done
 
-	if [ -n "$port" ] ; then
-		rule="th $xport { $(formatListString "$port" ", ") }"
-	fi
+	[[ -n "$port" ]] && rule="th $xport { $(formatListString "$port" ", ") }"
 
-	if [ -n "$port_negate" ] ; then
-		rule="$rule th $xport != { $(formatListString "$port_negate" ", ") }"
-	fi
+	[[ -n "$port_negate" ]] && rule="$rule th $xport != { $(formatListString "$port_negate" ", ") }"
 
 	eval "$xport"='$rule'
 	return 0
@@ -167,7 +159,7 @@ rule_port() {
 # $2: The direction of traffic (in/out)
 rule_device() {
   # Exit function if there are no arguments
-	[ -n "$1" ] || return 0
+	[[ -n "$1" ]] || return 0
 
   # Log a warning and return 1 if the second argument is empty
 	[ -n "$2" ] || {
@@ -188,10 +180,10 @@ rule_device() {
 check_class() {
 	local class
 
-	class="$(echo "$1" | tr 'A-Z' 'a-z')"
+	class="${1,,}"
 
 	case "$class" in
-	le) [ "$2" = "var" ] && class="lephb" ;;
+	le) [[ "$2" = "var" ]] && class="lephb" ;;
 	be | df) class="cs0" ;;
 	cs0 | cs1 | af11 | af12 | af13 | cs2 | af21 | af22 | af23 | cs3 | af31 | af32 | af33 | cs4 | af41 | af42 | af43 | cs5 | va | ef | cs6 | cs7) true ;;
 	*) return 1 ;;
@@ -207,10 +199,11 @@ check_class() {
 rule_verdict() {
 	local class
 
-	[ -n "$1" ] || {
+	[[ -n "$1" ]] || {
 		log warning "Rule is missing the DSCP class option"
 		return 1
 	}
+
 	class="$(check_class "$1")" || {
 		log warning "Rule '$name' contains an invalid DSCP class"
 		return 1
