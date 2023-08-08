@@ -11,6 +11,7 @@ RULESET_PATH="/tmp/etc/ruleset4.nft"
 MAIN_NFT_PATH="/etc/bakesale.d/main.nft"
 
 # Source helper scripts
+. /lib/functions.sh
 . "$BAKESALE_LIB_PATH/pre_include.sh"
 . "$BAKESALE_LIB_PATH/post_include.sh"
 
