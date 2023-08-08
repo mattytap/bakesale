@@ -4,9 +4,13 @@
 
 # Called by: /usr/lib/bakesale/bakesale.sh
 
+# Variables for paths
+BAKESALE_LIB_PATH="/usr/lib/bakesale"
+POST_INCLUDE_PATH="/tmp/etc/bakesale-post.include"
+
 # Source helper scripts
-. /usr/lib/bakesale/post_include_user_set.sh
-. /usr/lib/bakesale/post_include_rules.sh
+. "$BAKESALE_LIB_PATH/post_include_user_set.sh"
+. "$BAKESALE_LIB_PATH/post_include_rules.sh"
 
 config_foreach_reverse() {
 	# Given up trying to do this as an array in bash
@@ -15,7 +19,7 @@ config_foreach_reverse() {
 	# Retrieve and append configuration items.
 	config_foreach list+=$'\n'"$1" "$2"
 
-	# Reverse sort the list
+	# Reverse sort the list using native bash pattern matching
 	list=$(echo "$list" | sort -r)
 
 	for _ in $list; do
@@ -23,28 +27,25 @@ config_foreach_reverse() {
 	done
 }
 
-# Append to file function
 append_to_file() {
-	local content=$1
-	echo "$content" >> "/tmp/etc/bakesale-post.include"
+	local content="$1"
+	echo "$content" >> "$POST_INCLUDE_PATH"
 }
 
-# Validation function for integer variables
 validate_integer() {
-	local value=$1
-	local error_message=$2
+	local value="$1"
+	local error_message="$2"
 
 	# Returns 1 if the value is invalid, else 0.
 	{ ! ([ "$value" -ge 0 ] 2>/dev/null) || [ "$value" -lt 2 ] ;} && {
+	if [[ ! "$value" =~ ^[0-9]+$ ]] || [[ "$value" -lt 2 ]]; then
 		log error "$error_message"
 		return 1
-	}
+	fi
 	return 0
 }
 
-# Rule for threaded clients
 create_threaded_client_rule() {
-	# Variables initialization and configuration fetching
 	local class_bulk threaded_client_min_bytes threaded_client_min_connections
 
 	# Validation for threaded_client_min_connections
@@ -65,34 +66,27 @@ create_threaded_client_rule() {
 	append_to_file "add rule inet bakesale threaded_client_reply meter tc_reply_bulk { ip daddr . th dport . meta l4proto timeout 5m limit rate over $((threaded_client_min_bytes - 1)) bytes/hour } update @threaded_clients { ip daddr . th dport . meta l4proto timeout 5m } goto ct_set_$class_bulk"
 }
 
-# Rule for threaded services
 create_threaded_service_rule() {
-	# Variables initialization and configuration fetching
 	local class_high_throughput threaded_service_min_bytes threaded_service_min_connections
 
 	# Validation for threaded_service_min_connections
 	config_get threaded_service_min_connections global threaded_service_min_connections 3
-	if ! echo "$threaded_service_min_connections" | grep -qE "^[0-9]+$" || [ "$threaded_service_min_connections" -lt 2 ]; then
-		log error "Global option 'threaded_service_min_connections' contains an invalid value"
-		return 1
-	fi
+	[[ "$threaded_service_min_connections" =~ ^[0-9]+$ && "$threaded_service_min_connections" -ge 2 ]] || { log error "Global option 'threaded_service_min_connections' contains an invalid value"; return 1; }
 
 	# Validation for threaded_service_min_bytes
 	config_get threaded_service_min_bytes global threaded_service_min_bytes 1000000
-	if ! echo "$threaded_service_min_bytes" | grep -qE "^[0-9]+$" || [ "$threaded_service_min_bytes" = 0 ]; then
-		log error "Global option 'threaded_service_min_bytes' contains an invalid value"
-		return 1
-	fi
+	[[ "$threaded_service_min_bytes" =~ ^[0-9]+$ && "$threaded_service_min_bytes" -gt 0 ]] || { log error "Global option 'threaded_service_min_bytes' contains an invalid value"; return 1; }
 
 	# Validation for DSCP class for high throughput data
 	config_get class_high_throughput global class_high_throughput af13
-	class_high_throughput="$(echo "$class_high_throughput" | tr 'A-Z' 'a-z')"
+	class_high_throughput="${class_high_throughput,,}"  # Convert to lowercase
+
 	case "$class_high_throughput" in
-	af11 | af12 | af13 | af21 | af22 | af23 | af31 | af32 | af33 | af41 | af42 | af43 | cs1 | cs2 | cs3 | cs4 | cs5 | cs6 | cs7 | be | ef) true ;;
-	*) log error "Global option 'class_high_throughput' contains an invalid DSCP class"; return 1 ;;
+		af11|af12|af13|af21|af22|af23|af31|af32|af33|af41|af42|af43|cs1|cs2|cs3|cs4|cs5|cs6|cs7|be|ef) true ;;
+		*) log error "Global option 'class_high_throughput' contains an invalid DSCP class"; return 1 ;;
 	esac
 
-	# Append the required rules for threaded services to the post include file
+	# Append the required rules for threaded services
 	append_to_file "add rule inet bakesale established_connection meter ts_detect { ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto timeout 5s limit rate over $((threaded_service_min_connections - 1))/minute } add @threaded_services { ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto timeout 30s }"
 	append_to_file "add rule inet bakesale threaded_service ct original bytes < $threaded_service_min_bytes return"
 	append_to_file "add rule inet bakesale threaded_service update @threaded_services { ip saddr . ip daddr and 255.255.255.0 . th dport . meta l4proto timeout 5m }"
@@ -102,7 +96,6 @@ create_threaded_service_rule() {
 	append_to_file "add rule inet bakesale threaded_service_reply goto ct_set_$class_high_throughput"
 }
 
-# DSCP mark rule creation
 create_dscp_mark_rule() {
 	local wmm
 
@@ -110,9 +103,7 @@ create_dscp_mark_rule() {
 	config_get_bool wmm global wmm 0
 
 	# Append the required DSCP marking rules based on WMM settings
-	if [ "$wmm" = 1 ]; then
-		append_to_file "add rule inet bakesale postrouting oifname \$lan ct mark and \$ct_dscp vmap @ct_wmm"
-	fi
+	[[ "$wmm" -eq 1 ]] && append_to_file "add rule inet bakesale postrouting oifname \$lan ct mark and \$ct_dscp vmap @ct_wmm"
 	append_to_file "add rule inet bakesale postrouting ct mark and \$ct_dscp vmap @ct_dscp"
 }
 
@@ -168,15 +159,11 @@ create_user_rule() {
 
 # Main function to create the post include content
 create_post_include() {
-	local list
-	# Variables initialization
-	local enabled family proto direction device dest dest_ip dest_port src src_ip src_port counter class name
-	local nfproto l4proto oifname daddr dport iifname saddr sport verdict
-	local client_hints
+	local list client_hints
 
 	# Check client hints configuration
 	config_get_bool client_hints global client_hints 1
-	[ "$client_hints" = 1 ] || return 0
+	[[ "$client_hints" -eq 1 ]] || return 0
 
 	# Add default rule for DSCP to connection tracking mapping
 	append_to_file "insert rule inet bakesale static_classify ip dscp != { cs0, cs6, cs7 } iifname != \$wan ip dscp vmap @dscp_ct"
