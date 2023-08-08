@@ -45,7 +45,7 @@ formatListString() {
     # Iterate through each item in inputData, wrapping and delimiting as specified
 
     for item in $inputData; do
-        [ -n "$result" ] && result+="$delimiter"
+        [[ -n "$result" ]] && result+="$delimiter"
         result+="${wrapper}${item}${wrapper}"
     done
 
