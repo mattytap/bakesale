@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# File: /usr/lib/bakesale/post_include.sh
+
+# Called by: /usr/lib/bakesale/bakesale.sh
+
+# Variables for paths
+BAKESALE_LIB_PATH="/usr/lib/bakesale"
+PRE_INCLUDE_PATH="/tmp/etc/bakesale-pre.include"
+
 append_set_if_not_exists() {
     local setName="$1"
     local setType="$2"
@@ -7,11 +15,15 @@ append_set_if_not_exists() {
     # Check if the set exists in nftables
     nft list set inet bakesale "$setName" &>/dev/null || {
         # If the set does not exist, append the appropriate 'add set' command
-        echo "add set inet bakesale $setName { type $setType; flags timeout; }" >> "/tmp/etc/bakesale-pre.include"
+        echo "add set inet bakesale $setName { type $setType; flags timeout; }" >> "$PRE_INCLUDE_PATH"
     }
 }
 
 create_pre_include() {
+    # Ensure that the variables are local
+    local lan="$1"
+    local wan="$2"
+
     # Using a block to append multiple lines to 'bakesale-pre.include' for efficiency
     {
         # Define lan and wan based on formatted strings
@@ -28,8 +40,9 @@ create_pre_include() {
         # Include the static nftables DSCP/CT/WMM mappings
         echo "include \"/etc/bakesale.d/verdicts.nft\""
         echo "include \"/etc/bakesale.d/maps.nft\""
-    } >> "/tmp/etc/bakesale-pre.include"
+    } >> "$PRE_INCLUDE_PATH"
 
     # Log a notice that the pre_include file has been created
     log notice "created pre_include"
 }
+
