@@ -27,10 +27,6 @@ parse_set_timeout() {
 	return 0
 }
 
-post_include() {
-	echo "$1" >>"/tmp/etc/bakesale-post.include"
-}
-
 check_set_against_existing() {
 	local name type comment size flags timeout
 	local existing_set existing_type
@@ -168,12 +164,12 @@ process_rule() {
 
 	# Check set against existing
 	check_set_against_existing "$name" "$type" "$comment" "$size" "$flags" "$timeout" || {
-		[ "$?" = 1 ] && post_include "delete set inet bakesale $name"
-		post_include "add set inet bakesale $name { type $type; ${timeout:+timeout $timeout;} ${size:+size $size;} ${flags:+flags $flags;} ${auto_merge:+auto-merge;} ${comment:+comment \"$comment\";} }"
+		[ "$?" = 1 ] && append_to_file "delete set inet bakesale $name"
+		append_to_file "add set inet bakesale $name { type $type; ${timeout:+timeout $timeout;} ${size:+size $size;} ${flags:+flags $flags;} ${auto_merge:+auto-merge;} ${comment:+comment \"$comment\";} }"
 	}
 
 	# Add element if not null
-	[ -n "$entry$element" ] && echo "add element inet bakesale $name { $(formatListString "$entry $element" ", ") }" >>"/tmp/etc/bakesale-post.include"
+	[ -n "$entry$element" ] && append_to_file "add element inet bakesale $name { $(formatListString "$entry $element" ", ") }"
 	return 0
 }
 
