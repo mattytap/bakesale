@@ -41,7 +41,7 @@ validate_integer() {
 	if [[ ! "$value" =~ ^[0-9]+$ ]] || [[ "$value" -lt 2 ]]; then
 		log error "$error_message"
 		return 1
-	fi
+	}
 	return 0
 }
 
