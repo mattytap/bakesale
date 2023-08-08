@@ -34,15 +34,24 @@ handle_error() {
 	return 1
 }
 
+# Formats a list of items with a specified delimiter and optional quotes.
+# Usage: format_list_string "item1 item2 item3" ", " "\""
 formatListString() {
     local inputData="$1"
     local delimiter="$2"
     local wrapper="$3"
+    local item result=""
 
-    # Convert the list into a neat line, replace gaps with special markers and remove extra spaces.
-    echo "$inputData" | tr '\n' ' ' | \
-    sed -e "s/^\s*/$wrapper/" -e "s/\s*$/$wrapper/" | \
-    sed -e "s/\([^.]\)\s\+\([^.]\)/\1$wrapper$delimiter$wrapper\2/g"
+    # Iterate through each item in inputData, wrapping and delimiting as specified
+
+    for item in $inputData; do
+        [ -n "$result" ] && result+="$delimiter"
+        result+="${wrapper}${item}${wrapper}"
+    done
+
+    # Some functions now echo their results instead of setting a global variable.
+    # This can be a cleaner way to get function results in Bash, especially when the results are strings.
+    echo "$result"
 }
 
 cleanup_files() {

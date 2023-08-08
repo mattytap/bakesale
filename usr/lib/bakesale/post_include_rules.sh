@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# Filename: /usr/lib/bakesale/post_include_rules.sh
+# Paths
 LIB_BAKESALE="/usr/lib/bakesale"
 
-# Called by: /usr/lib/bakesale/bakesale.sh
-
+# Sets the oifname rule based on provided interface names.
 rule_oifname() {
-	[[ -n "$1" ]] || return 0
-	local oifname="oifname { $(formatListString "$1" ", " "\"") }"
+    [[ -n "$1" ]] || return 0
+    echo "oifname { $(formatListString "$1" ", " "\"") }"
 }
 
+# As above, but for iifname.
 rule_iifname() {
-	[[ -n "$1" ]] || return 0
-	local iifname="iifname { $(formatListString "$1" ", " "\"") }"
+    [[ -n "$1" ]] || return 0
+    echo "iifname { $(formatListString "$1" ", " "\"") }"
 }
 
 rule_zone() {
