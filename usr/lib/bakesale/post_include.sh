@@ -8,23 +8,17 @@
 . /usr/lib/bakesale/post_include_user_set.sh
 . /usr/lib/bakesale/post_include_rules.sh
 
-# Function to append values to the list
-append_to_list() {
-    list+=("$1" "$2")
-}
-
-# Reverse config_foreach and call the given function on each configuration item
 config_foreach_reverse() {
-	local list=()
-	local item
+	# Given up trying to do this as an array in bash
+	local list
 
 	# Retrieve and append configuration items.
-	config_foreach append_to_list "$1" "$2"
+	config_foreach list+=$'\n'"$1" "$2"
 
 	# Reverse sort the list
-	list=($(echo "${list[@]}" | tr ' ' '\n' | sort -r))
+	list=$(echo "$list" | sort -r)
 
-	for item in "${list[@]}"; do
+	for _ in $list; do
 		"$1" "$3"
 	done
 }
@@ -99,13 +93,13 @@ create_threaded_service_rule() {
 	esac
 
 	# Append the required rules for threaded services to the post include file
-	echo "add rule inet bakesale established_connection meter ts_detect { ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto timeout 5s limit rate over $((threaded_service_min_connections - 1))/minute } add @threaded_services { ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto timeout 30s }" >> "/tmp/etc/bakesale-post.include"
-	echo "add rule inet bakesale threaded_service ct original bytes < $threaded_service_min_bytes return" >> "/tmp/etc/bakesale-post.include"
-	echo "add rule inet bakesale threaded_service update @threaded_services { ip saddr . ip daddr and 255.255.255.0 . th dport . meta l4proto timeout 5m }" >> "/tmp/etc/bakesale-post.include"
-	echo "add rule inet bakesale threaded_service goto ct_set_$class_high_throughput" >> "/tmp/etc/bakesale-post.include"
-	echo "add rule inet bakesale threaded_service_reply ct reply bytes < $threaded_service_min_bytes return" >> "/tmp/etc/bakesale-post.include"
-	echo "add rule inet bakesale threaded_service_reply update @threaded_services { ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto timeout 5m }" >> "/tmp/etc/bakesale-post.include"
-	echo "add rule inet bakesale threaded_service_reply goto ct_set_$class_high_throughput" >> "/tmp/etc/bakesale-post.include"
+	append_to_file "add rule inet bakesale established_connection meter ts_detect { ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto timeout 5s limit rate over $((threaded_service_min_connections - 1))/minute } add @threaded_services { ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto timeout 30s }"
+	append_to_file "add rule inet bakesale threaded_service ct original bytes < $threaded_service_min_bytes return"
+	append_to_file "add rule inet bakesale threaded_service update @threaded_services { ip saddr . ip daddr and 255.255.255.0 . th dport . meta l4proto timeout 5m }"
+	append_to_file "add rule inet bakesale threaded_service goto ct_set_$class_high_throughput"
+	append_to_file "add rule inet bakesale threaded_service_reply ct reply bytes < $threaded_service_min_bytes return"
+	append_to_file "add rule inet bakesale threaded_service_reply update @threaded_services { ip daddr . ip saddr and 255.255.255.0 . th sport . meta l4proto timeout 5m }"
+	append_to_file "add rule inet bakesale threaded_service_reply goto ct_set_$class_high_throughput"
 }
 
 # DSCP mark rule creation
@@ -117,9 +111,9 @@ create_dscp_mark_rule() {
 
 	# Append the required DSCP marking rules based on WMM settings
 	if [ "$wmm" = 1 ]; then
-		echo "add rule inet bakesale postrouting oifname \$lan ct mark and \$ct_dscp vmap @ct_wmm" >> "/tmp/etc/bakesale-post.include"
+		append_to_file "add rule inet bakesale postrouting oifname \$lan ct mark and \$ct_dscp vmap @ct_wmm"
 	fi
-	echo "add rule inet bakesale postrouting ct mark and \$ct_dscp vmap @ct_dscp" >> "/tmp/etc/bakesale-post.include"
+	append_to_file "add rule inet bakesale postrouting ct mark and \$ct_dscp vmap @ct_dscp"
 }
 
 # Rule creation based on user configuration
@@ -163,11 +157,11 @@ create_user_rule() {
 
 	# Appending the formed rule to the post include file
 	[ -z "$daddr$saddr" ] && {
-		echo "insert rule inet bakesale static_classify $nfproto $l4proto $oifname $dport $iifname $sport ${counter:+counter} $verdict ${name:+comment \"$name\"}" >>"/tmp/etc/bakesale-post.include"
+		append_to_file "insert rule inet bakesale static_classify $nfproto $l4proto $oifname $dport $iifname $sport ${counter:+counter} $verdict ${name:+comment \"$name\"}"
 		return 0
 	}
 	[ -n "$daddr$saddr" ] && {
-		echo "insert rule inet bakesale static_classify $nfproto $l4proto $oifname $daddr $dport $iifname $saddr $sport ${counter:+counter} $verdict ${name:+comment \"$name\"}" >>"/tmp/etc/bakesale-post.include"
+		append_to_file "insert rule inet bakesale static_classify $nfproto $l4proto $oifname $daddr $dport $iifname $saddr $sport ${counter:+counter} $verdict ${name:+comment \"$name\"}"
 	}
 	return 0
 }
