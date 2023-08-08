@@ -3,6 +3,8 @@
 # Script: /usr/lib/bakesale/bakesale.sh
 # NOTE: THIS SCRIPT REQUIRES THE BASH INTERPRETER
 
+DEBUG=1
+
 # Variables for paths
 BAKESALE_LIB_PATH="/usr/lib/bakesale"
 PRE_INCLUDE_PATH="/tmp/etc/bakesale-pre.include"
