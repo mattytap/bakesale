@@ -175,6 +175,7 @@ process_rule() {
 	# Add element if not null
 	[ -n "$entry$element" ] && echo "add element inet bakesale $name { $(formatListString "$entry $element" ", ") }" >>"/tmp/etc/bakesale-post.include"
 	return 0
+}
 
 create_user_set() {
     local config_name="$1"
