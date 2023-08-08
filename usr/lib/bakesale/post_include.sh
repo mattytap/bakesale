@@ -33,17 +33,8 @@ append_to_file() {
 }
 
 validate_integer() {
-	local value="$1"
-	local error_message="$2"
-
-	# Returns 1 if the value is invalid, else 0.
-	{ ! ([ "$value" -ge 0 ] 2>/dev/null) || [ "$value" -lt 2 ] ;} && {
-		if [[ ! "$value" =~ ^[0-9]+$ ]] || [[ "$value" -lt 2 ]]; then
-			log error "$error_message"
-			return 1
-		fi
-	}
-	return 0
+	[ "$1" -ge 0 ] 2>/dev/null && return 0
+	return 1
 }
 
 create_threaded_client_rule() {

@@ -1,12 +1,6 @@
 #!/bin/bash
 
 # File: /usr/lib/bakesale/post_include_user_set.sh
-
-check_uint() {
-	[ "$1" -ge 0 ] 2>/dev/null && return 0
-	return 1
-}
-
 check_duration() {
 	echo "$1" | grep -q -E -e "^([1-9][0-9]*[smhd]){1,4}$"
 }
@@ -20,7 +14,7 @@ parse_set_timeout() {
 		return 0
 	}
 
-	check_uint "$timeout" && {
+	validate_integer "$timeout" && {
 		flag_timeout=1
 		timeout="${timeout}s"
 	}
@@ -68,25 +62,30 @@ check_set_against_existing() {
 	return 0
 }
 
-create_user_set() {
-	local comment entry element enabled family flags match size name timeout type
-	local flag_constant flag_interval flag_timeout auto_merge
+fetch_config() {
+    local config_name="$1"
 
-	config_get_bool enabled "$1" enabled 1
-	[ "$enabled" = 1 ] || return 0
+    config_get_bool enabled "$config_name" enabled 1
 
 	# Gather all configuration parameters
-	config_get comment "$1" comment
-	config_get name "$1" name
-	config_get family "$1" family ipv4
-	config_get match "$1" match
-	config_get type "$1" type # allows user to explicity specify the nft set type
-	config_get size "$1" maxelem
-	config_get timeout "$1" timeout
-	config_get_bool flag_constant "$1" constant
-	config_get_bool flag_interval "$1" interval
-	config_get entry "$1" entry
-	config_get element "$1" element # depreciate for naming consistency with fw4 (entry)
+	config_get comment "$config_name" comment
+	config_get name "$config_name" name
+	config_get family "$config_name" family ipv4
+	config_get match "$config_name" match
+	config_get type "$config_name" type # allows user to explicity specify the nft set type
+	config_get size "$config_name" maxelem
+	config_get timeout "$config_name" timeout
+	config_get_bool flag_constant "$config_name" constant
+	config_get_bool flag_interval "$config_name" interval
+	config_get entry "$config_name" entry
+	config_get element "$config_name" element # depreciate for naming consistency with fw4 (entry)
+}
+
+process_rule() {
+    # Use the fetched configurations (like $enabled, $comment, etc.)
+    # to process rules, validate, and create or update the nftables set.
+
+    [ "$enabled" = 1 ] || return 0
 
 	# If element is not null, give a warning
 	[ -n "$element" ] && log warning "The user set 'element' option is being depreciated in favour of 'entry' for consistency with fw4"
@@ -176,4 +175,10 @@ create_user_set() {
 	# Add element if not null
 	[ -n "$entry$element" ] && echo "add element inet bakesale $name { $(formatListString "$entry $element" ", ") }" >>"/tmp/etc/bakesale-post.include"
 	return 0
+
+create_user_set() {
+    local config_name="$1"
+
+    fetch_config "$config_name"
+    process_rule
 }
