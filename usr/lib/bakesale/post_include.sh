@@ -38,9 +38,10 @@ validate_integer() {
 
 	# Returns 1 if the value is invalid, else 0.
 	{ ! ([ "$value" -ge 0 ] 2>/dev/null) || [ "$value" -lt 2 ] ;} && {
-	if [[ ! "$value" =~ ^[0-9]+$ ]] || [[ "$value" -lt 2 ]]; then
-		log error "$error_message"
-		return 1
+		if [[ ! "$value" =~ ^[0-9]+$ ]] || [[ "$value" -lt 2 ]]; then
+			log error "$error_message"
+			return 1
+		fi
 	}
 	return 0
 }
