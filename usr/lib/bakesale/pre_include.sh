@@ -20,9 +20,7 @@ append_set_if_not_exists() {
 }
 
 create_pre_include() {
-    # Ensure that the variables are local
-    local lan="$1"
-    local wan="$2"
+    # lan and wan are global variables??
 
     # Using a block to append multiple lines to 'bakesale-pre.include' for efficiency
     {
