@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # File: /usr/lib/bakesale/post_include_user_set.sh
+
 check_duration() {
-	echo "$1" | grep -q -E -e "^([1-9][0-9]*[smhd]){1,4}$"
+	[[ "$1" =~ ^([1-9][0-9]*[smhd]){1,4}$ ]]
 }
 
 parse_set_timeout() {
-	[ -n "$timeout" ] || return 0
+	[[ -z "$timeout" ]] && return 0
 
 	[ "$timeout" = 0 ] && {
 		flag_timeout=1
@@ -23,47 +24,32 @@ parse_set_timeout() {
 		log warning "Set '$name' contains an invalid timeout option"
 		return 1
 	}
-
-	return 0
 }
 
 check_set_against_existing() {
-	local name type comment size flags timeout
 	local existing_set existing_type
 
-	name="$1"
-	existing_set=$(nft -t -j list set inet bakesale "$name" 2>/dev/null) || return 2
+	existing_set=$(nft -t -j list set inet bakesale "$1" 2>/dev/null) || return 2
 
-	type="$(echo "$2" | sed 's/ \+\. \+/ /g')"
-	existing_type="$(jsonfilter -s "$existing_set" -e "@.nftables[*].set.type")"
-	if [ -n "$existing_type" ]; then
-		[ "$existing_type" = "$type" ] || return 1
-	else
-		existing_type="$(jsonfilter -s "$existing_set" -e "@.nftables[*].set.type[*]" | tr '\n' ' ' | sed 's/ *$//')"
-		[ "$existing_type" = "$type" ] || return 1
-	fi
+	extract_json() {
+		jsonfilter -s "$existing_set" -e "$1" | tr '\n' ' ' | sed 's/ *$//'
+	}
 
-	comment="$3"
-	[ "$(jsonfilter -s "$existing_set" -e "@.nftables[*].set.comment")" = "$comment" ] || return 1
-
-	size="$4"
-	[ "$(jsonfilter -s "$existing_set" -e "@.nftables[*].set.size")" = "$size" ] || return 1
-
-	flags="$(echo "$5" | sed 's/, \+/ /g')"
-	[ "$(jsonfilter -s "$existing_set" -e "@.nftables[*].set.flags[*]" | tr '\n' ' ' | sed 's/ *$//')" = "$flags" ] || return 1
+	[[ "$2" == "$(extract_json '@.nftables[*].set.type')" ]] || return 1
+	[[ "$3" == "$(extract_json '@.nftables[*].set.comment')" ]] || return 1
+	[[ "$4" == "$(extract_json '@.nftables[*].set.size')" ]] || return 1
+	[[ "$5" == "$(extract_json '@.nftables[*].set.flags[*]')" ]] || return 1
 
 	timeout="$(convert_duration_to_seconds "$6")"
-	[ "$(jsonfilter -s "$existing_set" -e "@.nftables[*].set.timeout")" = "$timeout" ] || return 1
-
-	return 0
+	[[ "$timeout" == "$(extract_json '@.nftables[*].set.timeout')" ]] || return 1
 }
 
 fetch_config() {
-    local config_name="$1"
+	local config_name="$1"
 
-    config_get_bool enabled "$config_name" enabled 1
+	config_get_bool enabled "$config_name" enabled 1
 
-	# Gather all configuration parameters
+	# Gather configuration parameters
 	config_get comment "$config_name" comment
 	config_get name "$config_name" name
 	config_get family "$config_name" family ipv4
@@ -78,15 +64,11 @@ fetch_config() {
 }
 
 process_rule() {
-    # Use the fetched configurations (like $enabled, $comment, etc.)
-    # to process rules, validate, and create or update the nftables set.
 
-    [ "$enabled" = 1 ] || return 0
+	[[ "$enabled" == 1 ]] || return 0
 
-	# If element is not null, give a warning
-	[ -n "$element" ] && log warning "The user set 'element' option is being depreciated in favour of 'entry' for consistency with fw4"
+	[[ -n "$element" ]] && log warning "The user set 'element' option is being deprecated in favor of 'entry' for consistency with fw4"
 
-	# Check set name
 	case "$name" in
 	"")
 		log warning "Set is missing the name option"
@@ -99,18 +81,13 @@ process_rule() {
 	esac
 
 	# Check set size
-	if [ -n "$size" ]; then
-		if ! [ "$size" -ge 1 ] 2>/dev/null || ! [ "$size" -le 65535 ] 2>/dev/null; then
-			log warning "Set '$name' contains an invalid maxelem option"
-			return 1
-		fi
-	fi
+	[[ -n "$size" && ($size -lt 1 || $size -gt 65535) ]] && {
+		log warning "Set '$name' contains an invalid maxelem option"
+		return 1
+	}
 
 	# Check family
-	if [ "$family" != "ipv4" ]; then
-		log warning "Set contains an invalid family"
-		return 1
-	fi
+	[[ "$family" != "ipv4" ]] && log warning "Set contains an invalid family" && return 1
 
 	# Parse set type
 	if [ -z "$type" ]; then

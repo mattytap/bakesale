@@ -2,41 +2,41 @@
 
 # File: /usr/lib/bakesale/post_include.sh
 
-# Called by: /usr/lib/bakesale/bakesale.sh
-
-# Variables for paths
-BAKESALE_LIB_PATH="/usr/lib/bakesale"
-POST_INCLUDE_PATH="/tmp/etc/bakesale-post.include"
+# Define constants for paths
+readonly BAKESALE_LIB_PATH="/usr/lib/bakesale"
+readonly POST_INCLUDE_PATH="/tmp/etc/bakesale-post.include"
 
 # Source helper scripts
 . "$BAKESALE_LIB_PATH/post_include_user_set.sh"
 . "$BAKESALE_LIB_PATH/post_include_rules.sh"
 
-config_foreach_reverse() {
-	# Given up trying to do this as an array in bash
-	local list
+# Append content to the post include file
+append_to_file() {
+	local content="$1"
+	echo "$content" >> "$POST_INCLUDE_PATH"
+}
 
-	# Retrieve and append configuration items.
-	config_foreach list+=$'\n'"$1" "$2"
+# Check if the provided value is an integer
+validate_integer() {
+	[ "$1" -ge 0 ] 2>/dev/null && return 0 || return 1
+}
+
+# Function to reverse order and execute a callback on each configuration item
+config_foreach_reverse() {
+	local list items
+
+	# Retrieve and append configuration items
+	config_foreach items+=$'\n'"$1" "$2"
 
 	# Reverse sort the list using native bash pattern matching
-	list=$(echo "$list" | sort -r)
+	list=$(echo "$items" | sort -r)
 
 	for _ in $list; do
 		"$1" "$3"
 	done
 }
 
-append_to_file() {
-	local content="$1"
-	echo "$content" >> "$POST_INCLUDE_PATH"
-}
-
-validate_integer() {
-	[ "$1" -ge 0 ] 2>/dev/null && return 0
-	return 1
-}
-
+# Rule creation for threaded clients based on user configurations
 create_threaded_client_rule() {
 	local class_bulk threaded_client_min_bytes threaded_client_min_connections
 
@@ -58,6 +58,7 @@ create_threaded_client_rule() {
 	append_to_file "add rule inet bakesale threaded_client_reply meter tc_reply_bulk { ip daddr . th dport . meta l4proto timeout 5m limit rate over $((threaded_client_min_bytes - 1)) bytes/hour } update @threaded_clients { ip daddr . th dport . meta l4proto timeout 5m } goto ct_set_$class_bulk"
 }
 
+# Rule creation for threaded services based on user configurations
 create_threaded_service_rule() {
 	local class_high_throughput threaded_service_min_bytes threaded_service_min_connections
 
@@ -88,6 +89,7 @@ create_threaded_service_rule() {
 	append_to_file "add rule inet bakesale threaded_service_reply goto ct_set_$class_high_throughput"
 }
 
+# Rule creation for DSCP marking based on WMM (Wi-Fi Multimedia) settings
 create_dscp_mark_rule() {
 	local wmm
 
@@ -99,7 +101,7 @@ create_dscp_mark_rule() {
 	append_to_file "add rule inet bakesale postrouting ct mark and \$ct_dscp vmap @ct_dscp"
 }
 
-# Rule creation based on user configuration
+# Rule creation based on user-provided configurations
 create_user_rule() {
 	local enabled family proto direction device dest dest_ip dest_port src src_ip src_port counter class name
 	local nfproto l4proto oifname daddr dport iifname saddr sport verdict
@@ -169,7 +171,6 @@ create_post_include() {
 	# Create other specific rules
 	create_threaded_client_rule || { log error "Failed to create threaded client rule."; return 1; }
 	create_threaded_service_rule || { log error "Failed to create threaded service rule."; return 1; }
-
 	create_dscp_mark_rule || { log error "Failed to create dscp mark rule."; return 1; }
 
 	# Logging

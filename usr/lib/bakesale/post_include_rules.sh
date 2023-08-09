@@ -3,64 +3,40 @@
 # Paths
 LIB_BAKESALE="/usr/lib/bakesale"
 
-# Sets the oifname rule based on provided interface names.
+# Generates the oifname rule based on provided interface names.
 rule_oifname() {
-    [[ -n "$1" ]] || return 0
-    echo "oifname { $(formatListString "$1" ", " "\"") }"
+    [[ -z "$1" ]] && return 0
+    echo "oifname { $(formatListString "$1", ", ", "\"") }"
 }
 
-# As above, but for iifname.
+# Generates the iifname rule.
 rule_iifname() {
-    [[ -n "$1" ]] || return 0
-    echo "iifname { $(formatListString "$1" ", " "\"") }"
+    [[ -z "$1" ]] && return 0
+    echo "iifname { $(formatListString "$1", ", ", "\"") }"
 }
 
+# Generates rule based on zone.
 rule_zone() {
 	local device dev direction="$1" zone_name="$2"
-
-	[[ -n "$zone_name" ]] || return 0
+	[[ -z "$zone_name" ]] && return 0
 
 	dev="$(fw4 -q zone "$zone_name" | sort -u)"
-	[[ -n "$dev" ]] && device="$dev" || {
-		log warning "Rule '$name' contains an invalid $direction zone"
-		return 1
-	}
+	[[ -z "$dev" ]] && log warning "Rule '$name' contains an invalid $direction zone" && return 1
 
-	case "$direction" in
-	src) rule_iifname "$device" ;;
-	dest) rule_oifname "$device" ;;
-	*)
-		log error "Invalid direction for zone function"
-		return 1
-		;;
-	esac
+	[[ "$direction" == "src" ]] && rule_iifname "$device"
+	[[ "$direction" == "dest" ]] && rule_oifname "$device"
 }
 
-# Function to generate address rules
-# $1: The direction of traffic (src/dest)
-# $2: IP or IP set
-# $3: The IP family (ipv4)
+# Generates address rules.
 rule_addr() {
 	local rule xaddr ipv4="" ipset="" ipv4_negate="" ipset_negate=""
 
-	# Set xaddr based on the direction of traffic
-	case "$1" in
-	src) xaddr="saddr" ;;
-	dest) xaddr="daddr" ;;
-	*)
-		log error "Invalid direction for addr function"
-		return 1
-		;;
-	esac
+	[[ "$1" == "src" ]] && xaddr="saddr"
+	[[ "$1" == "dest" ]] && xaddr="daddr"
 
-	# Return if second argument is empty
-	[[ -n "$2" ]] || return 0
+	[[ -z "$2" ]] && return 0
 
-	# Log warning and return 1 if third argument is not ipv4
-	[[ -n "$3" && "$3" != "ipv4" ]] && {
-		log warning "Rule '$name' contains an invalid family"
-		return 1
-	}
+	[[ "$3" && "$3" != "ipv4" ]] && log warning "Rule '$name' contains an invalid family" && return 1
 
 	# Iterate over IPs or IP sets
 	for i in $2; do
@@ -105,28 +81,16 @@ case "$3" in
 	}
 
 	eval "$xaddr"='$rule'
-	return 0
 }
 
-# Function to generate port rules
-# $1: The direction of traffic (src/dest)
-# $2: Port or range of ports
-# $3: The protocol (tcp/udp)
+# Generates port rules.
 rule_port() {
 	local port port_negate rule xport
 
-	# Set xport based on the direction of traffic
-	case "$1" in
-	src) xport="sport" ;;
-	dest) xport="dport" ;;
-	*)
-		log error "Invalid direction for port function"
-		return 1
-		;;
-	esac
+	[[ "$1" == "src" ]] && xport="sport"
+	[[ "$1" == "dest" ]] && xport="dport"
 
-	# Return if second argument is empty
-	[[ -n "$2" ]] || return 0
+	[[ -z "$2" ]] && return 0
 
 	# This is the code moved from parse_rule_ports function
 	for i in $2; do
@@ -151,36 +115,22 @@ rule_port() {
 	[[ -n "$port_negate" ]] && rule="$rule th $xport != { $(formatListString "$port_negate" ", ") }"
 
 	eval "$xport"='$rule'
-	return 0
 }
 
-# Function to generate device rules
-# $1: The device name
-# $2: The direction of traffic (in/out)
+# Generates device rules.
 rule_device() {
-  # Exit function if there are no arguments
-	[[ -n "$1" ]] || return 0
+	[[ -z "$1" ]] && return 0
 
-  # Log a warning and return 1 if the second argument is empty
-	[ -n "$2" ] || {
-		log warning "Rules must use the device and direction options in conjunction"
-		return 1
-	}
+	[[ -z "$2" ]] && log warning "Rules must use the device and direction options together" && return 1
 
-	case "$2" in
-	in) rule_iifname "$1" ;;
-	out) rule_oifname "$1" ;;
-	*)
-		log warning "The direction rule option must contain either 'in' or 'out'"
-		return 1
-		;;
-	esac
+	[[ "$2" == "in" ]] && rule_iifname "$1"
+	[[ "$2" == "out" ]] && rule_oifname "$1"
 }
 
+# Checks the given class and returns the appropriate class.
 check_class() {
-	local class
 
-	class="${1,,}"
+	local class="${1,,}"
 
 	case "$class" in
 	le) [[ "$2" = "var" ]] && class="lephb" ;;
@@ -190,24 +140,17 @@ check_class() {
 	esac
 
 	echo "$class"
-	return 0
 }
 
-# Function to generate rule_verdict
-# $1: DSCP class
-# $2: Used to set 'le' class to 'lephb'
+# Generates a verdict rule based on DSCP class.
 rule_verdict() {
 	local class
 
-	[[ -n "$1" ]] || {
-		log warning "Rule is missing the DSCP class option"
-		return 1
-	}
+	[[ -z "$1" ]] && log warning "Missing DSCP class option in the rule" && return 1
 
-	class="$(check_class "$1")" || {
-		log warning "Rule '$name' contains an invalid DSCP class"
-		return 1
-	}
+	class="$(check_class "$1")" || log warning "Invalid DSCP class in rule '$name'" && return 1
 
 	verdict="goto ct_set_$class"
 }
+
+# ... rest of your code
