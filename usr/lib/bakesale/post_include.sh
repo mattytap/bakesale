@@ -38,7 +38,7 @@ config_foreach_reverse() {
 
 # Rule creation for threaded clients based on user configurations
 create_threaded_client_rule() {
-	local class_bulk threaded_client_min_bytes threaded_client_min_connections
+	local class_bulk threaded_client_min_bytes threaded_client_min_connections name
 
 	# Validation for threaded_client_min_connections
 	config_get threaded_client_min_connections global threaded_client_min_connections 10
@@ -50,8 +50,8 @@ create_threaded_client_rule() {
 
 	# Validation for DSCP class for bulk data
 	config_get class_bulk global class_bulk le
-	check_class "$class_bulk" || { log error "Global option 'class_bulk' contains an invalid DSCP class"; return 1; }
-
+	name="Gloobal option 'class bulk'"
+	rule_target "$class_bulk" || { log error "Global option 'class_bulk' contains an invalid DSCP class"; return 1; }
 	# Append the required rules for threaded clients to the post include file
 	append_to_file "add rule inet bakesale established_connection meter tc_detect { ip daddr . th dport . meta l4proto timeout 5s limit rate over $((threaded_client_min_connections - 1))/minute } add @threaded_clients { ip daddr . th dport . meta l4proto timeout 30s }"
 	append_to_file "add rule inet bakesale threaded_client meter tc_orig_bulk { ip saddr . th sport . meta l4proto timeout 5m limit rate over $((threaded_client_min_bytes - 1)) bytes/hour } update @threaded_clients { ip saddr . th sport . meta l4proto timeout 5m } goto ct_set_$class_bulk"
