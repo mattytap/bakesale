@@ -21,8 +21,8 @@ create_pre_include() {
     # Efficiently append multiple lines to 'bakesale-pre.include'
     {
         # Define lan and wan based on formatted strings
-        echo "define lan = { $(formatListString "$lan" ", " "\"") }"
-        echo "define wan = { $(formatListString "$wan" ", " "\"") }"
+        echo "define lan = { $(format_to_list_string "$lan" ", " "\"") }"
+        echo "define wan = { $(format_to_list_string "$wan" ", " "\"") }"
 
         # Add the main bakesale table to nftables
         echo "add table inet bakesale"

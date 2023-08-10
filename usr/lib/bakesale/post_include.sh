@@ -124,12 +124,12 @@ create_user_rule() {
 	config_get class "$1" class
 	config_get name "$1" name
 
-	# Convert configuration into appropriate rule format
+	# Convert configuration into nftable rules
 	# rule_nfproto function integrated
-	[ -z "$family" ] || nfproto="meta nfproto { $(formatListString "$family" ", ") }" || return 1
+	[ -z "$family" ] || nfproto="meta nfproto { $(format_to_list_string "$family" ", ") }" || return 1
 
 	# rule_l4proto function integrated
-	[ -z "$proto" ] || l4proto="meta l4proto { $(formatListString "$proto" ", ") }" || return 1
+	[ -z "$proto" ] || l4proto="meta l4proto { $(format_to_list_string "$proto" ", ") }" || return 1
 
 	rule_zone dest "$dest" || return 1
 	rule_addr dest "$dest_ip" "$family" || return 1

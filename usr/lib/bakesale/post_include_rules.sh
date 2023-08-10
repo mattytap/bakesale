@@ -3,19 +3,16 @@
 # Paths
 LIB_BAKESALE="/usr/lib/bakesale"
 
-# Generates the oifname rule based on provided interface names.
 rule_oifname() {
     [[ -z "$1" ]] && return 0
-    echo "oifname { $(formatListString "$1", ", ", "\"") }"
+    echo "oifname { $(format_to_list_string "$1", ", ", "\"") }"
 }
 
-# Generates the iifname rule.
 rule_iifname() {
     [[ -z "$1" ]] && return 0
-    echo "iifname { $(formatListString "$1", ", ", "\"") }"
+    echo "iifname { $(format_to_list_string "$1", ", ", "\"") }"
 }
 
-# Generates rule based on zone.
 rule_zone() {
 	local device dev direction="$1" zone_name="$2"
 	[[ -z "$zone_name" ]] && return 0
@@ -27,7 +24,6 @@ rule_zone() {
 	[[ "$direction" == "dest" ]] && rule_oifname "$device"
 }
 
-# Generates address rules.
 rule_addr() {
 	local rule xaddr ipv4="" ipset="" ipv4_negate="" ipset_negate=""
 
@@ -65,25 +61,24 @@ rule_addr() {
 		return 1
 	}
 
-	[[ -n "$ipv4" ]] && rule="ip $xaddr { $(formatListString "$ipv4" ", ") }"
-	[[ -n "$ipv4_negate" ]] && rule="$rule ip $xaddr != { $(formatListString "$ipv4_negate" ", ") }"
+	[[ -n "$ipv4" ]] && rule="ip $xaddr { $(format_to_list_string "$ipv4" ", ") }"
+	[[ -n "$ipv4_negate" ]] && rule="$rule ip $xaddr != { $(format_to_list_string "$ipv4_negate" ", ") }"
 	[[ -n "$ipset$ipset_negate" ]] && {
-case "$3" in
-	ipv4)
-		[[ -n "$ipset" ]] && rule="$rule ip $xaddr $ipset"
-		[[ -n "$ipset_negate" ]] && rule="$rule ip $xaddr != $ipset_negate"
-		;;
-	*)
-		log warning "Rules must contain the family option when a set is present in the $1_ip option"
-		return 1
-		;;
+	case "$3" in
+		ipv4)
+			[[ -n "$ipset" ]] && rule="$rule ip $xaddr $ipset"
+			[[ -n "$ipset_negate" ]] && rule="$rule ip $xaddr != $ipset_negate"
+			;;
+		*)
+			log warning "Rules must contain the family option when a set is present in the $1_ip option"
+			return 1
+			;;
 	esac
 	}
 
 	eval "$xaddr"='$rule'
 }
 
-# Generates port rules.
 rule_port() {
 	local port port_negate rule xport
 
@@ -110,14 +105,13 @@ rule_port() {
 		}
 	done
 
-	[[ -n "$port" ]] && rule="th $xport { $(formatListString "$port" ", ") }"
+	[[ -n "$port" ]] && rule="th $xport { $(format_to_list_string "$port" ", ") }"
 
-	[[ -n "$port_negate" ]] && rule="$rule th $xport != { $(formatListString "$port_negate" ", ") }"
+	[[ -n "$port_negate" ]] && rule="$rule th $xport != { $(format_to_list_string "$port_negate" ", ") }"
 
 	eval "$xport"='$rule'
 }
 
-# Generates device rules.
 rule_device() {
 	[[ -z "$1" ]] && return 0
 
@@ -127,10 +121,10 @@ rule_device() {
 	[[ "$2" == "out" ]] && rule_oifname "$1"
 }
 
-# Function to generate rule_target based on DSCP class
-# $1: DSCP class
-# $2: Used to set 'le' class to 'lephb'
 rule_target() {
+	# Function to generate the 'goto target' based on DSCP class
+	# $1: DSCP class
+	# $2: Used to set 'le' class to 'lephb'
 	local class="${1,,}" # force lower case
 
 	# Validate the DSCP class option

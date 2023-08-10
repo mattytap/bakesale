@@ -33,7 +33,7 @@ handle_error() {
 }
 
 # Format a list string with delimiters and wrappers
-formatListString() {
+format_to_list_string() {
 	local inputData="$1"
 	local delimiter="$2"
 	local wrapper="$3"

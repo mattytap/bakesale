@@ -117,7 +117,7 @@ process_rule() {
 					;;
 				esac
 			done
-			type=$(formatListString "$type" " . ")
+			type=$(format_to_list_string "$type" " . ")
 		fi
 	fi
 
@@ -136,7 +136,7 @@ process_rule() {
 		flags="$flags timeout"
 	}
 	if [ -n "$flags" ]; then
-		flags="$(formatListString "$flags" ", ")"
+		flags="$(format_to_list_string "$flags" ", ")"
 	fi
 
 	# Check set against existing
@@ -146,7 +146,7 @@ process_rule() {
 	}
 
 	# Add element if not null
-	[ -n "$entry$element" ] && append_to_file "add element inet bakesale $name { $(formatListString "$entry $element" ", ") }"
+	[ -n "$entry$element" ] && append_to_file "add element inet bakesale $name { $(format_to_list_string "$entry $element" ", ") }"
 	return 0
 }
 
