@@ -142,10 +142,10 @@ check_class() {
 	echo "$class"
 }
 
-# Function to generate rule_verdict
+# Function to generate rule_target
 # $1: DSCP class
 # $2: Used to set 'le' class to 'lephb'
-rule_verdict() {
+rule_target() {
 	local class
 
 	[[ -z "$1" ]] && log warning "Missing DSCP class option in the rule" && return 1
@@ -155,6 +155,6 @@ rule_verdict() {
 		return 1
 	}
 
-	verdict="goto ct_set_$class"
+	target="goto ct_set_$class"
 }
 

@@ -104,7 +104,7 @@ create_dscp_mark_rule() {
 # Rule creation based on user-provided configurations
 create_user_rule() {
 	local enabled family proto direction device dest dest_ip dest_port src src_ip src_port counter class name
-	local nfproto l4proto oifname daddr dport iifname saddr sport verdict
+	local nfproto l4proto oifname daddr dport iifname saddr sport target
 
 	config_get_bool enabled "$1" enabled 1
 	[ "$enabled" = 1 ] || return 0
@@ -138,15 +138,15 @@ create_user_rule() {
 	rule_addr src "$src_ip" "$family" || return 1
 	rule_port src "$src_port" "$proto" || return 1
 	rule_device "$device" "$direction" || return 1
-	rule_verdict "$class" || return 1
+	rule_target "$class" || return 1
 
 	# Appending the formed rule to the post include file
 	[ -z "$daddr$saddr" ] && {
-		append_to_file "insert rule inet bakesale static_classify $nfproto $l4proto $oifname $dport $iifname $sport ${counter:+counter} $verdict ${name:+comment \"$name\"}"
+		append_to_file "insert rule inet bakesale static_classify $nfproto $l4proto $oifname $dport $iifname $sport ${counter:+counter} $target ${name:+comment \"$name\"}"
 		return 0
 	}
 	[ -n "$daddr$saddr" ] && {
-		append_to_file "insert rule inet bakesale static_classify $nfproto $l4proto $oifname $daddr $dport $iifname $saddr $sport ${counter:+counter} $verdict ${name:+comment \"$name\"}"
+		append_to_file "insert rule inet bakesale static_classify $nfproto $l4proto $oifname $daddr $dport $iifname $saddr $sport ${counter:+counter} $target ${name:+comment \"$name\"}"
 	}
 	return 0
 }
