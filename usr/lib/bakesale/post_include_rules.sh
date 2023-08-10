@@ -130,7 +130,7 @@ rule_device() {
 # Checks the given class and returns the appropriate class.
 check_class() {
 
-	local class="${1,,}"
+	local class="${1,,}" # force lower case
 
 	case "$class" in
 	le) [[ "$2" = "var" ]] && class="lephb" ;;
@@ -142,15 +142,19 @@ check_class() {
 	echo "$class"
 }
 
-# Generates a verdict rule based on DSCP class.
+# Function to generate rule_verdict
+# $1: DSCP class
+# $2: Used to set 'le' class to 'lephb'
 rule_verdict() {
 	local class
 
 	[[ -z "$1" ]] && log warning "Missing DSCP class option in the rule" && return 1
 
-	class="$(check_class "$1")" || log warning "Invalid DSCP class in rule '$name'" && return 1
+	class="$(check_class "$1")" || {
+		log warning "Rule '$name' contains an invalid DSCP class"
+		return 1
+	}
 
 	verdict="goto ct_set_$class"
 }
 
-# ... rest of your code
