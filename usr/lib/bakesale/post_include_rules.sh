@@ -127,34 +127,24 @@ rule_device() {
 	[[ "$2" == "out" ]] && rule_oifname "$1"
 }
 
-# Checks the given class and returns the appropriate class.
-check_class() {
-
+# Function to generate rule_target based on DSCP class
+# $1: DSCP class
+# $2: Used to set 'le' class to 'lephb'
+rule_target() {
 	local class="${1,,}" # force lower case
+
+	# Validate the DSCP class option
+	[[ -z "$1" ]] && log warning "Missing DSCP class option in the rule" && return 1
 
 	case "$class" in
 	le) [[ "$2" = "var" ]] && class="lephb" ;;
 	be | df) class="cs0" ;;
-	cs0 | cs1 | af11 | af12 | af13 | cs2 | af21 | af22 | af23 | cs3 | af31 | af32 | af33 | cs4 | af41 | af42 | af43 | cs5 | va | ef | cs6 | cs7) true ;;
-	*) return 1 ;;
-	esac
-
-	echo "$class"
-}
-
-# Function to generate rule_target
-# $1: DSCP class
-# $2: Used to set 'le' class to 'lephb'
-rule_target() {
-	local class
-
-	[[ -z "$1" ]] && log warning "Missing DSCP class option in the rule" && return 1
-
-	class="$(check_class "$1")" || {
+	cs0 | cs1 | af11 | af12 | af13 | cs2 | af21 | af22 | af23 | cs3 | af31 | af32 | af33 | cs4 | af41 | af42 | af43 | cs5 | va | ef | cs6 | cs7) ;; # Valid classes, do nothing
+	*)
 		log warning "Rule '$name' contains an invalid DSCP class"
 		return 1
-	}
+		;;
+	esac
 
 	target="goto ct_set_$class"
 }
-
