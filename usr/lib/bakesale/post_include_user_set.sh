@@ -152,9 +152,3 @@ create_user_set() {
 	return 0
 }
 
-create_user_set() {
-    local config_name="$1"
-
-    fetch_config "$config_name"
-    process_rule
-}
