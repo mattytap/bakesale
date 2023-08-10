@@ -119,16 +119,16 @@ table inet fw4 {
 	}
 
 	chain accept_from_lan {
-		meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } counter packets 7 bytes 536 accept comment "!fw4: accept lan IPv4 traffic"
+		meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } counter packets 73303 bytes 5870400 accept comment "!fw4: accept lan IPv4 traffic"
 	}
 
 	chain accept_to_lan {
-		meta nfproto ipv4 oifname { "br-lan", "br-swlan", "eth2" } counter packets 0 bytes 0 accept comment "!fw4: accept lan IPv4 traffic"
+		meta nfproto ipv4 oifname { "br-lan", "br-swlan", "eth2" } counter packets 65 bytes 21908 accept comment "!fw4: accept lan IPv4 traffic"
 	}
 
 	chain input_wan {
 		meta nfproto ipv4 udp dport 68 counter packets 0 bytes 0 accept comment "!fw4: Allow-DHCP-Renew"
-		icmp type echo-request counter packets 12 bytes 1008 accept comment "!fw4: Allow-Ping"
+		icmp type echo-request counter packets 53585 bytes 2416456 accept comment "!fw4: Allow-Ping"
 		meta nfproto ipv4 meta l4proto igmp counter packets 0 bytes 0 accept comment "!fw4: Allow-IGMP"
 		jump reject_from_wan
 	}
@@ -145,11 +145,11 @@ table inet fw4 {
 	}
 
 	chain accept_to_wan {
-		meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 13 bytes 898 accept comment "!fw4: accept wan IPv4 traffic"
+		meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 60807 bytes 5575954 accept comment "!fw4: accept wan IPv4 traffic"
 	}
 
 	chain reject_from_wan {
-		meta nfproto ipv4 iifname { "eth0", "eth5" } counter packets 2 bytes 88 log prefix "reject wan in: " jump handle_reject comment "!fw4: reject wan IPv4 traffic"
+		meta nfproto ipv4 iifname { "eth0", "eth5" } counter packets 13738 bytes 710937 log prefix "reject wan in: " jump handle_reject comment "!fw4: reject wan IPv4 traffic"
 	}
 
 	chain reject_to_wan {

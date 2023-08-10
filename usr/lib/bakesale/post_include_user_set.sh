@@ -7,6 +7,8 @@ check_duration() {
 }
 
 parse_set_timeout() {
+	local timeout="$1"
+
 	[[ -z "$timeout" ]] && return 0
 
 	[ "$timeout" = 0 ] && {
@@ -44,8 +46,11 @@ check_set_against_existing() {
 	[[ "$timeout" == "$(extract_json '@.nftables[*].set.timeout')" ]] || return 1
 }
 
-fetch_config() {
+create_user_set() {
 	local config_name="$1"
+	local enabled flag_constant flag_interval auto_merge=0
+	local comment name family match type size timeout entry element
+	local flag_timeout=0 flags
 
 	config_get_bool enabled "$config_name" enabled 1
 
@@ -61,9 +66,6 @@ fetch_config() {
 	config_get_bool flag_interval "$config_name" interval
 	config_get entry "$config_name" entry
 	config_get element "$config_name" element # depreciate for naming consistency with fw4 (entry)
-}
-
-process_rule() {
 
 	[[ "$enabled" == 1 ]] || return 0
 
