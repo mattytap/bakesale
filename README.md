@@ -20,12 +20,8 @@ Assuming that SQM is already installed and running, you will then need to instal
 repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 opkg update
 opkg install kmod-sched-ctinfo
-wget "$repo/usr/lib/sqm/layer_cake_ct.qos" -O "/usr/lib/sqm/layer_cake_ct.qos"
-wget "$repo/usr/lib/sqm/layer_cake_ct.qos.help" -O "/usr/lib/sqm/layer_cake_ct.qos.help"
-wget "$repo/usr/lib/sqm/layer_cake_ct_wan.qos" -O "/usr/lib/sqm/layer_cake_ct_wan.qos"
-wget "$repo/usr/lib/sqm/layer_cake_ct_wan.qos.help" -O "/usr/lib/sqm/layer_cake_ct_wan.qos.help"
-wget "$repo/usr/lib/sqm/layer_cake_ct_vpn.qos" -O "/usr/lib/sqm/layer_cake_ct_vpn.qos"
-wget "$repo/usr/lib/sqm/layer_cake_ct_vpn.qos.help" -O "/usr/lib/sqm/layer_cake_ct_vpn.qos.help"
+wget "$repo/usr/lib/sqm/bakesale.qos" -O "/usr/lib/sqm/bakesale.qos"
+wget "$repo/usr/lib/sqm/bakesale.qos.help" -O "/usr/lib/sqm/bakesale.qos.help"
 
 ```
 
