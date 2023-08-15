@@ -22,6 +22,10 @@ opkg update
 opkg install kmod-sched-ctinfo
 wget "$repo/usr/lib/sqm/layer_cake_ct.qos" -O "/usr/lib/sqm/layer_cake_ct.qos"
 wget "$repo/usr/lib/sqm/layer_cake_ct.qos.help" -O "/usr/lib/sqm/layer_cake_ct.qos.help"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos_wan" -O "/usr/lib/sqm/layer_cake_ct_wan.qos"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos_wan.help" -O "/usr/lib/sqm/layer_cake_ct.qos_wan.help"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos_van" -O "/usr/lib/sqm/layer_cake_ct_van.qos"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos_van.help" -O "/usr/lib/sqm/layer_cake_ct.qos_van.help"
 ```
 
 To install the BakeSale use case, please follow these steps:
