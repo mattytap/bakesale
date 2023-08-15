@@ -1,2 +1,7 @@
-This script uses the layer-cake queue setup and additionally restores DSCP marks upon packet ingress from its conntrack mark.
-This script requires the kmod-sched-ctinfo package.
+bakesale qos script
+- diffserv3 (optionally set diffserv4 in Dangerous Options)
+- WatchGuard + PBR two stage SQM
+- can be run alongside cake-autorate (on the wan interface)
+- restores DSCP marks upon packet ingress from its conntrack mark.
+
+Requires the kmod-sched-ctinfo package.

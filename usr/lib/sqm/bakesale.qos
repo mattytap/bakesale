@@ -16,18 +16,6 @@ QDISC=cake
 
 # Default traffic classication is passed in INGRESS_CAKE_OPTS and EGRESS_CAKE_OPTS, defined in defaults.sh now
 
-# Temp overrides until ive figured out how to fill in luci
-case "$IFACE" in
-    "0_WIN1LDN71")
-        EGRESS_CAKE_OPTS="diffserv4"
-        ;;
-    *)
-        EGRESS_CAKE_OPTS="besteffort flows nonat nowash no-ack-filter split-gso rtt 100ms noatm overhead 92"
-        ;;
-esac
-
-# There is no dependency on the VPN interface for this script to manage WAN traffic (both ways)
-
 egress() {
 	# apply CAKE on WAN upload (must be besteffort flows nonat nowash to work with the skb->hash preservation)
     # apply CAKE on VPN diffserv4 ack-filter
