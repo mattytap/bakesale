@@ -17,7 +17,7 @@ Once the use case is configured and installed, it becomes a part of my standard 
 Assuming that SQM is already installed and running, you will then need to install the following and then configure /etc/config/sqm to use the new cake_ct script:
 
 ```bash
-repo="https://raw.githubusercontent.com/mattytap/dscpclassify/bakesale"
+repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 opkg update
 opkg install kmod-sched-ctinfo
 wget "$repo/usr/lib/sqm/layer_cake_ct.qos" -O "/usr/lib/sqm/layer_cake_ct.qos"
