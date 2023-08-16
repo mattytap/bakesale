@@ -18,12 +18,9 @@ QDISC=cake
 
 
 egress() {
-    # apply CAKE on WAN upload (must be besteffort flows nonat nowash to work with the skb->hash preservation)
-    # apply CAKE on VPN diffserv4 ack-filter
     SILENT=1 $TC qdisc del dev $IFACE root
     $TC qdisc add dev $IFACE root $( get_stab_string ) cake \
         bandwidth ${UPLINK}kbit $( get_cake_lla_string ) ${EGRESS_CAKE_OPTS} ${EQDISC_OPTS}
-
 }
 
 
@@ -43,30 +40,29 @@ ingress() {
     $IP link set dev $DEV up
 
     # redirect all IP packets arriving in $IFACE to ifb0
-    # DSCPClassify specific code: set DSCP mark from conntrack mark
+    # set DSCP mark from conntrack mark (pull from conntrack table in kernel: conntrack -L mark field)
+    # based on https://www.man7.org/linux/man-pages/man8/tc-ctinfo.8.html
+    # CTINFO (Conntrack Information) is a tc action for retrieving data
+    # from conntrack marks into various fields.
+    # DSCP mode (tc ctinfo dscp ) copies a DSCP stored in conntrack's connmark into the
+    # IPv4/v6 diffserv field.  The copying may conditionally occur
+    # based on a flag also stored in the connmark.  DSCP mode was
+    # designed to assist in restoring packet classifications on
+    # ingress, classifications which may then be used by qdiscs such as
+    # CAKE.  It may be used in any circumstance where ingress
+    # classification needs to be maintained across links that otherwise
+    # bleach or remap according to their own policies.
 
-    # +FIX to SQM: see dscpclassify commit cbfd72d
-    # layer_cake_ct.qos: improve filter parameters
-    # Use 'matchall' filter type to match all packets
-    # instead of u32 matching on everything.
-    # Remove flowid 1:1 as this can make cake 'flow blind'
+    # the ctinfo in set in nftables on first (and subsequebt frames in connection)
+    # ct mark set meta mark
+
+    # but as per commit cbfd72d
+    # Use 'matchall' filter type to match all packets instead of u32 matching on everything.
+
+    # Remove flowid 1:1 as this can make cake 'flow blind' see:
     # https://lists.bufferbloat.net/pipermail/cake/2019-September/005031.html
-    $TC filter add dev $IFACE parent ffff: prio 2 matchall \
-        action ctinfo dscp 0x0000003f mirred egress redirect dev $DEV
-
-    # if 'wg show' reports an endpoint, then pass over WireGuard packets on WAN and capture all VPN packets and redirect back up to WAN ifb for Cake
-
-    wan_if="eth0"
-    ifb_wan="ifb4eth0"
-    vpn_if="0_WIN1LDN71"
-    # need a generic way to set this off the WAN SQM profile
-    # for the moment set both ifb hardcoded (twice)
-
-    wg_endpoint=$(wg show | awk '{if($1 == "endpoint:"){split($2,a,":"); print a[1]}}')
-    if [ ! -z "$wg_endpoint" ]; then
-        $TC filter add dev $wan_if parent ffff: protocol ip prio 1 u32 match ip src ${wg_endpoint}/32 action pass
-        $TC filter add dev $vpn_if parent ffff: matchall action mirred egress redirect dev $ifb_wan
-    fi
+    $TC filter add dev $IFACE parent ffff: matchall \
+    action ctinfo dscp 0x0000003f mirred egress redirect dev $DEV
 }
 
 sqm_prepare_script() {
