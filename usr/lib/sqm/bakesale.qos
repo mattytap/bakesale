@@ -20,7 +20,7 @@ DEV="ifb4eth0"
 # Default traffic classication is passed in INGRESS_CAKE_OPTS and EGRESS_CAKE_OPTS, defined in defaults.sh now
 # overides just belt and braces until implications of allowing user to completely div erge from usecase are known
 
-if IFACE="eth0"
+if [ "$IFACE" == "eth0" ]; then
 	EGRESS_CAKE_OPTS="besteffort flows"
 	EQDISC_OPTS=""
 	UPLINK="18000"
@@ -38,17 +38,15 @@ egress() {
     # apply CAKE on WAN upload (must be besteffort flows nonat nowash to work with the skb->hash preservation)
     # apply CAKE on VPN diffserv4 ack-filter
     SILENT=1 $TC qdisc del dev $IFACE root
-    $TC qdisc add dev $IFACE root $( get_stab_string ) cake \
-        bandwidth ${UPLINK}kbit $( get_cake_lla_string ) ${EGRESS_CAKE_OPTS} ${EQDISC_OPTS}
+    $TC qdisc add dev $IFACE root $( get_stab_string ) cake bandwidth ${UPLINK}kbit $( get_cake_lla_string ) ${EGRESS_CAKE_OPTS} ${EQDISC_OPTS}
 }
 
 ingress() {
-
     SILENT=1 $TC qdisc del dev $IFACE handle ffff: ingress
     $TC qdisc add dev $IFACE handle ffff: ingress
 
     # if 'wg show' reports an endpoint, then pass over WireGuard packets on WAN and capture all VPN packets and redirect back up to WAN ifb for Cake
-	if IFACE="eth0"; then
+    if [ "$IFACE" == "eth0" ]; then
 		$TC filter add dev $IFACE parent ffff: protocol ip prio 1 u32 match ip src ${wg_endpoint}/32 action pass
 	fi
 
@@ -61,19 +59,14 @@ ingress() {
     # instead of u32 matching on everything.
     # Remove flowid 1:1 as this can make cake 'flow blind'
     # https://lists.bufferbloat.net/pipermail/cake/2019-September/005031.html
-	$TC filter add dev $IFACE parent ffff: prio 2 matchall \
-		action ctinfo dscp 0x0000003f mirred egress redirect dev $DEV
-
+	$TC filter add dev $IFACE parent ffff: prio 2 matchall action ctinfo dscp 0x0000003f mirred egress redirect dev $DEV
     SILENT=1 $TC qdisc del dev $DEV root
 
     [ "$IGNORE_DSCP_INGRESS" -eq "1" ] && INGRESS_CAKE_OPTS="$INGRESS_CAKE_OPTS besteffort"
     [ "$ZERO_DSCP_INGRESS" -eq "1" ] && INGRESS_CAKE_OPTS="$INGRESS_CAKE_OPTS wash"
 
-    $TC qdisc add dev $DEV root $( get_stab_string ) cake \
-        bandwidth ${DOWNLINK}kbit $( get_cake_lla_string ) ${INGRESS_CAKE_OPTS} ${IQDISC_OPTS}
-
+    $TC qdisc add dev $DEV root $( get_stab_string ) cake bandwidth ${DOWNLINK}kbit $( get_cake_lla_string ) ${INGRESS_CAKE_OPTS} ${IQDISC_OPTS}
     $IP link set dev $DEV up
-
 }
 
 sqm_prepare_script() {
