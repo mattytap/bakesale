@@ -13,9 +13,26 @@
 
 . ${SQM_LIB_DIR}/defaults.sh
 QDISC=cake
+wg_endpoint=$(wg show | awk '{if($1 == "endpoint:"){split($2,a,":"); print a[1]}}')
+# Assumes wan="eth0"
+DEV="ifb4eth0"
 
 # Default traffic classication is passed in INGRESS_CAKE_OPTS and EGRESS_CAKE_OPTS, defined in defaults.sh now
+# overides just belt and braces until implications of allowing user to completely div erge from usecase are known
 
+if IFACE="eth0"
+	EGRESS_CAKE_OPTS="besteffort flows"
+	EQDISC_OPTS=""
+	UPLINK="18000"
+else
+	# assumes if not eth0 then a ProtonVPN interface
+	EGRESS_CAKE_OPTS="diffserv4 triple-isolate nat ack-filter"
+	EQDISC_OPTS=""
+	UPLINK="200000"
+fi
+INGRESS_CAKE_OPTS="diffserv4 triple-isolate nat ingress"
+IQDISC_OPTS=""
+DOWNLINK="95000"
 
 egress() {
     # apply CAKE on WAN upload (must be besteffort flows nonat nowash to work with the skb->hash preservation)
@@ -23,14 +40,29 @@ egress() {
     SILENT=1 $TC qdisc del dev $IFACE root
     $TC qdisc add dev $IFACE root $( get_stab_string ) cake \
         bandwidth ${UPLINK}kbit $( get_cake_lla_string ) ${EGRESS_CAKE_OPTS} ${EQDISC_OPTS}
-
 }
-
 
 ingress() {
 
     SILENT=1 $TC qdisc del dev $IFACE handle ffff: ingress
     $TC qdisc add dev $IFACE handle ffff: ingress
+
+    # if 'wg show' reports an endpoint, then pass over WireGuard packets on WAN and capture all VPN packets and redirect back up to WAN ifb for Cake
+	if IFACE="eth0"; then
+		$TC filter add dev $IFACE parent ffff: protocol ip prio 1 u32 match ip src ${wg_endpoint}/32 action pass
+	fi
+
+    # redirect all IP packets arriving in $IFACE to ifb0
+    # DSCPClassify specific code: set DSCP mark from conntrack mark
+
+    # +FIX to SQM: see dscpclassify commit cbfd72d
+    # layer_cake_ct.qos: improve filter parameters
+    # Use 'matchall' filter type to match all packets
+    # instead of u32 matching on everything.
+    # Remove flowid 1:1 as this can make cake 'flow blind'
+    # https://lists.bufferbloat.net/pipermail/cake/2019-September/005031.html
+	$TC filter add dev $IFACE parent ffff: prio 2 matchall \
+		action ctinfo dscp 0x0000003f mirred egress redirect dev $DEV
 
     SILENT=1 $TC qdisc del dev $DEV root
 
@@ -42,31 +74,6 @@ ingress() {
 
     $IP link set dev $DEV up
 
-    # redirect all IP packets arriving in $IFACE to ifb0
-    # DSCPClassify specific code: set DSCP mark from conntrack mark
-
-    # +FIX to SQM: see dscpclassify commit cbfd72d
-    # layer_cake_ct.qos: improve filter parameters
-    # Use 'matchall' filter type to match all packets
-    # instead of u32 matching on everything.
-    # Remove flowid 1:1 as this can make cake 'flow blind'
-    # https://lists.bufferbloat.net/pipermail/cake/2019-September/005031.html
-    $TC filter add dev $IFACE parent ffff: prio 2 matchall \
-        action ctinfo dscp 0x0000003f mirred egress redirect dev $DEV
-
-    # if 'wg show' reports an endpoint, then pass over WireGuard packets on WAN and capture all VPN packets and redirect back up to WAN ifb for Cake
-
-    wan_if="eth0"
-    ifb_wan="ifb4eth0"
-    vpn_if="0_WIN1LDN71"
-    # need a generic way to set this off the WAN SQM profile
-    # for the moment set both ifb hardcoded (twice)
-
-    wg_endpoint=$(wg show | awk '{if($1 == "endpoint:"){split($2,a,":"); print a[1]}}')
-    if [ ! -z "$wg_endpoint" ]; then
-        $TC filter add dev $wan_if parent ffff: protocol ip prio 1 u32 match ip src ${wg_endpoint}/32 action pass
-        $TC filter add dev $vpn_if parent ffff: matchall action mirred egress redirect dev $ifb_wan
-    fi
 }
 
 sqm_prepare_script() {
