@@ -22,19 +22,17 @@ QDISC=cake
 # (in testing eth0 is currently processed first so it works).
 
 egress() {
-    DEV="ifb4eth0"
-    if [ "$IFACE" == "eth0" ]; then
-        # apply CAKE on WAN upload (must be besteffort flows nonat nowash to work with the skb->hash preservation)
+    wg_endpoint=$(wg show | awk '{if($1 == "endpoint:"){split($2,a,":"); print a[1]}}')
+    if [ "$IFACE" == "eth0" ] && [ -n "$wg_endpoint" ]; then
+        # With a VPN traffic, CAKE on WAN upload must be 'besteffort flows' to work with skb->hash preservation
         EGRESS_CAKE_OPTS="besteffort flows"
-        UPLINK="18000"
+        # UPLOAD should be set in Luci on both interfaces to 18000 
     else
-        # assumes if not eth0 then a ProtonVPN interface
-        # apply CAKE on VPN diffserv4 ack-filter
+        # apply CAKE 'diffserv4 ack-filter' on VPN (or WAN when VPN not present)
         EGRESS_CAKE_OPTS="diffserv4 triple-isolate nat ack-filter"
-        UPLINK="50000"
+        # UPLOAD should be set in Luci on both interfaces to 65000 
     fi
 
-    sqm_debug "egress"
     SILENT=1 $TC qdisc del dev $IFACE root
     $TC qdisc add dev $IFACE root $( get_stab_string ) cake \
         bandwidth ${UPLINK}kbit $( get_cake_lla_string ) ${EGRESS_CAKE_OPTS} ${EQDISC_OPTS}
@@ -42,40 +40,47 @@ egress() {
 
 
 ingress() {
-    # force differv4 on ingress. re-apply to ifb4$wan_if on VPN
-    DEV="ifb4eth0"
-    DOWNLINK="65000"
-    INGRESS_CAKE_OPTS="diffserv4 triple-isolate nat ingress"
     sqm_debug "ingress"
 
     SILENT=1 $TC qdisc del dev $IFACE handle ffff: ingress
     $TC qdisc add dev $IFACE handle ffff: ingress
 
+    # if 'wg show' reports an endpoint, then pass over WireGuard packets on WAN
+    # Assumes wan="eth0"
+    wg_endpoint=$(wg show | awk '{if($1 == "endpoint:"){split($2,a,":"); print a[1]}}')
+    if [ "$IFACE" == "eth0" ] && [ -n "$wg_endpoint" ]; then
+		$TC filter add dev $IFACE parent ffff: protocol ip prio 1 u32 match ip src ${wg_endpoint}/32 action pass
+	fi
+
     SILENT=1 $TC qdisc del dev $DEV root
 
-    # these both need setting to 0 in /et/config/sqm
-    # i had thought of forcing these too (they default to 1 in luci) but want to allow user some flex
+    # Configure CAKE options: force differv4 on ingress
+    INGRESS_CAKE_OPTS="diffserv4 triple-isolate nat ingress"
+    # these both need setting to 0 in /et/config/sqm to fully benefit from diffserv4 on ingress
+    # i had thought of forcing these too (they default to 1 in luci) but want to allow user control
+    # If ive got this right, Dangerous mode should not be needed in normal use
     [ "$IGNORE_DSCP_INGRESS" -eq "1" ] && INGRESS_CAKE_OPTS="$INGRESS_CAKE_OPTS besteffort"
     [ "$ZERO_DSCP_INGRESS" -eq "1" ] && INGRESS_CAKE_OPTS="$INGRESS_CAKE_OPTS wash"
 
+    # Re-apply to ifb4$wan_if on VPN. All interfaces pass non-watchguard trafic through same ifb
+    SILENT=1 $IP link del name $DEV type ifb
+    DEV="wg-pbr-ingress"
+
+	# Creat ingress ifb interface (if not already created by another interface)
+    SILENT=1 $IP link add name $DEV type ifb
+
+    # DOWNLOAD should be set in Luci on both interfaces to 65000 
     $TC qdisc add dev $DEV root $( get_stab_string ) cake \
         bandwidth ${DOWNLINK}kbit $( get_cake_lla_string ) ${INGRESS_CAKE_OPTS} ${IQDISC_OPTS}
 
     $IP link set dev $DEV up
 
-    # if 'wg show' reports an endpoint, then pass over WireGuard packets on WAN and capture all VPN packets and redirect back up to WAN ifb for Cake
-    # Assumes wan="eth0"
-    wg_endpoint=$(wg show | awk '{if($1 == "endpoint:"){split($2,a,":"); print a[1]}}')
-    if [ "$IFACE" == "eth0" ]; then
-		$TC filter add dev $IFACE parent ffff: protocol ip prio 1 u32 match ip src ${wg_endpoint}/32 action pass
-	fi
-
     # redirect all IP packets arriving in $IFACE to ifb0
     # DSCPClassify specific code: set DSCP mark from conntrack mark
     # +FIX to SQM: see dscpclassify commit cbfd72d
     # https://lists.bufferbloat.net/pipermail/cake/2019-September/005031.html
-	$TC filter add dev $IFACE parent ffff: prio 2 \
-        matchall action ctinfo dscp 0x0000003f mirred egress redirect dev $DEV
+	$TC filter add dev $IFACE parent ffff: prio 2 matchall \
+        action ctinfo dscp 0x0000003f mirred egress redirect dev $DEV
 }
 
 sqm_prepare_script() {
