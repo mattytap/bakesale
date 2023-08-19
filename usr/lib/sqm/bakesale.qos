@@ -14,14 +14,16 @@
 . ${SQM_LIB_DIR}/defaults.sh
 QDISC=cake
 
-# as in piece_of_cake.qos, we ignore the *_CAKE_OPTS from defaults.sh
-# and force all ingress through the one ifb attached to wan interface
+# As in piece_of_cake.qos, we ignore the *_CAKE_OPTS from defaults.sh
+# and force all ingress through the one ifb attached to both the wan and vpn interfaces
 
 # ToDo - remove hard coding of wan interface
-# ToDo - setup ibf4eth0 should in deployment the VPN ever get processed before eth0 by the sqm service
+# ToDo - check whether it matters which interface comesup first
 # (in testing eth0 is currently processed first so it works).
 
 egress() {
+    sqm_debug "egress"
+
     wg_endpoint=$(wg show | awk '{if($1 == "endpoint:"){split($2,a,":"); print a[1]}}')
     if [ "$IFACE" == "eth0" ] && [ -n "$wg_endpoint" ]; then
         # With a VPN traffic, CAKE on WAN upload must be 'besteffort flows' to work with skb->hash preservation
@@ -56,7 +58,8 @@ ingress() {
 
     # Configure CAKE options: force differv4 on ingress
     INGRESS_CAKE_OPTS="diffserv4 triple-isolate nat ingress"
-    # these both need setting to 0 in /et/config/sqm to fully benefit from diffserv4 on ingress
+
+    # These both need setting to 0 in /et/config/sqm to fully benefit from diffserv4 on ingress
     # i had thought of forcing these too (they default to 1 in luci) but want to allow user control
     # If ive got this right, Dangerous mode should not be needed in normal use
     [ "$IGNORE_DSCP_INGRESS" -eq "1" ] && INGRESS_CAKE_OPTS="$INGRESS_CAKE_OPTS besteffort"
@@ -76,6 +79,7 @@ ingress() {
     $IP link set dev $DEV up
 
     # redirect all IP packets arriving in $IFACE to ifb0
+
     # DSCPClassify specific code: set DSCP mark from conntrack mark
     # +FIX to SQM: see dscpclassify commit cbfd72d
     # https://lists.bufferbloat.net/pipermail/cake/2019-September/005031.html
