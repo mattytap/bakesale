@@ -194,3 +194,17 @@ config rule
 	option class 'ef'
 	option counter '1'
 
+config rule
+	option name 'IoT Devices'
+	option proto 'udp'
+	option proto 'tcp'
+	list src_ip '192.168.240.4'
+	list src_ip '192.168.240.5'
+	list src_ip '192.168.240.6'
+	list src_ip '192.168.240.7'
+	list src_ip '192.168.240.8'
+	list src_ip '192.168.240.9'
+	list src_ip '192.168.240.10'
+	list src_ip '192.168.240.11'
+	option class 'le'
+	option counter '1'
