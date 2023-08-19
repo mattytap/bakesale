@@ -22,6 +22,8 @@ opkg update
 opkg install kmod-sched-ctinfo
 wget "$repo/usr/lib/sqm/bakesale.qos" -O "/usr/lib/sqm/bakesale.qos"
 wget "$repo/usr/lib/sqm/bakesale.qos.help" -O "/usr/lib/sqm/bakesale.qos.help"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos" -O "/usr/lib/sqm/layer_cake_ct.qos"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos.help" -O "/usr/lib/sqm/layer_cake_ct.qos.help"
 
 ```
 
