@@ -12,7 +12,7 @@ In cases where nftable content cannot be generated solely by firewall4, a static
 
 Once the use case is configured and installed, it becomes a part of my standard OpenWRT configuration, making it easy to back up with sysupgrade.
 
-## Installation
+## DSCP Installation
 
 Assuming that SQM is already installed and running, you will then need to install the following and then configure /etc/config/sqm to use the new cake_ct script:
 
@@ -57,6 +57,18 @@ chmod +x "/usr/lib/bakesale/post_include_rules.sh"
 /etc/init.d/bakesale enable
 /etc/init.d/bakesale start
 
+```
+
+## autorate Installation
+
+To install autorate, run the following code and refer to the installation instructions in the separate
+[INSTALLATION](./documentation/INSTALLATION_autorate.md) page.
+
+```bash
+  wget -O /tmp/autorate_setup.sh https://raw.githubusercontent.com/mattytap/bakesale/main/usr/lib/bakesale/setup_autorate.sh
+
+  sh /tmp/autorate_setup.sh
+  
 ```
 
 ## Development Journey - using a repository such as jeverley/dscpclassify
