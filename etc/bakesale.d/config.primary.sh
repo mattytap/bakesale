@@ -99,7 +99,7 @@ base_dl_shaper_rate_kbps=125000 # steady state bandwidth for download (Kbit/s)
 max_dl_shaper_rate_kbps=190000  # maximum bandwidth for download (Kbit/s)
 
 min_ul_shaper_rate_kbps=7500  # minimum bandwidth for upload (Kbit/s)
-base_ul_shaper_rate_kbps=35000 # steady state bandwidth for upload (KBit/s)
+base_ul_shaper_rate_kbps=20000 # steady state bandwidth for upload (KBit/s)
 max_ul_shaper_rate_kbps=50000  # maximum bandwidth for upload (Kbit/s)
 
 # *** OVERRIDES ***

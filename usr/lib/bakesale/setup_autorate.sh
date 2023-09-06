@@ -136,8 +136,8 @@ main() {
 	EOF
 
 	# Also copy over the service file but DO NOT ACTIVATE IT
-	mv "${tmp}/bakesale-"*/etc/init.d/autorate /etc/init.d/autorate
-	chmod +x /etc/init.d/autorate
+	mv "${tmp}/bakesale-"*/etc/init.d/bakesale /etc/init.d/bakesale
+	chmod +x /etc/init.d/bakesale
 
 	# Tell how to handle the config file - use old, or edit the new one
 	# shellcheck disable=SC2059

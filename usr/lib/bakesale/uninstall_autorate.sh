@@ -46,10 +46,10 @@ main() {
 
 	# Set up autorate files
 	# cd to the /usr/lib/bakesale directory
-	cd /usr/lib/bakesale/ || exit 1
+	cd /usr/lib/ || exit 1
 
 	# cd into it
-	cd autorate/ || exit 1
+	cd bakesale/ || exit 1
 
 	# remove configuration files if user does not want to keep them
 	keepIt=''
