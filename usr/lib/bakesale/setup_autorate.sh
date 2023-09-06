@@ -126,6 +126,7 @@ main() {
 	do
 		mv "${tmp}/${file}" "${file}"
 	done
+	chmod +x ${files}
 
 	# Get version and generate a file containing version information
 	version=$(grep -m 1 ^autorate_version= /usr/lib/bakesale/autorate.sh | cut -d= -f2 | cut -d'"' -f2)

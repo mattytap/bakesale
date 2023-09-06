@@ -6,7 +6,7 @@ USE_PROCD=1
 
 start_service() {
 
-        cake_instances=(/usr/lib/bakesale/config.*.sh)
+        cake_instances=(/etc/bakesale.d/config.*.sh)
 
         for cake_instance in "${!cake_instances[@]}"
         do
