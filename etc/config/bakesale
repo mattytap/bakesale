@@ -4,7 +4,7 @@ config global 'global'
 	option client_hints '1'
 	option threaded_client_min_bytes '10000'
 	option threaded_service_min_bytes '1000000'
-	option wan_zone 'wan Proton1VPN Net2Shield'
+	option wan_zone 'wan vpn'
 	option wmm '1' #See RFC8325
 
 config ipset

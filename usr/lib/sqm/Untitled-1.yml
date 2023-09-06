@@ -1,0 +1,182 @@
+root@m300-WatchGuard-M300:~# service sqm start
+SQM:
+SQM: Tue Sep  5 22:58:19 BST 2023: Starting.
+SQM: Starting SQM script: bakesale.qos on eth0, in: 38000 Kbps, out: 10000 Kbps
+SQM: fn_exists: function candidate name: sqm_start
+SQM: fn_exists: TYPE_OUTPUT: sqm_start: not found
+SQM: fn_exists: return value: 1
+SQM: Using generic sqm_start_default function.
+SQM: fn_exists: function candidate name: sqm_prepare_script
+SQM: fn_exists: TYPE_OUTPUT: sqm_prepare_script is a function
+SQM: fn_exists: return value: 0
+SQM: sqm_start_default: starting sqm_prepare_script
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name SQM_IFB_0086e type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link add name SQM_IFB_0086e type ifb
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc replace dev SQM_IFB_0086e root cake
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc replace dev SQM_IFB_0086e root cake
+SQM: QDISC cake is useable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link set dev SQM_IFB_0086e down
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link set dev SQM_IFB_0086e down
+SQM: cmd_wrapper: COMMAND: /sbin/ip link delete SQM_IFB_0086e type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link delete SQM_IFB_0086e type ifb
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name SQM_IFB_1dd4a type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link add name SQM_IFB_1dd4a type ifb
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc replace dev SQM_IFB_1dd4a root cake
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc replace dev SQM_IFB_1dd4a root cake
+SQM: QDISC cake is useable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link set dev SQM_IFB_1dd4a down
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link set dev SQM_IFB_1dd4a down
+SQM: cmd_wrapper: COMMAND: /sbin/ip link delete SQM_IFB_1dd4a type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link delete SQM_IFB_1dd4a type ifb
+SQM: sqm_start_default: Starting bakesale.qos
+SQM: ifb associated with interface eth0:
+SQM: Currently no ifb is associated with eth0, this is normal during starting of the sqm system.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name ifb4eth0 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link add name ifb4eth0 type ifb
+SQM: fn_exists: function candidate name: egress
+SQM: fn_exists: TYPE_OUTPUT: egress is a function
+SQM: fn_exists: return value: 0
+SQM: egress
+SQM: cmd_wrapper: tc: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc del dev eth0 root
+SQM: cmd_wrapper: tc: FAILURE (2): /sbin/tc qdisc del dev eth0 root
+SQM: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: No such file or directory
+SQM: LLA: default link layer adjustment method for cake is cake
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc add dev eth0 root cake bandwidth 10000kbit besteffort flows
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc add dev eth0 root cake bandwidth 10000kbit besteffort flows
+SQM: sqm_start_default: egress shaping activated
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name SQM_IFB_38d84 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link add name SQM_IFB_38d84 type ifb
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc replace dev SQM_IFB_38d84 ingress
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc replace dev SQM_IFB_38d84 ingress
+SQM: QDISC ingress is useable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link set dev SQM_IFB_38d84 down
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link set dev SQM_IFB_38d84 down
+SQM: cmd_wrapper: COMMAND: /sbin/ip link delete SQM_IFB_38d84 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link delete SQM_IFB_38d84 type ifb
+SQM: fn_exists: function candidate name: ingress
+SQM: fn_exists: TYPE_OUTPUT: ingress is a function
+SQM: fn_exists: return value: 0
+SQM: ingress
+SQM: cmd_wrapper: tc: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc del dev eth0 handle ffff: ingress
+SQM: cmd_wrapper: tc: FAILURE (2): /sbin/tc qdisc del dev eth0 handle ffff: ingress
+SQM: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: Invalid argument
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc add dev eth0 handle ffff: ingress
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc add dev eth0 handle ffff: ingress
+SQM: cmd_wrapper: COMMAND: /sbin/tc filter add dev eth0 parent ffff: protocol ip prio 1 u32 match ip src 146.70.96.66/32 action pass
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc filter add dev eth0 parent ffff: protocol ip prio 1 u32 match ip src 146.70.96.66/32 action pass
+SQM: cmd_wrapper: tc: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc del dev ifb4eth0 root
+SQM: cmd_wrapper: tc: FAILURE (2): /sbin/tc qdisc del dev ifb4eth0 root
+SQM: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: No such file or directory
+SQM: cmd_wrapper: ip: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link del name ifb4eth0 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link del name ifb4eth0 type ifb
+SQM: cmd_wrapper: ip: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name wg-pbr-ingress type ifb
+SQM: cmd_wrapper: ip: FAILURE (2): /sbin/ip link add name wg-pbr-ingress type ifb
+SQM: cmd_wrapper: ip: LAST ERROR: RTNETLINK answers: File exists
+SQM: LLA: default link layer adjustment method for cake is cake
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc add dev wg-pbr-ingress root cake bandwidth 38000kbit diffserv4 triple-isolate nat ingress
+SQM: ERROR: cmd_wrapper: tc: FAILURE (2): /sbin/tc qdisc add dev wg-pbr-ingress root cake bandwidth 38000kbit diffserv4 triple-isolate nat ingress
+SQM: ERROR: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: File exists
+SQM: cmd_wrapper: COMMAND: /sbin/ip link set dev wg-pbr-ingress up
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link set dev wg-pbr-ingress up
+SQM: cmd_wrapper: COMMAND: /sbin/tc filter add dev eth0 parent ffff: prio 2 matchall action ctinfo dscp 0x0000003f mirred egress redirect dev wg-pbr-ingress
+SQM: ERROR: cmd_wrapper: tc: FAILURE (2): /sbin/tc filter add dev eth0 parent ffff: prio 2 matchall action ctinfo dscp 0x0000003f mirred egress redirect dev wg-pbr-ingress
+SQM: ERROR: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: No such file or directory
+We have an error talking to the kernel
+SQM: WARNING: sqm_start_default: bakesale.qos lacks an ingress() function
+SQM: sqm_start_default: ingress shaping activated
+SQM: bakesale.qos was started on eth0 successfully
+SQM:
+SQM: Tue Sep  5 22:58:20 BST 2023: Starting.
+SQM: Starting SQM script: bakesale.qos on 0_WIN1LDN71, in: 38000 Kbps, out: 10000 Kbps
+SQM: fn_exists: function candidate name: sqm_start
+SQM: fn_exists: TYPE_OUTPUT: sqm_start: not found
+SQM: fn_exists: return value: 1
+SQM: Using generic sqm_start_default function.
+SQM: fn_exists: function candidate name: sqm_prepare_script
+SQM: fn_exists: TYPE_OUTPUT: sqm_prepare_script is a function
+SQM: fn_exists: return value: 0
+SQM: sqm_start_default: starting sqm_prepare_script
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name SQM_IFB_2d737 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link add name SQM_IFB_2d737 type ifb
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc replace dev SQM_IFB_2d737 root cake
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc replace dev SQM_IFB_2d737 root cake
+SQM: QDISC cake is useable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link set dev SQM_IFB_2d737 down
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link set dev SQM_IFB_2d737 down
+SQM: cmd_wrapper: COMMAND: /sbin/ip link delete SQM_IFB_2d737 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link delete SQM_IFB_2d737 type ifb
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name SQM_IFB_03198 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link add name SQM_IFB_03198 type ifb
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc replace dev SQM_IFB_03198 root cake
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc replace dev SQM_IFB_03198 root cake
+SQM: QDISC cake is useable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link set dev SQM_IFB_03198 down
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link set dev SQM_IFB_03198 down
+SQM: cmd_wrapper: COMMAND: /sbin/ip link delete SQM_IFB_03198 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link delete SQM_IFB_03198 type ifb
+SQM: sqm_start_default: Starting bakesale.qos
+SQM: ifb associated with interface 0_WIN1LDN71:
+SQM: Currently no ifb is associated with 0_WIN1LDN71, this is normal during starting of the sqm system.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name ifb40_WIN1LDN71 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link add name ifb40_WIN1LDN71 type ifb
+SQM: fn_exists: function candidate name: egress
+SQM: fn_exists: TYPE_OUTPUT: egress is a function
+SQM: fn_exists: return value: 0
+SQM: egress
+SQM: cmd_wrapper: tc: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc del dev 0_WIN1LDN71 root
+SQM: cmd_wrapper: tc: FAILURE (2): /sbin/tc qdisc del dev 0_WIN1LDN71 root
+SQM: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: No such file or directory
+SQM: LLA: default link layer adjustment method for cake is cake
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc add dev 0_WIN1LDN71 root cake bandwidth 10000kbit diffserv4 triple-isolate nat ack-filter
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc add dev 0_WIN1LDN71 root cake bandwidth 10000kbit diffserv4 triple-isolate nat ack-filter
+SQM: sqm_start_default: egress shaping activated
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name SQM_IFB_74bef type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link add name SQM_IFB_74bef type ifb
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc replace dev SQM_IFB_74bef ingress
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc replace dev SQM_IFB_74bef ingress
+SQM: QDISC ingress is useable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link set dev SQM_IFB_74bef down
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link set dev SQM_IFB_74bef down
+SQM: cmd_wrapper: COMMAND: /sbin/ip link delete SQM_IFB_74bef type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link delete SQM_IFB_74bef type ifb
+SQM: fn_exists: function candidate name: ingress
+SQM: fn_exists: TYPE_OUTPUT: ingress is a function
+SQM: fn_exists: return value: 0
+SQM: ingress
+SQM: cmd_wrapper: tc: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc del dev 0_WIN1LDN71 handle ffff: ingress
+SQM: cmd_wrapper: tc: FAILURE (2): /sbin/tc qdisc del dev 0_WIN1LDN71 handle ffff: ingress
+SQM: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: Invalid argument
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc add dev 0_WIN1LDN71 handle ffff: ingress
+SQM: cmd_wrapper: tc: SUCCESS: /sbin/tc qdisc add dev 0_WIN1LDN71 handle ffff: ingress
+SQM: cmd_wrapper: tc: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc del dev ifb40_WIN1LDN71 root
+SQM: cmd_wrapper: tc: FAILURE (2): /sbin/tc qdisc del dev ifb40_WIN1LDN71 root
+SQM: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: No such file or directory
+SQM: cmd_wrapper: ip: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link del name ifb40_WIN1LDN71 type ifb
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link del name ifb40_WIN1LDN71 type ifb
+SQM: cmd_wrapper: ip: invocation silenced by request, FAILURE either expected or acceptable.
+SQM: cmd_wrapper: COMMAND: /sbin/ip link add name wg-pbr-ingress type ifb
+SQM: cmd_wrapper: ip: FAILURE (2): /sbin/ip link add name wg-pbr-ingress type ifb
+SQM: cmd_wrapper: ip: LAST ERROR: RTNETLINK answers: File exists
+SQM: LLA: default link layer adjustment method for cake is cake
+SQM: cmd_wrapper: COMMAND: /sbin/tc qdisc add dev wg-pbr-ingress root cake bandwidth 38000kbit diffserv4 triple-isolate nat ingress
+SQM: ERROR: cmd_wrapper: tc: FAILURE (2): /sbin/tc qdisc add dev wg-pbr-ingress root cake bandwidth 38000kbit diffserv4 triple-isolate nat ingress
+SQM: ERROR: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: File exists
+SQM: cmd_wrapper: COMMAND: /sbin/ip link set dev wg-pbr-ingress up
+SQM: cmd_wrapper: ip: SUCCESS: /sbin/ip link set dev wg-pbr-ingress up
+SQM: cmd_wrapper: COMMAND: /sbin/tc filter add dev 0_WIN1LDN71 parent ffff: prio 2 matchall action ctinfo dscp 0x0000003f mirred egress redirect dev wg-pbr-ingress
+SQM: ERROR: cmd_wrapper: tc: FAILURE (2): /sbin/tc filter add dev 0_WIN1LDN71 parent ffff: prio 2 matchall action ctinfo dscp 0x0000003f mirred egress redirect dev wg-pbr-ingress
+SQM: ERROR: cmd_wrapper: tc: LAST ERROR: RTNETLINK answers: No such file or directory
+We have an error talking to the kernel
+SQM: WARNING: sqm_start_default: bakesale.qos lacks an ingress() function
+SQM: sqm_start_default: ingress shaping activated
+SQM: bakesale.qos was started on 0_WIN1LDN71 successfully
+root@m300-WatchGuard-M300:~#

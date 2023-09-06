@@ -68,15 +68,15 @@ main() {
 	[ "${exit_now}" -ge 1 ] && exit "${exit_now}"
 
 	# Set up autorate files
-	# Set up autorate files in /usr/lib
-	cd /usr/lib/ || exit 1
-	[ -d bakesale ] || mkdir bakesale || exit 1
-	cd bakesale/ || exit 1
-
 	# Set up directory in /etc
 	cd /etc/ || exit 1
 	[ -d bakesale.d ] || mkdir bakesale.d || exit 1
 	cd bakesale.d/ || exit 1
+
+	# Set up autorate files in /usr/lib
+	cd /usr/lib/ || exit 1
+	[ -d bakesale ] || mkdir bakesale || exit 1
+	cd bakesale/ || exit 1
 
 	# Get the latest commit to download
 	commit=$(uclient-fetch -qO- "${API_URL}" | jsonfilter -e @.sha)
