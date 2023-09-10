@@ -1,0 +1,115 @@
+
+config defaults
+	option input 'REJECT'
+	option output 'REJECT'
+	option forward 'REJECT'
+	option synflood_protect '1'
+	option drop_invalid '1'
+
+config zone
+	option name 'lan'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'ACCEPT'
+	option family 'ipv4'
+	option log '1'
+	list network '1_lan'
+	list network '2_eth2'
+	list network '7_swlan'
+
+config zone
+	option name 'wan'
+	option output 'ACCEPT'
+	option forward 'REJECT'
+	option masq '1'
+	option mtu_fix '1'
+	option family 'ipv4'
+	list network '0_wan'
+	list network 'tether'
+	option input 'REJECT'
+	option log '1'
+
+config forwarding
+	option src 'lan'
+	option dest 'wan'
+
+config zone
+	option name 'vpn'
+	option input 'REJECT'
+	option output 'ACCEPT'
+	option forward 'REJECT'
+	option masq '1'
+	option family 'ipv4'
+	option mtu_fix '1'
+	list network '0_WIN1LDN95'
+	list network '0_WIN1LDN71'
+	list network '0_WIN1REY6'
+	list network '0_WIN2LDN92'
+	list network '0_WIN2LDN122'
+	list network '0_WIN2LDN137'
+	option log '1'
+
+config forwarding
+	option src 'lan'
+	option dest 'vpn'
+
+config rule
+	option name 'Allow-DHCP-Renew'
+	option src 'wan'
+	option proto 'udp'
+	option dest_port '68'
+	option target 'ACCEPT'
+	option family 'ipv4'
+
+config rule
+	option name 'Allow-Ping'
+	option src 'wan'
+	option proto 'icmp'
+	option icmp_type 'echo-request'
+	option family 'ipv4'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-IGMP'
+	option src 'wan'
+	option proto 'igmp'
+	option family 'ipv4'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-IPSec-ESP'
+	option src 'wan'
+	option dest 'lan'
+	option proto 'esp'
+	option target 'ACCEPT'
+	option family 'ipv4'
+
+config rule
+	option name 'Allow-ISAKMP'
+	option src 'wan'
+	option dest 'lan'
+	option dest_port '500'
+	option proto 'udp'
+	option target 'ACCEPT'
+	option family 'ipv4'
+
+config include 'miniupnpd'
+	option type 'script'
+	option path '/usr/share/miniupnpd/firewall.include'
+
+config ipset
+	option name 'BBCSounds'
+	option family 'ipv4'
+	list match 'dest_net'
+	list entry '212.58.0.0/16'
+	option counters '1'
+
+config include 'opennds'
+	option type 'script'
+	option path '/usr/lib/opennds/restart.sh'
+
+config include 'pbr'
+	option fw4_compatible '1'
+	option type 'script'
+	option path '/usr/share/pbr/pbr.firewall.include'
+

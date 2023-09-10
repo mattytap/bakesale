@@ -1,0 +1,78 @@
+set wan_443_net {
+		type ipv4_addr . ipv4_addr
+		flags interval,timeout
+		counter
+		auto-merge
+		comment "wan 443 CIDR RDAP request experimental"
+}
+
+set alan_443 {
+		type ipv4_addr . ipv4_addr
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 5m
+		comment "lan 443 traffic"
+}
+
+set bwan_443 {
+		type ipv4_addr . ipv4_addr
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 5m
+		comment "wan 443 traffic"
+}
+
+set cvpn_443 {
+		type ipv4_addr . ipv4_addr
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 5m
+		comment "vpn 443 traffic"
+}
+
+set dlo_443 {
+		type ipv4_addr . ipv4_addr
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 5m
+		comment "vpn 443 traffic"
+}
+
+set eall_443 {
+		type ipv4_addr . ipv4_addr
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 5m
+		comment "all 443 traffic"
+}
+
+
+set fall_443 {
+		type ifname . ifname . inet_proto . ipv4_addr . ipv4_addr
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 5m
+		comment "all 443 traffic"
+}
+
+chain prerouting {
+    type filter hook prerouting priority filter; policy accept;
+
+    # Rule to update wan_443 set with pre-NAT packet information for traffic to port 443 (outgoing)
+    meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } counter update @alan_443 { ip saddr . ip daddr }
+    meta nfproto ipv4 iifname { "WIN1LDN71", "vpn_______vpn" } counter update @cvpn_443 { ip saddr . ip daddr }
+
+    # Rule to update wan_443 set with pre-NAT packet information for returning traffic from port 443
+    meta nfproto ipv4 iifname { "eth0", "eth5", "vpn____vpn" } counter update @bwan_443 { ip daddr . ip saddr }
+    meta nfproto ipv4 iifname { "lo", "lo_____lo", "lo___lo" } counter update @dlo_443 { ip daddr . ip saddr }
+    meta nfproto ipv4 iifname { "WIN1LDN71", "vpn_______vpn" } counter update @cvpn_443 { ip daddr . ip saddr }
+
+    meta nfproto ipv4 counter update @eall_443 { ip saddr . ip daddr }
+    meta nfproto ipv4 counter update @fall_443 { iifname . oifname . ip protocol . ip saddr . ip daddr }
+}

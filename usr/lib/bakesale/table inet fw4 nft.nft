@@ -1,0 +1,662 @@
+table inet fw4 {
+        ct helper amanda {
+                type "amanda" protocol udp
+                l3proto inet
+        }
+
+        ct helper ftp {
+                type "ftp" protocol tcp
+                l3proto inet
+        }
+
+        ct helper RAS {
+                type "RAS" protocol udp
+                l3proto inet
+        }
+
+        ct helper Q.931 {
+                type "Q.931" protocol tcp
+                l3proto inet
+        }
+
+        ct helper irc {
+                type "irc" protocol tcp
+                l3proto ip
+        }
+
+        ct helper pptp {
+                type "pptp" protocol tcp
+                l3proto ip
+        }
+
+        ct helper sip {
+                type "sip" protocol udp
+                l3proto inet
+        }
+
+        ct helper snmp {
+                type "snmp" protocol udp
+                l3proto ip
+        }
+
+        ct helper tftp {
+                type "tftp" protocol udp
+                l3proto inet
+        }
+
+        set BBCSounds {
+                type ipv4_addr
+                flags interval
+                auto-merge
+                elements = { 212.58.0.0/16 }
+        }
+
+        set wan_443_net {
+                type ipv4_addr . ipv4_addr
+                flags interval,timeout
+                counter
+                auto-merge
+                comment "wan 443 CIDR RDAP request experimental"
+        }
+
+        set alan_443 {
+                type ipv4_addr . ipv4_addr
+                size 65535
+                flags dynamic,timeout
+                counter
+                timeout 5m
+                comment "lan 443 traffic"
+                elements = { 0.0.0.0 . 224.0.0.1 counter packets 1 bytes 32 timeout 5m expires 3m34s340ms,
+                             192.168.1.123 . 34.107.141.31 counter packets 5 bytes 323 timeout 5m expires 4m18s300ms,
+                             192.168.1.123 . 34.117.14.220 counter packets 5 bytes 323 timeout 5m expires 4m19s290ms,
+                             192.168.1.123 . 35.186.227.140 counter packets 7 bytes 466 timeout 5m expires 4m22s320ms,
+                             192.168.1.123 . 116.203.91.91 counter packets 6 bytes 418 timeout 5m expires 4m11s340ms,
+                             192.168.1.123 . 192.168.1.1 counter packets 1 bytes 62 timeout 5m expires 4m11s240ms,
+                             192.168.240.4 . 34.117.13.189 counter packets 6 bytes 272 timeout 5m expires 4m51s640ms,
+                             192.168.240.4 . 173.194.76.206 counter packets 5 bytes 200 timeout 5m expires 4m35s250ms,
+                             192.168.240.4 . 192.168.240.1 counter packets 2 bytes 124 timeout 5m expires 4m22s650ms,
+                             192.168.240.4 . 224.0.0.22 counter packets 2 bytes 80 timeout 5m expires 3m30s40ms,
+                             192.168.240.4 . 239.255.255.250 counter packets 12 bytes 4044 timeout 5m expires 4m44s310ms,
+                             192.168.240.5 . 47.251.6.232 counter packets 6 bytes 256 timeout 5m expires 4m48s420ms,
+                             192.168.240.9 . 17.57.146.12 counter packets 2 bytes 104 timeout 5m expires 4m41s420ms,
+                             192.168.240.11 . 52.45.138.182 counter packets 14 bytes 777 timeout 5m expires 4m59s640ms,
+                             192.168.240.13 . 8.8.8.8 counter packets 4 bytes 336 timeout 5m expires 4m57s210ms,
+                             192.168.240.13 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s360ms,
+                             192.168.240.14 . 8.8.8.8 counter packets 1 bytes 84 timeout 5m expires 4m20s330ms,
+                             192.168.240.14 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s360ms,
+                             192.168.240.15 . 8.8.8.8 counter packets 1 bytes 84 timeout 5m expires 4m16s200ms,
+                             192.168.240.15 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s360ms,
+                             192.168.240.16 . 192.168.240.1 counter packets 18 bytes 1512 timeout 5m expires 4m57s760ms,
+                             192.168.240.17 . 192.168.240.1 counter packets 19 bytes 1596 timeout 5m expires 4m59s610ms,
+                             192.168.240.18 . 192.168.240.1 counter packets 18 bytes 1512 timeout 5m expires 4m55s360ms,
+                             192.168.240.19 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s360ms,
+                             192.168.240.101 . 17.57.146.7 counter packets 1 bytes 52 timeout 5m expires 4m13s510ms,
+                             192.168.240.101 . 23.41.8.48 counter packets 10 bytes 586 timeout 5m expires 3m56s320ms,
+                             192.168.240.101 . 88.82.11.208 counter packets 3 bytes 87 timeout 5m expires 4m41s410ms,
+                             192.168.240.101 . 157.240.240.61 counter packets 8 bytes 2030 timeout 5m expires 3m38s340ms,
+                             192.168.240.101 . 192.168.240.1 counter packets 10 bytes 824 timeout 5m expires 4m13s510ms,
+                             192.168.240.101 . 224.0.0.22 counter packets 2 bytes 80 timeout 5m expires 3m58s550ms,
+                             192.168.240.101 . 224.0.0.251 counter packets 32 bytes 10150 timeout 5m expires 4m21s290ms,
+                             192.168.240.102 . 3.231.170.191 counter packets 13 bytes 1883 timeout 5m expires 4m25s840ms,
+                             192.168.240.102 . 17.56.9.14 counter packets 4 bytes 208 timeout 5m expires 4m41s480ms,
+                             192.168.240.102 . 17.57.146.86 counter packets 5 bytes 288 timeout 5m expires 4m20s990ms,
+                             192.168.240.102 . 17.250.81.68 counter packets 18 bytes 5458 timeout 5m expires 4m35s290ms,
+                             192.168.240.102 . 17.253.77.202 counter packets 11 bytes 1750 timeout 5m expires 4m40s960ms,
+                             192.168.240.102 . 18.172.150.135 counter packets 5 bytes 895 timeout 5m expires 4m14s950ms,
+                             192.168.240.102 . 23.41.8.48 counter packets 36 bytes 4107 timeout 5m expires 4m24s90ms,
+                             192.168.240.102 . 23.43.196.18 counter packets 23 bytes 9223 timeout 5m expires 4m40s960ms,
+                             192.168.240.102 . 23.52.179.199 counter packets 2 bytes 104 timeout 5m expires 4m59s900ms,
+                             192.168.240.102 . 35.190.33.26 counter packets 28 bytes 11460 timeout 5m expires 4m51s620ms,
+                             192.168.240.102 . 46.137.98.152 counter packets 19 bytes 6346 timeout 5m expires 4m8s600ms,
+                             192.168.240.102 . 54.192.137.43 counter packets 11 bytes 5380 timeout 5m expires 4m56s430ms,
+                             192.168.240.102 . 54.192.137.63 counter packets 32 bytes 10170 timeout 5m expires 4m40s960ms,
+                             192.168.240.102 . 104.82.196.200 counter packets 18 bytes 2288 timeout 5m expires 4m11s480ms,
+                             192.168.240.102 . 104.82.215.89 counter packets 1091 bytes 258123 timeout 5m expires 4m52s340ms,
+                             192.168.240.102 . 143.204.72.5 counter packets 8 bytes 774 timeout 5m expires 4m54s920ms,
+                             192.168.240.102 . 172.217.169.77 counter packets 44 bytes 3628 timeout 5m expires 4m59s890ms,
+                             192.168.240.102 . 192.168.240.1 counter packets 57 bytes 3781 timeout 5m expires 4m55s680ms,
+                             192.168.240.102 . 216.58.201.99 counter packets 10 bytes 1238 timeout 5m expires 4m54s920ms,
+                             192.168.240.102 . 216.58.212.246 counter packets 16 bytes 1921 timeout 5m expires 4m24s,
+                             192.168.240.103 . 13.107.42.12 counter packets 111 bytes 51745 timeout 5m expires 4m55s770ms,
+                             192.168.240.103 . 20.135.20.1 counter packets 1 bytes 40 timeout 5m expires 3m42s460ms,
+                             192.168.240.103 . 104.103.200.214 counter packets 12 bytes 9534 timeout 5m expires 4m54s970ms,
+                             192.168.240.103 . 192.168.240.1 counter packets 38 bytes 1926 timeout 5m expires 5m }
+        }
+
+        set bwan_443 {
+                type ipv4_addr . ipv4_addr
+                size 65535
+                flags dynamic,timeout
+                counter
+                timeout 5m
+                comment "wan 443 traffic"
+                elements = { 94.196.232.124 . 8.8.4.4 counter packets 9 bytes 756 timeout 5m expires 4m55s420ms,
+                             94.196.232.124 . 35.203.210.134 counter packets 1 bytes 44 timeout 5m expires 3m28s200ms,
+                             94.196.232.124 . 47.101.58.204 counter packets 1 bytes 60 timeout 5m expires 4m28s940ms,
+                             94.196.232.124 . 89.248.163.245 counter packets 1 bytes 44 timeout 5m expires 4m16s770ms,
+                             94.196.232.124 . 146.70.96.66 counter packets 6000 bytes 7565340 timeout 5m expires 4m59s820ms,
+                             94.196.232.124 . 192.168.0.1 counter packets 69 bytes 19208 timeout 5m expires 4m55s700ms,
+                             94.196.232.124 . 198.98.51.160 counter packets 1 bytes 58 timeout 5m expires 4m31s490ms,
+                             94.196.232.124 . 199.204.200.14 counter packets 1 bytes 44 timeout 5m expires 4m17s730ms }
+        }
+
+        set cvpn_443 {
+                type ipv4_addr . ipv4_addr
+                size 65535
+                flags dynamic,timeout
+                counter
+                timeout 5m
+                comment "vpn 443 traffic"
+        }
+
+        set dlo_443 {
+                type ipv4_addr . ipv4_addr
+                size 65535
+                flags dynamic,timeout
+                counter
+                timeout 5m
+                comment "vpn 443 traffic"
+        }
+
+        set eall_443 {
+                type ipv4_addr . ipv4_addr
+                size 65535
+                flags dynamic,timeout
+                counter
+                timeout 5m
+                comment "all 443 traffic"
+                elements = { 0.0.0.0 . 224.0.0.1 counter packets 1 bytes 32 timeout 5m expires 3m34s310ms,
+                             1.0.0.1 . 10.2.0.2 counter packets 15 bytes 1952 timeout 5m expires 4m55s410ms,
+                             1.1.1.1 . 10.2.0.2 counter packets 6 bytes 1196 timeout 5m expires 4m54s920ms,
+                             3.231.170.191 . 192.168.240.102 counter packets 17 bytes 6884 timeout 5m expires 4m25s860ms,
+                             8.8.4.4 . 94.196.232.124 counter packets 9 bytes 756 timeout 5m expires 4m55s400ms,
+                             8.8.8.8 . 10.2.0.2 counter packets 8 bytes 1364 timeout 5m expires 4m54s890ms,
+                             8.8.8.8 . 192.168.240.13 counter packets 4 bytes 336 timeout 5m expires 4m57s240ms,
+                             8.8.8.8 . 192.168.240.14 counter packets 1 bytes 84 timeout 5m expires 4m20s360ms,
+                             8.8.8.8 . 192.168.240.15 counter packets 1 bytes 84 timeout 5m expires 4m16s220ms,
+                             10.2.0.1 . 10.2.0.2 counter packets 9 bytes 756 timeout 5m expires 4m55s400ms,
+                             13.107.42.12 . 192.168.240.103 counter packets 136 bytes 90026 timeout 5m expires 4m56s480ms,
+                             17.56.9.14 . 192.168.240.102 counter packets 4 bytes 208 timeout 5m expires 4m41s380ms,
+                             17.57.146.7 . 192.168.240.101 counter packets 2 bytes 104 timeout 5m expires 4m59s800ms,
+                             17.57.146.12 . 192.168.240.9 counter packets 2 bytes 104 timeout 5m expires 4m41s380ms,
+                             17.57.146.86 . 192.168.240.102 counter packets 4 bytes 258 timeout 5m expires 4m20s910ms,
+                             17.250.81.68 . 192.168.240.102 counter packets 14 bytes 8340 timeout 5m expires 4m35s300ms,
+                             17.253.77.202 . 192.168.240.102 counter packets 10 bytes 5259 timeout 5m expires 4m40s910ms,
+                             18.172.150.135 . 192.168.240.102 counter packets 5 bytes 611 timeout 5m expires 4m14s820ms,
+                             20.135.20.1 . 192.168.240.103 counter packets 2 bytes 80 timeout 5m expires 4m12s580ms,
+                             23.41.8.48 . 192.168.240.101 counter packets 7 bytes 436 timeout 5m expires 3m56s310ms,
+                             23.41.8.48 . 192.168.240.102 counter packets 36 bytes 26261 timeout 5m expires 4m24s50ms,
+                             23.43.196.18 . 192.168.240.102 counter packets 24 bytes 10025 timeout 5m expires 4m40s910ms,
+                             23.52.179.199 . 192.168.240.102 counter packets 2 bytes 104 timeout 5m expires 4m59s800ms,
+                             34.107.141.31 . 192.168.1.123 counter packets 3 bytes 156 timeout 5m expires 4m18s270ms,
+                             34.117.13.189 . 192.168.240.4 counter packets 5 bytes 228 timeout 5m expires 4m51s600ms,
+                             34.117.14.220 . 192.168.1.123 counter packets 3 bytes 156 timeout 5m expires 4m19s260ms,
+                             35.186.227.140 . 192.168.1.123 counter packets 4 bytes 247 timeout 5m expires 4m22s290ms,
+                             35.190.33.26 . 192.168.240.102 counter packets 25 bytes 9314 timeout 5m expires 4m51s680ms,
+                             35.203.210.134 . 94.196.232.124 counter packets 1 bytes 44 timeout 5m expires 3m28s190ms,
+                             47.101.58.204 . 94.196.232.124 counter packets 1 bytes 60 timeout 5m expires 4m28s930ms,
+                             47.251.6.232 . 192.168.240.5 counter packets 6 bytes 256 timeout 5m expires 4m48s430ms,
+                             52.45.138.182 . 192.168.240.11 counter packets 14 bytes 777 timeout 5m expires 4m59s350ms,
+                             54.192.137.43 . 192.168.240.102 counter packets 12 bytes 7663 timeout 5m expires 4m56s470ms,
+                             54.192.137.63 . 192.168.240.102 counter packets 28 bytes 15685 timeout 5m expires 4m40s910ms,
+                             89.248.163.245 . 94.196.232.124 counter packets 1 bytes 44 timeout 5m expires 4m16s750ms,
+                             104.82.196.200 . 192.168.240.102 counter packets 16 bytes 10106 timeout 5m expires 4m11s450ms,
+                             104.82.215.89 . 192.168.240.102 counter packets 5434 bytes 6864826 timeout 5m expires 4m52s360ms,
+                             104.103.200.214 . 192.168.240.103 counter packets 8 bytes 628 timeout 5m expires 4m54s980ms,
+                             116.203.91.91 . 192.168.1.123 counter packets 5 bytes 583 timeout 5m expires 4m11s350ms,
+                             143.204.72.5 . 192.168.240.102 counter packets 6 bytes 1195 timeout 5m expires 4m54s890ms,
+                             146.70.96.66 . 94.196.232.124 counter packets 6000 bytes 7565340 timeout 5m expires 4m59s810ms,
+                             172.217.169.77 . 192.168.240.102 counter packets 84 bytes 93506 timeout 5m expires 4m59s810ms,
+                             173.194.76.206 . 192.168.240.4 counter packets 5 bytes 200 timeout 5m expires 4m35s290ms,
+                             185.177.149.33 . 10.2.0.2 counter packets 1 bytes 76 timeout 5m expires 3m57s90ms,
+                             192.168.0.1 . 94.196.232.124 counter packets 69 bytes 19208 timeout 5m expires 4m55s690ms,
+                             192.168.1.123 . 34.107.141.31 counter packets 5 bytes 323 timeout 5m expires 4m18s280ms,
+                             192.168.1.123 . 34.117.14.220 counter packets 5 bytes 323 timeout 5m expires 4m19s260ms,
+                             192.168.1.123 . 35.186.227.140 counter packets 7 bytes 466 timeout 5m expires 4m22s290ms,
+                             192.168.1.123 . 116.203.91.91 counter packets 6 bytes 418 timeout 5m expires 4m11s310ms,
+                             192.168.1.123 . 192.168.1.1 counter packets 1 bytes 62 timeout 5m expires 4m11s210ms,
+                             192.168.240.4 . 34.117.13.189 counter packets 6 bytes 272 timeout 5m expires 4m51s610ms,
+                             192.168.240.4 . 173.194.76.206 counter packets 5 bytes 200 timeout 5m expires 4m35s220ms,
+                             192.168.240.4 . 192.168.240.1 counter packets 2 bytes 124 timeout 5m expires 4m22s620ms,
+                             192.168.240.4 . 224.0.0.22 counter packets 2 bytes 80 timeout 5m expires 3m30s30ms,
+                             192.168.240.4 . 239.255.255.250 counter packets 12 bytes 4044 timeout 5m expires 4m44s280ms,
+                             192.168.240.5 . 47.251.6.232 counter packets 6 bytes 256 timeout 5m expires 4m48s390ms,
+                             192.168.240.9 . 17.57.146.12 counter packets 2 bytes 104 timeout 5m expires 4m41s390ms,
+                             192.168.240.11 . 52.45.138.182 counter packets 14 bytes 777 timeout 5m expires 4m59s620ms,
+                             192.168.240.13 . 8.8.8.8 counter packets 4 bytes 336 timeout 5m expires 4m57s190ms,
+                             192.168.240.13 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s330ms,
+                             192.168.240.14 . 8.8.8.8 counter packets 1 bytes 84 timeout 5m expires 4m20s310ms,
+                             192.168.240.14 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s330ms,
+                             192.168.240.15 . 8.8.8.8 counter packets 1 bytes 84 timeout 5m expires 4m16s180ms,
+                             192.168.240.15 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s330ms,
+                             192.168.240.16 . 192.168.240.1 counter packets 18 bytes 1512 timeout 5m expires 4m57s730ms,
+                             192.168.240.17 . 192.168.240.1 counter packets 19 bytes 1596 timeout 5m expires 4m59s590ms,
+                             192.168.240.18 . 192.168.240.1 counter packets 18 bytes 1512 timeout 5m expires 4m55s330ms,
+                             192.168.240.19 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s330ms,
+                             192.168.240.101 . 17.57.146.7 counter packets 1 bytes 52 timeout 5m expires 4m13s480ms,
+                             192.168.240.101 . 23.41.8.48 counter packets 10 bytes 586 timeout 5m expires 3m56s290ms,
+                             192.168.240.101 . 88.82.11.208 counter packets 3 bytes 87 timeout 5m expires 4m41s390ms,
+                             192.168.240.101 . 157.240.240.61 counter packets 8 bytes 2030 timeout 5m expires 3m38s310ms,
+                             192.168.240.101 . 192.168.240.1 counter packets 10 bytes 824 timeout 5m expires 4m13s480ms,
+                             192.168.240.101 . 224.0.0.22 counter packets 2 bytes 80 timeout 5m expires 3m58s520ms,
+                             192.168.240.101 . 224.0.0.251 counter packets 32 bytes 10150 timeout 5m expires 4m21s270ms,
+                             192.168.240.102 . 3.231.170.191 counter packets 13 bytes 1883 timeout 5m expires 4m25s810ms,
+                             192.168.240.102 . 17.56.9.14 counter packets 4 bytes 208 timeout 5m expires 4m41s450ms,
+                             192.168.240.102 . 17.57.146.86 counter packets 5 bytes 288 timeout 5m expires 4m20s960ms,
+                             192.168.240.102 . 17.250.81.68 counter packets 18 bytes 5458 timeout 5m expires 4m35s270ms,
+                             192.168.240.102 . 17.253.77.202 counter packets 11 bytes 1750 timeout 5m expires 4m40s940ms,
+                             192.168.240.102 . 18.172.150.135 counter packets 5 bytes 895 timeout 5m expires 4m14s930ms,
+                             192.168.240.102 . 23.41.8.48 counter packets 36 bytes 4107 timeout 5m expires 4m24s60ms,
+                             192.168.240.102 . 23.43.196.18 counter packets 23 bytes 9223 timeout 5m expires 4m40s930ms,
+                             192.168.240.102 . 23.52.179.199 counter packets 2 bytes 104 timeout 5m expires 4m59s880ms,
+                             192.168.240.102 . 35.190.33.26 counter packets 28 bytes 11460 timeout 5m expires 4m51s590ms,
+                             192.168.240.102 . 46.137.98.152 counter packets 19 bytes 6346 timeout 5m expires 4m8s580ms,
+                             192.168.240.102 . 54.192.137.43 counter packets 11 bytes 5380 timeout 5m expires 4m56s410ms,
+                             192.168.240.102 . 54.192.137.63 counter packets 32 bytes 10170 timeout 5m expires 4m40s930ms,
+                             192.168.240.102 . 104.82.196.200 counter packets 18 bytes 2288 timeout 5m expires 4m11s450ms,
+                             192.168.240.102 . 104.82.215.89 counter packets 1091 bytes 258123 timeout 5m expires 4m52s310ms,
+                             192.168.240.102 . 143.204.72.5 counter packets 8 bytes 774 timeout 5m expires 4m54s900ms,
+                             192.168.240.102 . 172.217.169.77 counter packets 44 bytes 3628 timeout 5m expires 4m59s880ms,
+                             192.168.240.102 . 192.168.240.1 counter packets 57 bytes 3781 timeout 5m expires 4m55s650ms,
+                             192.168.240.102 . 216.58.201.99 counter packets 10 bytes 1238 timeout 5m expires 4m54s890ms,
+                             192.168.240.102 . 216.58.212.246 counter packets 16 bytes 1921 timeout 5m expires 4m23s980ms,
+                             192.168.240.103 . 13.107.42.12 counter packets 111 bytes 51745 timeout 5m expires 4m55s750ms,
+                             192.168.240.103 . 20.135.20.1 counter packets 1 bytes 40 timeout 5m expires 3m42s430ms,
+                             192.168.240.103 . 104.103.200.214 counter packets 12 bytes 9534 timeout 5m expires 4m54s940ms,
+                             192.168.240.103 . 192.168.240.1 counter packets 38 bytes 1926 timeout 5m expires 4m59s970ms,
+                             198.98.51.160 . 94.196.232.124 counter packets 1 bytes 58 timeout 5m expires 4m31s480ms,
+                             199.204.200.14 . 94.196.232.124 counter packets 1 bytes 44 timeout 5m expires 4m17s710ms,
+                             216.58.201.99 . 192.168.240.102 counter packets 7 bytes 1798 timeout 5m expires 4m54s890ms,
+                             216.58.212.246 . 192.168.240.102 counter packets 19 bytes 15965 timeout 5m expires 4m24s10ms }
+        }
+
+        set fall_443 {
+                type ifname . ifname . inet_proto . ipv4_addr . ipv4_addr
+                size 65535
+                flags dynamic,timeout
+                counter
+                timeout 5m
+                comment "all 443 traffic"
+                elements = { "0_WIN1LDN71" . "" . icmp . 1.0.0.1 . 10.2.0.2 counter packets 9 bytes 756 timeout 5m expires 4m55s400ms,
+                             "0_WIN1LDN71" . "" . icmp . 8.8.8.8 . 10.2.0.2 counter packets 2 bytes 168 timeout 5m expires 4m49s190ms,
+                             "0_WIN1LDN71" . "" . icmp . 8.8.8.8 . 192.168.240.13 counter packets 4 bytes 336 timeout 5m expires 4m57s240ms,
+                             "0_WIN1LDN71" . "" . icmp . 8.8.8.8 . 192.168.240.14 counter packets 1 bytes 84 timeout 5m expires 4m20s360ms,
+                             "0_WIN1LDN71" . "" . icmp . 8.8.8.8 . 192.168.240.15 counter packets 1 bytes 84 timeout 5m expires 4m16s220ms,
+                             "0_WIN1LDN71" . "" . icmp . 10.2.0.1 . 10.2.0.2 counter packets 9 bytes 756 timeout 5m expires 4m55s400ms,
+                             "0_WIN1LDN71" . "" . tcp . 3.231.170.191 . 192.168.240.102 counter packets 17 bytes 6884 timeout 5m expires 4m25s850ms,
+                             "0_WIN1LDN71" . "" . tcp . 13.107.42.12 . 192.168.240.103 counter packets 136 bytes 90026 timeout 5m expires 4m56s480ms,
+                             "0_WIN1LDN71" . "" . tcp . 17.56.9.14 . 192.168.240.102 counter packets 4 bytes 208 timeout 5m expires 4m41s380ms,
+                             "0_WIN1LDN71" . "" . tcp . 17.57.146.7 . 192.168.240.101 counter packets 2 bytes 104 timeout 5m expires 4m59s800ms,
+                             "0_WIN1LDN71" . "" . tcp . 17.57.146.12 . 192.168.240.9 counter packets 2 bytes 104 timeout 5m expires 4m41s380ms,
+                             "0_WIN1LDN71" . "" . tcp . 17.57.146.86 . 192.168.240.102 counter packets 4 bytes 258 timeout 5m expires 4m20s900ms,
+                             "0_WIN1LDN71" . "" . tcp . 17.250.81.68 . 192.168.240.102 counter packets 14 bytes 8340 timeout 5m expires 4m35s300ms,
+                             "0_WIN1LDN71" . "" . tcp . 17.253.77.202 . 192.168.240.102 counter packets 10 bytes 5259 timeout 5m expires 4m40s900ms,
+                             "0_WIN1LDN71" . "" . tcp . 18.172.150.135 . 192.168.240.102 counter packets 5 bytes 611 timeout 5m expires 4m14s810ms,
+                             "0_WIN1LDN71" . "" . tcp . 20.135.20.1 . 192.168.240.103 counter packets 2 bytes 80 timeout 5m expires 4m12s580ms,
+                             "0_WIN1LDN71" . "" . tcp . 23.41.8.48 . 192.168.240.101 counter packets 7 bytes 436 timeout 5m expires 3m56s310ms,
+                             "0_WIN1LDN71" . "" . tcp . 23.41.8.48 . 192.168.240.102 counter packets 36 bytes 26261 timeout 5m expires 4m24s40ms,
+                             "0_WIN1LDN71" . "" . tcp . 23.43.196.18 . 192.168.240.102 counter packets 24 bytes 10025 timeout 5m expires 4m40s890ms,
+                             "0_WIN1LDN71" . "" . tcp . 23.52.179.199 . 192.168.240.102 counter packets 2 bytes 104 timeout 5m expires 4m59s800ms,
+                             "0_WIN1LDN71" . "" . tcp . 34.107.141.31 . 192.168.1.123 counter packets 3 bytes 156 timeout 5m expires 4m18s270ms,
+                             "0_WIN1LDN71" . "" . tcp . 34.117.13.189 . 192.168.240.4 counter packets 5 bytes 228 timeout 5m expires 4m51s600ms,
+                             "0_WIN1LDN71" . "" . tcp . 34.117.14.220 . 192.168.1.123 counter packets 3 bytes 156 timeout 5m expires 4m19s260ms,
+                             "0_WIN1LDN71" . "" . tcp . 35.186.227.140 . 192.168.1.123 counter packets 4 bytes 247 timeout 5m expires 4m22s290ms,
+                             "0_WIN1LDN71" . "" . tcp . 35.190.33.26 . 192.168.240.102 counter packets 25 bytes 9314 timeout 5m expires 4m51s660ms,
+                             "0_WIN1LDN71" . "" . tcp . 47.251.6.232 . 192.168.240.5 counter packets 6 bytes 256 timeout 5m expires 4m48s420ms,
+                             "0_WIN1LDN71" . "" . tcp . 52.45.138.182 . 192.168.240.11 counter packets 14 bytes 777 timeout 5m expires 4m59s340ms,
+                             "0_WIN1LDN71" . "" . tcp . 54.192.137.43 . 192.168.240.102 counter packets 12 bytes 7663 timeout 5m expires 4m56s460ms,
+                             "0_WIN1LDN71" . "" . tcp . 54.192.137.63 . 192.168.240.102 counter packets 28 bytes 15685 timeout 5m expires 4m40s910ms,
+                             "0_WIN1LDN71" . "" . tcp . 104.82.196.200 . 192.168.240.102 counter packets 16 bytes 10106 timeout 5m expires 4m11s440ms,
+                             "0_WIN1LDN71" . "" . tcp . 104.82.215.89 . 192.168.240.102 counter packets 5434 bytes 6864826 timeout 5m expires 4m52s350ms,
+                             "0_WIN1LDN71" . "" . tcp . 104.103.200.214 . 192.168.240.103 counter packets 8 bytes 628 timeout 5m expires 4m54s980ms,
+                             "0_WIN1LDN71" . "" . tcp . 116.203.91.91 . 192.168.1.123 counter packets 5 bytes 583 timeout 5m expires 4m11s350ms,
+                             "0_WIN1LDN71" . "" . tcp . 143.204.72.5 . 192.168.240.102 counter packets 6 bytes 1195 timeout 5m expires 4m54s880ms,
+                             "0_WIN1LDN71" . "" . tcp . 172.217.169.77 . 192.168.240.102 counter packets 84 bytes 93506 timeout 5m expires 4m59s790ms,
+                             "0_WIN1LDN71" . "" . tcp . 173.194.76.206 . 192.168.240.4 counter packets 5 bytes 200 timeout 5m expires 4m35s280ms,
+                             "0_WIN1LDN71" . "" . tcp . 216.58.201.99 . 192.168.240.102 counter packets 7 bytes 1798 timeout 5m expires 4m54s890ms,
+                             "0_WIN1LDN71" . "" . tcp . 216.58.212.246 . 192.168.240.102 counter packets 19 bytes 15965 timeout 5m expires 4m24s10ms,
+                             "0_WIN1LDN71" . "" . udp . 1.0.0.1 . 10.2.0.2 counter packets 6 bytes 1196 timeout 5m expires 4m54s900ms,
+                             "0_WIN1LDN71" . "" . udp . 1.1.1.1 . 10.2.0.2 counter packets 6 bytes 1196 timeout 5m expires 4m54s900ms,
+                             "0_WIN1LDN71" . "" . udp . 8.8.8.8 . 10.2.0.2 counter packets 6 bytes 1196 timeout 5m expires 4m54s890ms,
+                             "0_WIN1LDN71" . "" . udp . 185.177.149.33 . 10.2.0.2 counter packets 1 bytes 76 timeout 5m expires 3m57s70ms,
+                             "br-lan" . "" . tcp . 192.168.1.123 . 34.107.141.31 counter packets 5 bytes 323 timeout 5m expires 4m18s270ms,
+                             "br-lan" . "" . tcp . 192.168.1.123 . 34.117.14.220 counter packets 5 bytes 323 timeout 5m expires 4m19s260ms,
+                             "br-lan" . "" . tcp . 192.168.1.123 . 35.186.227.140 counter packets 7 bytes 466 timeout 5m expires 4m22s290ms,
+                             "br-lan" . "" . tcp . 192.168.1.123 . 116.203.91.91 counter packets 6 bytes 418 timeout 5m expires 4m11s310ms,
+                             "br-lan" . "" . udp . 192.168.1.123 . 192.168.1.1 counter packets 1 bytes 62 timeout 5m expires 4m11s200ms,
+                             "br-swlan" . "" . icmp . 192.168.240.13 . 8.8.8.8 counter packets 4 bytes 336 timeout 5m expires 4m57s180ms,
+                             "br-swlan" . "" . icmp . 192.168.240.13 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s330ms,
+                             "br-swlan" . "" . icmp . 192.168.240.14 . 8.8.8.8 counter packets 1 bytes 84 timeout 5m expires 4m20s300ms,
+                             "br-swlan" . "" . icmp . 192.168.240.14 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s330ms,
+                             "br-swlan" . "" . icmp . 192.168.240.15 . 8.8.8.8 counter packets 1 bytes 84 timeout 5m expires 4m16s170ms,
+                             "br-swlan" . "" . icmp . 192.168.240.15 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s330ms,
+                             "br-swlan" . "" . icmp . 192.168.240.16 . 192.168.240.1 counter packets 18 bytes 1512 timeout 5m expires 4m57s720ms,
+                             "br-swlan" . "" . icmp . 192.168.240.17 . 192.168.240.1 counter packets 19 bytes 1596 timeout 5m expires 4m59s580ms,
+                             "br-swlan" . "" . icmp . 192.168.240.18 . 192.168.240.1 counter packets 18 bytes 1512 timeout 5m expires 4m55s320ms,
+                             "br-swlan" . "" . icmp . 192.168.240.19 . 192.168.240.1 counter packets 9 bytes 756 timeout 5m expires 4m55s330ms,
+                             "br-swlan" . "" . igmp . 192.168.240.4 . 224.0.0.22 counter packets 2 bytes 80 timeout 5m expires 3m30s20ms,
+                             "br-swlan" . "" . igmp . 192.168.240.101 . 224.0.0.22 counter packets 2 bytes 80 timeout 5m expires 3m58s520ms,
+                             "br-swlan" . "" . tcp . 192.168.240.4 . 34.117.13.189 counter packets 6 bytes 272 timeout 5m expires 4m51s600ms,
+                             "br-swlan" . "" . tcp . 192.168.240.4 . 173.194.76.206 counter packets 5 bytes 200 timeout 5m expires 4m35s220ms,
+                             "br-swlan" . "" . tcp . 192.168.240.5 . 47.251.6.232 counter packets 6 bytes 256 timeout 5m expires 4m48s380ms,
+                             "br-swlan" . "" . tcp . 192.168.240.9 . 17.57.146.12 counter packets 2 bytes 104 timeout 5m expires 4m41s390ms,
+                             "br-swlan" . "" . tcp . 192.168.240.11 . 52.45.138.182 counter packets 14 bytes 777 timeout 5m expires 4m59s600ms,
+                             "br-swlan" . "" . tcp . 192.168.240.101 . 17.57.146.7 counter packets 1 bytes 52 timeout 5m expires 4m13s480ms,
+                             "br-swlan" . "" . tcp . 192.168.240.101 . 23.41.8.48 counter packets 10 bytes 586 timeout 5m expires 3m56s280ms,
+                             "br-swlan" . "" . tcp . 192.168.240.101 . 157.240.240.61 counter packets 8 bytes 2030 timeout 5m expires 3m38s310ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 3.231.170.191 counter packets 13 bytes 1883 timeout 5m expires 4m25s810ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 17.56.9.14 counter packets 4 bytes 208 timeout 5m expires 4m41s450ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 17.57.146.86 counter packets 5 bytes 288 timeout 5m expires 4m20s950ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 17.250.81.68 counter packets 18 bytes 5458 timeout 5m expires 4m35s260ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 17.253.77.202 counter packets 11 bytes 1750 timeout 5m expires 4m40s920ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 18.172.150.135 counter packets 5 bytes 895 timeout 5m expires 4m14s920ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 23.41.8.48 counter packets 36 bytes 4107 timeout 5m expires 4m24s60ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 23.43.196.18 counter packets 23 bytes 9223 timeout 5m expires 4m40s930ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 23.52.179.199 counter packets 2 bytes 104 timeout 5m expires 4m59s860ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 35.190.33.26 counter packets 28 bytes 11460 timeout 5m expires 4m51s580ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 46.137.98.152 counter packets 19 bytes 6346 timeout 5m expires 4m8s570ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 54.192.137.43 counter packets 11 bytes 5380 timeout 5m expires 4m56s400ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 54.192.137.63 counter packets 32 bytes 10170 timeout 5m expires 4m40s930ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 104.82.196.200 counter packets 18 bytes 2288 timeout 5m expires 4m11s450ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 104.82.215.89 counter packets 1091 bytes 258123 timeout 5m expires 4m52s310ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 143.204.72.5 counter packets 8 bytes 774 timeout 5m expires 4m54s880ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 172.217.169.77 counter packets 44 bytes 3628 timeout 5m expires 4m59s860ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 192.168.240.1 counter packets 12 bytes 736 timeout 5m expires 4m24s60ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 216.58.201.99 counter packets 10 bytes 1238 timeout 5m expires 4m54s890ms,
+                             "br-swlan" . "" . tcp . 192.168.240.102 . 216.58.212.246 counter packets 16 bytes 1921 timeout 5m expires 4m23s970ms,
+                             "br-swlan" . "" . tcp . 192.168.240.103 . 13.107.42.12 counter packets 111 bytes 51745 timeout 5m expires 4m55s740ms,
+                             "br-swlan" . "" . tcp . 192.168.240.103 . 20.135.20.1 counter packets 1 bytes 40 timeout 5m expires 3m42s430ms,
+                             "br-swlan" . "" . tcp . 192.168.240.103 . 104.103.200.214 counter packets 12 bytes 9534 timeout 5m expires 4m54s940ms,
+                             "br-swlan" . "" . tcp . 192.168.240.103 . 192.168.240.1 counter packets 31 bytes 1444 timeout 5m expires 4m59s960ms,
+                             "br-swlan" . "" . udp . 192.168.240.4 . 192.168.240.1 counter packets 2 bytes 124 timeout 5m expires 4m22s620ms,
+                             "br-swlan" . "" . udp . 192.168.240.4 . 239.255.255.250 counter packets 12 bytes 4044 timeout 5m expires 4m44s280ms,
+                             "br-swlan" . "" . udp . 192.168.240.101 . 88.82.11.208 counter packets 3 bytes 87 timeout 5m expires 4m41s370ms,
+                             "br-swlan" . "" . udp . 192.168.240.101 . 192.168.240.1 counter packets 10 bytes 824 timeout 5m expires 4m13s480ms,
+                             "br-swlan" . "" . udp . 192.168.240.101 . 224.0.0.251 counter packets 32 bytes 10150 timeout 5m expires 4m21s250ms,
+                             "br-swlan" . "" . udp . 192.168.240.102 . 192.168.240.1 counter packets 45 bytes 3045 timeout 5m expires 4m55s640ms,
+                             "br-swlan" . "" . udp . 192.168.240.103 . 192.168.240.1 counter packets 7 bytes 482 timeout 5m expires 4m54s940ms,
+                             "eth0" . "" . icmp . 8.8.4.4 . 94.196.232.124 counter packets 9 bytes 756 timeout 5m expires 4m55s390ms,
+                             "eth0" . "" . tcp . 35.203.210.134 . 94.196.232.124 counter packets 1 bytes 44 timeout 5m expires 3m28s170ms,
+                             "eth0" . "" . tcp . 47.101.58.204 . 94.196.232.124 counter packets 1 bytes 60 timeout 5m expires 4m28s910ms,
+                             "eth0" . "" . tcp . 89.248.163.245 . 94.196.232.124 counter packets 1 bytes 44 timeout 5m expires 4m16s750ms,
+                             "eth0" . "" . tcp . 192.168.0.1 . 94.196.232.124 counter packets 16 bytes 5900 timeout 5m expires 4m24s50ms,
+                             "eth0" . "" . tcp . 199.204.200.14 . 94.196.232.124 counter packets 1 bytes 44 timeout 5m expires 4m17s710ms,
+                             "eth0" . "" . udp . 146.70.96.66 . 94.196.232.124 counter packets 6000 bytes 7565340 timeout 5m expires 4m59s800ms,
+                             "eth0" . "" . udp . 192.168.0.1 . 94.196.232.124 counter packets 53 bytes 13308 timeout 5m expires 4m55s680ms,
+                             "eth0" . "" . udp . 198.98.51.160 . 94.196.232.124 counter packets 1 bytes 58 timeout 5m expires 4m31s470ms,
+                             "eth2" . "" . igmp . 0.0.0.0 . 224.0.0.1 counter packets 1 bytes 32 timeout 5m expires 3m34s310ms }
+        }
+
+        set wan_ips_blocklist_net {
+                type ipv4_addr
+                flags interval,timeout
+                counter
+                auto-merge
+                comment "IPS wan CIDR RDAP request experimental"
+        }
+
+        set ips_blocklist_wan {
+                type ipv4_addr
+                size 65535
+                flags dynamic,timeout
+                counter
+                timeout 1d
+                comment "IPS Block Sites - wan"
+                elements = { 35.203.210.134 counter packets 1 bytes 44 timeout 1d expires 23h58m28s160ms, 47.101.58.204 counter packets 1 bytes 60 timeout 1d expires 23h59m28s910ms,
+                             89.248.163.245 counter packets 1 bytes 44 timeout 1d expires 23h59m16s730ms, 198.98.51.160 counter packets 1 bytes 58 timeout 1d expires 23h59m31s460ms,
+                             199.204.200.14 counter packets 1 bytes 44 timeout 1d expires 23h59m17s700ms }
+        }
+
+        set ips_blocklist_vpn {
+                type ipv4_addr
+                size 65535
+                flags dynamic,timeout
+                counter
+                timeout 1d
+                comment "IPS Block Sites - VPN"
+        }
+
+        chain prerouting {
+                type filter hook prerouting priority filter; policy accept;
+                meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } counter packets 1850 bytes 421708 update @alan_443 { ip saddr . ip daddr }
+                meta nfproto ipv4 iifname { "WIN1LDN71", "vpn_______vpn" } counter packets 0 bytes 0 update @cvpn_443 { ip saddr . ip daddr }
+                meta nfproto ipv4 iifname { "eth0", "eth5", "vpn____vpn" } counter packets 6083 bytes 7585554 update @bwan_443 { ip daddr . ip saddr }
+                meta nfproto ipv4 iifname { "lo", "lo_____lo", "lo___lo" } counter packets 0 bytes 0 update @dlo_443 { ip daddr . ip saddr }
+                meta nfproto ipv4 iifname { "WIN1LDN71", "vpn_______vpn" } counter packets 0 bytes 0 update @cvpn_443 { ip daddr . ip saddr }
+                meta nfproto ipv4 counter packets 13927 bytes 15185099 update @eall_443 { ip saddr . ip daddr }
+                meta nfproto ipv4 counter packets 13927 bytes 15185099 update @fall_443 { iifname . oifname . ip protocol . ip saddr . ip daddr }
+                meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } jump helper_lan comment "!fw4: Handle lan IPv4 helper assignment"
+        }
+
+        chain ips_filter {
+                type filter hook prerouting priority -200; policy accept;
+                ip saddr @ips_blocklist_wan counter packets 0 bytes 0 drop
+                ip saddr @ips_blocklist_vpn counter packets 0 bytes 0 log prefix "IPS vpn blocklist: "
+        }
+
+        chain reject_from_wan {
+                meta nfproto ipv4 counter packets 5 bytes 250 update @ips_blocklist_wan { ip saddr timeout 1d }
+                meta nfproto ipv4 iifname { "eth0", "eth5" } counter packets 5 bytes 250 jump handle_reject comment "!fw4: reject wan IPv4 traffic"
+        }
+
+        chain reject_from_vpn {
+                meta nfproto ipv4 counter packets 0 bytes 0 update @ips_blocklist_vpn { ip saddr }
+                meta nfproto ipv4 iifname "0_WIN1LDN71" counter packets 0 bytes 0 jump handle_reject comment "!fw4: reject vpn IPv4 traffic"
+        }
+
+        chain drop_from_wan {
+                meta nfproto ipv4 counter packets 0 bytes 0 update @ips_blocklist_wan { ip saddr }
+        }
+
+        chain drop_from_vpn {
+                meta nfproto ipv4 counter packets 0 bytes 0 update @ips_blocklist_vpn { ip saddr }
+        }
+
+        chain input {
+                type filter hook input priority filter; policy drop;
+                iifname "lo" accept comment "!fw4: Accept traffic from loopback"
+                ct state established,related accept comment "!fw4: Allow inbound established and related flows"
+                ct state invalid drop comment "!fw4: Drop flows with invalid conntrack state"
+                tcp flags syn / fin,syn,rst,ack jump syn_flood comment "!fw4: Rate limit TCP syn packets"
+                meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } jump input_lan comment "!fw4: Handle lan IPv4 input traffic"
+                meta nfproto ipv4 iifname { "eth0", "eth5" } jump input_wan comment "!fw4: Handle wan IPv4 input traffic"
+                meta nfproto ipv4 iifname "0_WIN1LDN71" jump input_vpn comment "!fw4: Handle vpn IPv4 input traffic"
+                jump handle_reject
+        }
+
+        chain forward {
+                type filter hook forward priority filter; policy drop;
+                ct state established,related accept comment "!fw4: Allow forwarded established and related flows"
+                ct state invalid drop comment "!fw4: Drop flows with invalid conntrack state"
+                meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } jump forward_lan comment "!fw4: Handle lan IPv4 forward traffic"
+                meta nfproto ipv4 iifname { "eth0", "eth5" } jump forward_wan comment "!fw4: Handle wan IPv4 forward traffic"
+                meta nfproto ipv4 iifname "0_WIN1LDN71" jump forward_vpn comment "!fw4: Handle vpn IPv4 forward traffic"
+                jump upnp_forward comment "Hook into miniupnpd forwarding chain"
+                jump handle_reject
+        }
+
+        chain output {
+                type filter hook output priority filter; policy drop;
+                oifname "lo" accept comment "!fw4: Accept traffic towards loopback"
+                ct state established,related accept comment "!fw4: Allow outbound established and related flows"
+                ct state invalid drop comment "!fw4: Drop flows with invalid conntrack state"
+                meta nfproto ipv4 oifname { "br-lan", "br-swlan", "eth2" } jump output_lan comment "!fw4: Handle lan IPv4 output traffic"
+                meta nfproto ipv4 oifname { "eth0", "eth5" } jump output_wan comment "!fw4: Handle wan IPv4 output traffic"
+                meta nfproto ipv4 oifname "0_WIN1LDN71" jump output_vpn comment "!fw4: Handle vpn IPv4 output traffic"
+                jump handle_reject
+        }
+
+        chain handle_reject {
+                meta l4proto tcp reject with tcp reset comment "!fw4: Reject TCP traffic"
+                reject comment "!fw4: Reject any other traffic"
+        }
+
+        chain syn_flood {
+                limit rate 25/second burst 50 packets return comment "!fw4: Accept SYN packets below rate-limit"
+                drop comment "!fw4: Drop excess packets"
+        }
+
+        chain input_lan {
+                jump accept_from_lan
+        }
+
+        chain output_lan {
+                jump accept_to_lan
+        }
+
+        chain forward_lan {
+                meta nfproto ipv4 jump accept_to_wan comment "!fw4: Accept lan to wan IPv4 forwarding"
+                meta nfproto ipv4 jump accept_to_vpn comment "!fw4: Accept lan to vpn IPv4 forwarding"
+                jump accept_to_lan
+                log prefix "reject lan forward: "
+        }
+
+        chain helper_lan {
+                udp dport 10080 ct helper set "amanda" comment "!fw4: Amanda backup and archiving proto"
+                tcp dport 21 ct helper set "ftp" comment "!fw4: FTP passive connection tracking"
+                udp dport 1719 ct helper set "RAS" comment "!fw4: RAS proto tracking"
+                tcp dport 1720 ct helper set "Q.931" comment "!fw4: Q.931 proto tracking"
+                meta nfproto ipv4 tcp dport 6667 ct helper set "irc" comment "!fw4: IRC DCC connection tracking"
+                meta nfproto ipv4 tcp dport 1723 ct helper set "pptp" comment "!fw4: PPTP VPN connection tracking"
+                udp dport 5060 ct helper set "sip" comment "!fw4: SIP VoIP connection tracking"
+                meta nfproto ipv4 udp dport 161 ct helper set "snmp" comment "!fw4: SNMP monitoring connection tracking"
+                udp dport 69 ct helper set "tftp" comment "!fw4: TFTP connection tracking"
+        }
+
+        chain accept_from_lan {
+                meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } counter packets 96 bytes 7049 accept comment "!fw4: accept lan IPv4 traffic"
+        }
+
+        chain accept_to_lan {
+                meta nfproto ipv4 oifname { "br-lan", "br-swlan", "eth2" } counter packets 0 bytes 0 accept comment "!fw4: accept lan IPv4 traffic"
+        }
+
+        chain input_wan {
+                meta nfproto ipv4 udp dport 68 counter packets 0 bytes 0 accept comment "!fw4: Allow-DHCP-Renew"
+                icmp type echo-request counter packets 0 bytes 0 accept comment "!fw4: Allow-Ping"
+                meta nfproto ipv4 meta l4proto igmp counter packets 0 bytes 0 accept comment "!fw4: Allow-IGMP"
+                jump reject_from_wan
+        }
+
+        chain output_wan {
+                jump accept_to_wan
+        }
+
+        chain forward_wan {
+                meta nfproto ipv4 meta l4proto esp counter packets 0 bytes 0 jump accept_to_lan comment "!fw4: Allow-IPSec-ESP"
+                meta nfproto ipv4 udp dport 500 counter packets 0 bytes 0 jump accept_to_lan comment "!fw4: Allow-ISAKMP"
+                jump reject_to_wan
+        }
+
+        chain accept_to_wan {
+                meta nfproto ipv4 oifname { "eth0", "eth5" } ct state invalid counter packets 0 bytes 0 drop comment "!fw4: Prevent NAT leakage"
+                meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 58 bytes 4572 accept comment "!fw4: accept wan IPv4 traffic"
+        }
+
+        chain reject_to_wan {
+                meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 0 bytes 0 jump handle_reject comment "!fw4: reject wan IPv4 traffic"
+        }
+
+        chain input_vpn {
+                jump reject_from_vpn
+        }
+
+        chain output_vpn {
+                jump accept_to_vpn
+        }
+
+        chain forward_vpn {
+                jump reject_to_vpn
+        }
+
+        chain accept_to_vpn {
+                meta nfproto ipv4 oifname "0_WIN1LDN71" ct state invalid counter packets 0 bytes 0 drop comment "!fw4: Prevent NAT leakage"
+                meta nfproto ipv4 oifname "0_WIN1LDN71" counter packets 52 bytes 3688 accept comment "!fw4: accept vpn IPv4 traffic"
+        }
+
+        chain reject_to_vpn {
+                meta nfproto ipv4 oifname "0_WIN1LDN71" counter packets 0 bytes 0 jump handle_reject comment "!fw4: reject vpn IPv4 traffic"
+        }
+
+        chain dstnat {
+                type nat hook prerouting priority dstnat; policy accept;
+                jump upnp_prerouting comment "Hook into miniupnpd prerouting chain"
+        }
+
+        chain srcnat {
+                type nat hook postrouting priority srcnat; policy accept;
+                meta nfproto ipv4 oifname { "eth0", "eth5" } jump srcnat_wan comment "!fw4: Handle wan IPv4 srcnat traffic"
+                meta nfproto ipv4 oifname "0_WIN1LDN71" jump srcnat_vpn comment "!fw4: Handle vpn IPv4 srcnat traffic"
+                jump upnp_postrouting comment "Hook into miniupnpd postrouting chain"
+        }
+
+        chain srcnat_wan {
+                meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 wan traffic"
+        }
+
+        chain srcnat_vpn {
+                meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 vpn traffic"
+        }
+
+        chain raw_prerouting {
+                type filter hook prerouting priority raw; policy accept;
+        }
+
+        chain raw_output {
+                type filter hook output priority raw; policy accept;
+        }
+
+        chain mangle_prerouting {
+                type filter hook prerouting priority mangle; policy accept;
+                jump pbr_prerouting comment "Jump into pbr prerouting chain"
+        }
+
+        chain mangle_postrouting {
+                type filter hook postrouting priority mangle; policy accept;
+                jump pbr_postrouting comment "Jump into pbr postrouting chain"
+        }
+
+        chain mangle_input {
+                type filter hook input priority mangle; policy accept;
+                jump pbr_input comment "Jump into pbr input chain"
+        }
+
+        chain mangle_output {
+                type route hook output priority mangle; policy accept;
+                jump pbr_output comment "Jump into pbr output chain"
+        }
+
+        chain mangle_forward {
+                type filter hook forward priority mangle; policy accept;
+                meta nfproto ipv4 iifname { "eth0", "eth5" } tcp flags syn tcp option maxseg size set rt mtu comment "!fw4: Zone wan IPv4 ingress MTU fixing"
+                meta nfproto ipv4 oifname { "eth0", "eth5" } tcp flags syn tcp option maxseg size set rt mtu comment "!fw4: Zone wan IPv4 egress MTU fixing"
+                meta nfproto ipv4 iifname "0_WIN1LDN71" tcp flags syn tcp option maxseg size set rt mtu comment "!fw4: Zone vpn IPv4 ingress MTU fixing"
+                meta nfproto ipv4 oifname "0_WIN1LDN71" tcp flags syn tcp option maxseg size set rt mtu comment "!fw4: Zone vpn IPv4 egress MTU fixing"
+                jump pbr_forward comment "Jump into pbr forward chain"
+        }
+
+        chain upnp_forward {
+        }
+
+        chain upnp_prerouting {
+        }
+
+        chain upnp_postrouting {
+        }
+
+        chain pbr_forward {
+        }
+
+        chain pbr_input {
+        }
+
+        chain pbr_output {
+        }
+
+        chain pbr_prerouting {
+        }
+
+        chain pbr_postrouting {
+        }
+}
+root@m300-WatchGuard-M300:~#
