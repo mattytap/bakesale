@@ -21,13 +21,13 @@ set ips_blocklist_vpn {
 		flags dynamic,timeout
 		counter
 		timeout 1d
-		comment "IPS Block Sites - VPN"
+		comment "IPS Block Sites - VPN - SHOULD BE EMPTY DUE TO PROTON NetShield"
 }
 
 chain ips_filter {
 		type filter hook prerouting priority -200; policy accept;
 		meta nfproto ipv4 ip saddr @ips_blocklist_wan counter drop
-		meta nfproto ipv4 ip saddr @ips_blocklist_vpn counter log prefix "IPS vpn blocklist: "
+		meta nfproto ipv4 ip saddr @ips_blocklist_vpn counter log prefix "IPS vpn blocklist - check PROTON NetShield: "
 }
 
 chain reject_from_wan {

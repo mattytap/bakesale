@@ -59,6 +59,13 @@ flush_nft_entries() {
 	done
 }
 
+# Reset IPS. bakesale reloads occur after frewall resets and IPS often needs cleaning up after this.
+ips_reset () {
+	 nft flush set inet fw4 ips_blocklist_wan
+	 nft flush set inet fw4 ips_blocklist_vpn
+	 log notice "ips_blocklist_vpn flushed following firewall/bakesale reload"
+}
+
 # Setup the service
 setup() {
 	local action="$1"
@@ -90,6 +97,7 @@ setup() {
 	[[ "$action" == "reload" ]] && {
 		flush_nft_entries "chains" '@.nftables[@.chain.table="bakesale"].chain.name'
 		flush_nft_entries "maps" '@.nftables[@.map.table="bakesale"].map.name'
+		ips_reset
 	}
 
 	nft -f "$MAIN_NFT_PATH" || return 1
