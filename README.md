@@ -46,18 +46,9 @@ repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 target_dir="/usr/lib/bakesale"
 mkdir -p "$target_dir"
 
-file_list=(
-    "bakesale.sh"
-    "pre_include.sh"
-    "post_include.sh"
-    "post_include_user_set.sh"
-    "post_include_rules.sh"
-    "tcp_443_initialise.sh"
-    "tcp_443_net_update.sh"
-    "monitor.sh"
-)
+file_list="bakesale.sh pre_include.sh post_include.sh post_include_user_set.sh post_include_rules.sh tcp_443_initialise.sh tcp_443_net_update.sh monitor.sh"
 
-for file in "${file_list[@]}"; do
+for file in $file_list; do
     wget "$repo/$target_dir/$file" -O "$target_dir/$file"
 done
 
