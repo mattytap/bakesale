@@ -20,10 +20,7 @@ Assuming that SQM is already installed and running, you will then need to instal
 repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 opkg update
 opkg install kmod-sched-ctinfo
-wget "$repo/usr/lib/sqm/bakesale.qos" -O "/usr/lib/sqm/bakesale.qos"
-wget "$repo/usr/lib/sqm/bakesale.qos.help" -O "/usr/lib/sqm/bakesale.qos.help"
-wget "$repo/usr/lib/sqm/layer_cake_ct.qos" -O "/usr/lib/sqm/layer_cake_ct.qos"
-wget "$repo/usr/lib/sqm/layer_cake_ct.qos.help" -O "/usr/lib/sqm/layer_cake_ct.qos.help"
+wget -r "$repo/usr/lib/sqm/" -P "/usr/lib/sqm/"
 
 ```
 
@@ -34,25 +31,15 @@ repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 wget "$repo/etc/config/bakesale" -O "/etc/config/bakesale"
 
 mkdir -p "/etc/bakesale.d"
-wget "$repo/etc/bakesale.d/main.nft" -O "/etc/bakesale.d/main.nft"
-wget "$repo/etc/bakesale.d/maps.nft" -O "/etc/bakesale.d/maps.nft"
-wget "$repo/etc/bakesale.d/verdicts.nft" -O "/etc/bakesale.d/verdicts.nft"
+wget -r "$repo/etc/bakesale.d/" -P "/etc/bakesale.d/"
 
 wget "$repo/etc/hotplug.d/iface/21-bakesale" -O "/etc/hotplug.d/iface/21-bakesale"
 wget "$repo/etc/init.d/bakesale" -O "/etc/init.d/bakesale"
 chmod +x "/etc/init.d/bakesale"
 
 mkdir -p "/usr/lib/bakesale"
-wget "$repo/usr/lib/bakesale/bakesale.sh" -O "/usr/lib/bakesale/bakesale.sh"
-wget "$repo/usr/lib/bakesale/pre_include.sh" -O "/usr/lib/bakesale/pre_include.sh"
-wget "$repo/usr/lib/bakesale/post_include.sh" -O "/usr/lib/bakesale/post_include.sh"
-wget "$repo/usr/lib/bakesale/post_include_user_set.sh" -O "/usr/lib/bakesale/post_include_user_set.sh"
-wget "$repo/usr/lib/bakesale/post_include_rules.sh" -O "/usr/lib/bakesale/post_include_rules.sh"
-chmod +x "/usr/lib/bakesale/bakesale.sh"
-chmod +x "/usr/lib/bakesale/pre_include.sh"
-chmod +x "/usr/lib/bakesale/post_include.sh"
-chmod +x "/usr/lib/bakesale/post_include_user_set.sh"
-chmod +x "/usr/lib/bakesale/post_include_rules.sh"
+wget -r "$repo/usr/lib/bakesale/" -P "/usr/lib/bakesale/"
+chmod +x "/usr/lib/bakesale/*.sh"
 
 /etc/init.d/bakesale enable
 /etc/init.d/bakesale start
