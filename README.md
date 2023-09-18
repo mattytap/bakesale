@@ -20,28 +20,48 @@ Assuming that SQM is already installed and running, you will then need to instal
 repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 opkg update
 opkg install kmod-sched-ctinfo
-wget -r "$repo/usr/lib/sqm/" -P "/usr/lib/sqm/"
+wget "$repo/usr/lib/sqm/bakesale.qos" -O "/usr/lib/sqm/bakesale.qos"
+wget "$repo/usr/lib/sqm/bakesale.qos.help" -O "/usr/lib/sqm/bakesale.qos.help"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos" -O "/usr/lib/sqm/layer_cake_ct.qos"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos.help" -O "/usr/lib/sqm/layer_cake_ct.qos.help"
 
 ```
 
 To install the BakeSale use case, please follow these steps:
 
 ```bash
-git clone https://github.com/mattytap/bakesale.git
-
 repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 wget "$repo/etc/config/bakesale" -O "/etc/config/bakesale"
 
 mkdir -p "/etc/bakesale.d"
-cp -r bakesale/etc/bakesale.d /etc/
+wget "$repo/etc/bakesale.d/main.nft" -O "/etc/bakesale.d/main.nft"
+wget "$repo/etc/bakesale.d/maps.nft" -O "/etc/bakesale.d/maps.nft"
+wget "$repo/etc/bakesale.d/verdicts.nft" -O "/etc/bakesale.d/verdicts.nft"
 
 wget "$repo/etc/hotplug.d/iface/21-bakesale" -O "/etc/hotplug.d/iface/21-bakesale"
 wget "$repo/etc/init.d/bakesale" -O "/etc/init.d/bakesale"
 chmod +x "/etc/init.d/bakesale"
 
-mkdir -p "/usr/lib/bakesale"
-cp -r bakesale/usr/lib/bakesale.d /usr/lib/
-chmod +x "/usr/lib/bakesale/*.sh"
+repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
+target_dir="/usr/lib/bakesale"
+mkdir -p "$target_dir"
+
+file_list=(
+    "bakesale.sh"
+    "pre_include.sh"
+    "post_include.sh"
+    "post_include_user_set.sh"
+    "post_include_rules.sh"
+    "tcp_443_initialise.sh"
+    "tcp_443_net_update.sh"
+    "monitor.sh"
+)
+
+for file in "${file_list[@]}"; do
+    wget "$repo/$target_dir/$file" -O "$target_dir/$file"
+done
+
+chmod +x "$target_dir/*.sh"
 
 /etc/init.d/bakesale enable
 /etc/init.d/bakesale start
