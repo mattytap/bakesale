@@ -95,8 +95,8 @@ setup() {
 	create_post_include || return 1
 
 	[[ "$action" == "reload" ]] && {
-		flush_nft_entries "chains" '@.nftables[@.chain.table="bakesale"].chain.name'
-		flush_nft_entries "maps" '@.nftables[@.map.table="bakesale"].map.name'
+		flush_nft_entries "chain" '@.nftables[@.chain.table="bakesale"].chain.name'
+		flush_nft_entries "map" '@.nftables[@.map.table="bakesale"].map.name'
 		ips_reset
 	}
 
