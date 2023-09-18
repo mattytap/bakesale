@@ -27,18 +27,20 @@ wget -r "$repo/usr/lib/sqm/" -P "/usr/lib/sqm/"
 To install the BakeSale use case, please follow these steps:
 
 ```bash
+git clone https://github.com/mattytap/bakesale.git
+
 repo="https://raw.githubusercontent.com/mattytap/bakesale/main"
 wget "$repo/etc/config/bakesale" -O "/etc/config/bakesale"
 
 mkdir -p "/etc/bakesale.d"
-wget -r "$repo/etc/bakesale.d/" -P "/etc/bakesale.d/"
+cp -r bakesale/etc/bakesale.d /etc/
 
 wget "$repo/etc/hotplug.d/iface/21-bakesale" -O "/etc/hotplug.d/iface/21-bakesale"
 wget "$repo/etc/init.d/bakesale" -O "/etc/init.d/bakesale"
 chmod +x "/etc/init.d/bakesale"
 
 mkdir -p "/usr/lib/bakesale"
-wget -r "$repo/usr/lib/bakesale/" -P "/usr/lib/bakesale/"
+cp -r bakesale/usr/lib/bakesale.d /usr/lib/
 chmod +x "/usr/lib/bakesale/*.sh"
 
 /etc/init.d/bakesale enable
