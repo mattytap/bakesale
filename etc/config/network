@@ -1,0 +1,321 @@
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+
+config device
+	option name 'br-lan'
+	option type 'bridge'
+	option ipv6 '0'
+	option bridge_empty '1'
+	list ports 'eth1'
+
+config device
+	option name 'br-swlan'
+	option type 'bridge'
+	option ipv6 '0'
+	option bridge_empty '1'
+	list ports 'sweth3'
+	list ports 'sweth4'
+	list ports 'sweth5'
+	list ports 'sweth6'
+	list ports 'sweth7'
+
+config device
+	option name 'eth0'
+	option ipv6 '0'
+	option mtu '1380'
+
+config device
+	option name 'eth1'
+	option ipv6 '0'
+
+config device
+	option name 'eth2'
+	option ipv6 '0'
+
+config device
+	option name 'eth3'
+	option ipv6 '0'
+
+config device
+	option name 'eth4'
+	option ipv6 '0'
+
+config device
+	option name 'eth5'
+	option ipv6 '0'
+
+config device
+	option name 'sweth3'
+	option ipv6 '0'
+
+config device
+	option name 'sweth4'
+	option ipv6 '0'
+
+config device
+	option name 'sweth5'
+	option ipv6 '0'
+
+config device
+	option name 'sweth6'
+	option ipv6 '0'
+
+config device
+	option name 'sweth7'
+	option ipv6 '0'
+
+config interface '0_wan'
+	option device 'eth0'
+	option proto 'dhcp'
+	option delegate '0'
+	option metric '1023'
+
+config interface '1_lan'
+	option device 'br-lan'
+	option proto 'static'
+	option ipaddr '192.168.1.1'
+	option netmask '255.255.255.0'
+	option delegate '0'
+
+config interface '2_eth2'
+	option device 'eth2'
+	option proto 'static'
+	option ipaddr '10.0.2.1'
+	option netmask '255.255.255.0'
+	option delegate '0'
+
+config interface '7_swlan'
+	option device 'br-swlan'
+	option proto 'static'
+	option ipaddr '192.168.240.1'
+	option netmask '255.255.255.0'
+	option delegate '0'
+
+config interface 'tether'
+	option device 'eth5'
+	option proto 'dhcp'
+	option force_link '1'
+	option peerdns '0'
+	option delegate '0'
+	option metric '2047'
+
+config interface 'WIN2LDN137'
+	option proto 'wireguard'
+	option private_key 'MOVVd+32eWEqX/5LY+Tt7weWD0NVpEorRTRUyKRY/3E='
+	list addresses '10.2.0.2/32'
+	option peerdns '0'
+	list dns '10.2.0.1'
+	option delegate '0'
+	option mtu '1300'
+	option metric '137'
+	option auto '0'
+
+config wireguard_WIN2LDN137
+	option public_key 'uIYz5QpWqSNGRSJw0m4Py3eHR1dXQPb95sIKV8KaEC4='
+	option description 'LDN137'
+	list allowed_ips '0.0.0.0/0'
+	option endpoint_host '154.47.24.193'
+	option endpoint_port '51820'
+	option route_allowed_ips '1'
+	option persistent_keepalive '25'
+
+config interface 'WIN2LDN92'
+	option proto 'wireguard'
+	option private_key 'UEhOMqMqdAGi3rl8TmOfeWJ+MbYu/mFnCVPx6sQRY0I='
+	list addresses '10.2.0.2/32'
+	option peerdns '0'
+	list dns '10.2.0.1'
+	option delegate '0'
+	option mtu '1300'
+	option auto '0'
+	option metric '92'
+
+config wireguard_WIN2LDN92
+	option public_key 'zctOjv4DH2gzXtLQy86Tp0vnT+PNpMsxecd2vUX/i0U='
+	option description 'LDN92'
+	list allowed_ips '0.0.0.0/0'
+	option endpoint_host '146.70.179.50'
+	option endpoint_port '51820'
+	option route_allowed_ips '1'
+	option persistent_keepalive '25'
+
+config interface 'WIN2LDN122'
+	option proto 'wireguard'
+	option private_key 'GCEcZYbQp1sxSvwYOLRCl4r0n5LMNsEfLNbbFyXVSGQ='
+	list addresses '10.2.0.2/32'
+	option peerdns '0'
+	list dns '10.2.0.1'
+	option delegate '0'
+	option mtu '1300'
+	option auto '0'
+	option metric '122'
+
+config wireguard_WIN2LDN122
+	option public_key '7tEhXa2x1eKGbPevwzPjo5u5HLshPxwkofSII9y0v2c='
+	option description 'LDN122'
+	list allowed_ips '0.0.0.0/0'
+	option endpoint_host '146.70.179.98'
+	option endpoint_port '51820'
+	option route_allowed_ips '1'
+	option persistent_keepalive '25'
+
+config interface 'WIN1LDN95'
+	option proto 'wireguard'
+	option private_key 'OOUbKHex2b/S7EDyNZOaTy12n0BA7DtPovXCMsaFq08='
+	list addresses '10.2.0.2/32'
+	option peerdns '0'
+	list dns '10.2.0.1'
+	option delegate '0'
+	option mtu '1300'
+	option auto '0'
+	option metric '95'
+
+config wireguard_WIN1LDN95
+	option public_key 'zctOjv4DH2gzXtLQy86Tp0vnT+PNpMsxecd2vUX/i0U='
+	option description 'LDN95'
+	list allowed_ips '0.0.0.0/0'
+	option endpoint_host '146.70.179.50'
+	option endpoint_port '51820'
+	option route_allowed_ips '1'
+	option persistent_keepalive '25'
+
+config interface 'WIN1LDN71'
+	option proto 'wireguard'
+	option private_key 'aBJJzyQ7q5c82+BetR7FH/apDX6HlOK9ObWdMQq7ZFw='
+	list addresses '10.2.0.2/32'
+	option mtu '1300'
+	option metric '71'
+	option delegate '0'
+	option auto '0'
+
+config wireguard_WIN1LDN71
+	option public_key 'ic5vxFWQEX5lRVwgx2vfE1xYKXQuwQi1TGDSkR0fsEY='
+	option description 'LDN71'
+	list allowed_ips '0.0.0.0/0'
+	option route_allowed_ips '1'
+	option endpoint_host '146.70.96.66'
+	option persistent_keepalive '25'
+	option endpoint_port '51820'
+
+config interface 'WIN1REY6'
+	option proto 'wireguard'
+	option private_key 'uBye0kuuDB5bPePnP+QJ5Al+bWW1q02ebeTf7q1XbmQ='
+	list addresses '10.2.0.2/32'
+	option mtu '1300'
+	option metric '6'
+	option delegate '0'
+	option auto '0'
+
+config wireguard_WIN1REY6
+	option public_key 'nnG3a0fTkyAfCSRWNXR32Z3qFP2/Jk0ATux1IszyWmc='
+	option description 'REY6'
+	list allowed_ips '0.0.0.0/0'
+	option route_allowed_ips '1'
+	option endpoint_host '185.159.158.2'
+	option endpoint_port '51820'
+	option persistent_keepalive '25'
+
+config interface '0_vpn'
+	option proto 'wireguard'
+	option private_key 'aBJJzyQ7q5c82+BetR7FH/apDX6HlOK9ObWdMQq7ZFw='
+	list addresses '10.2.0.2/32'
+	option mtu '1300'
+	option metric '71'
+	option delegate '0'
+
+config wireguard_0_vpn
+	option public_key 'ic5vxFWQEX5lRVwgx2vfE1xYKXQuwQi1TGDSkR0fsEY='
+	option description 'LDN71'
+	list allowed_ips '0.0.0.0/0'
+	option endpoint_host '146.70.96.66'
+	option persistent_keepalive '25'
+	option endpoint_port '51820'
+	option route_allowed_ips '1'
+
+config device
+	option name 'WIN2LDN92'
+	option ipv6 '0'
+	option mtu '1300'
+
+config device
+	option name 'WIN1LDN95'
+	option ipv6 '0'
+	option mtu '1300'
+
+config device
+	option name 'WIN2LDN137'
+	option ipv6 '0'
+	option mtu '1300'
+
+config device
+	option name 'WIN2LDN122'
+	option ipv6 '0'
+	option mtu '1300'
+
+config device
+	option name 'WIN1REY6'
+	option ipv6 '0'
+	option mtu '1300'
+
+config device
+	option name 'WIN1LDN71'
+	option ipv6 '0'
+	option mtu '1300'
+
+config device
+	option name '0_vpn'
+	option ipv6 '0'
+	option mtu '1300'
+
+config device
+	option name 'wg-pbr-ingress'
+	option mtu '1300'
+	option txqueuelen '1000'
+	option macaddr 'CA:6D:CE:E0:F7:59'
+
+config route
+	option interface '0_wan'
+	option target '81.20.48.0/20'
+
+config route
+	option interface '0_wan'
+	option target '192.168.0.0/24'
+
+config route
+	option interface '0_wan'
+	option target '8.8.4.4/32'
+
+config route
+	option interface '0_wan'
+	option target '2.19.112.0/20'
+
+config route
+	option interface '0_wan'
+	option target '18.164.0.0/15'
+
+config route
+	option interface '0_wan'
+	option target '18.172.0.0/15'
+
+config route
+	option interface '0_wan'
+	option target '18.244.0.0/15'
+
+config route
+	option interface '0_wan'
+	option target '23.72.0.0/13'
+
+config route
+	option interface '0_wan'
+	option target '92.123.140.0/22'
+
+config route
+	option interface '0_wan'
+	option target '104.86.110.0/23'
+

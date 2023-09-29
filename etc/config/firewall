@@ -27,7 +27,6 @@ config zone
 	list network '0_wan'
 	list network 'tether'
 	option input 'REJECT'
-	option log '1'
 
 config forwarding
 	option src 'lan'
@@ -41,13 +40,13 @@ config zone
 	option masq '1'
 	option family 'ipv4'
 	option mtu_fix '1'
-	list network '0_WIN1LDN95'
-	list network '0_WIN1LDN71'
-	list network '0_WIN1REY6'
-	list network '0_WIN2LDN92'
-	list network '0_WIN2LDN122'
-	list network '0_WIN2LDN137'
-	option log '1'
+	list network '0_vpn'
+	list network 'WIN1LDN71'
+	list network 'WIN1LDN95'
+	list network 'WIN1REY6'
+	list network 'WIN2LDN92'
+	list network 'WIN2LDN122'
+	list network 'WIN2LDN137'
 
 config forwarding
 	option src 'lan'

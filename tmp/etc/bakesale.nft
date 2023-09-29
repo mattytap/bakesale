@@ -44,6 +44,13 @@ table inet fw4 {
 		l3proto inet
 	}
 
+	chain reject_from_wan {
+		meta nfproto ipv4 iifname { "eth0", "eth5" } counter packets 17778 bytes 904696 log prefix "reject wan in: " jump handle_reject comment "!fw4: reject wan IPv4 traffic"
+	}
+
+	chain reject_from_vpn {
+	}
+
 	chain input {
 		type filter hook input priority filter; policy drop;
 		iifname "lo" accept comment "!fw4: Accept traffic from loopback"
@@ -99,9 +106,8 @@ table inet fw4 {
 	}
 
 	chain forward_lan {
-		meta nfproto ipv4 jump accept_to_Net2Shield comment "!fw4: Accept lan to Net2Shield IPv4 forwarding"
 		meta nfproto ipv4 jump accept_to_wan comment "!fw4: Accept lan to wan IPv4 forwarding"
-		meta nfproto ipv4 jump accept_to_Proton1VPN comment "!fw4: Accept lan to Proton1VPN IPv4 forwarding"
+		meta nfproto ipv4 jump accept_to_vpn comment "!fw4: Accept lan to vpn IPv4 forwarding"
 		jump accept_to_lan
 		log prefix "reject lan forward: "
 	}
@@ -148,56 +154,27 @@ table inet fw4 {
 		meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 61627 bytes 5266083 accept comment "!fw4: accept wan IPv4 traffic"
 	}
 
-	chain reject_from_wan {
-		meta nfproto ipv4 iifname { "eth0", "eth5" } counter packets 17778 bytes 904696 log prefix "reject wan in: " jump handle_reject comment "!fw4: reject wan IPv4 traffic"
-	}
-
 	chain reject_to_wan {
 		meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 0 bytes 0 log prefix "reject wan out: " jump handle_reject comment "!fw4: reject wan IPv4 traffic"
 	}
 
-	chain input_Net2Shield {
-		jump reject_from_Net2Shield
+	chain input_vpn {
+		jump reject_from_vpn
 	}
 
-	chain output_Net2Shield {
-		jump accept_to_Net2Shield
+	chain output_vpn {
+		jump accept_to_vpn
 	}
 
-	chain forward_Net2Shield {
-		jump reject_to_Net2Shield
-		log prefix "reject Net2Shield forward: "
+	chain forward_vpn {
+		jump reject_to_vpn
+		log prefix "reject vpn forward: "
 	}
 
-	chain accept_to_Net2Shield {
+	chain accept_to_vpn {
 	}
 
-	chain reject_from_Net2Shield {
-	}
-
-	chain reject_to_Net2Shield {
-	}
-
-	chain input_Proton1VPN {
-		jump reject_from_Proton1VPN
-	}
-
-	chain output_Proton1VPN {
-		jump accept_to_Proton1VPN
-	}
-
-	chain forward_Proton1VPN {
-		jump reject_to_Proton1VPN
-		log prefix "reject Proton1VPN forward: "
-	}
-
-	chain accept_to_Proton1VPN {
-	}
-
-	chain reject_from_Proton1VPN {
-	}
-
-	chain reject_to_Proton1VPN {
+	chain reject_to_vpn {
 	}
 
 	chain dstnat {
@@ -215,12 +192,8 @@ table inet fw4 {
 		meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 wan traffic"
 	}
 
-	chain srcnat_Net2Shield {
-		meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 Net2Shield traffic"
-	}
-
-	chain srcnat_Proton1VPN {
-		meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 Proton1VPN traffic"
+	chain srcnat_vpn {
+		meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 vpn traffic"
 	}
 
 	chain raw_prerouting {

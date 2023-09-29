@@ -10,4 +10,7 @@ nft list table inet vpn_bypass_analysis | \
 sed 's/{/{\n/g' | \
 sed '/elements = {/,/}/!b; s/,\([^$]\)/,\n\1/g' | \
 sed 's/ c/\tc/' | \
+grep -E 'set |counter ' | \
+grep -v 'ip daddr' | \
+sed 's/set /\nset /g' | \
 sed 's/^\s\+//'

@@ -1,0 +1,171 @@
+
+config dnsmasq
+	option domainneeded '1'
+	option localise_queries '1'
+	option rebind_protection '1'
+	option rebind_localhost '1'
+	option local '/lan/'
+	option domain 'lan'
+	option expandhosts '1'
+	option authoritative '1'
+	option readethers '1'
+	option leasefile '/tmp/dhcp.leases'
+	option resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
+	option localservice '1'
+	option ednspacket_max '1232'
+	option confdir '/tmp/dnsmasq.d'
+	option sequential_ip '1'
+	option filter_aaaa '1'
+	option dnssec '1'
+	option quietdhcp '1'
+	list address '/status.client/192.168.1.1'
+	list server '1.0.0.1'
+	list server '1.1.1.1'
+	list server '8.8.8.8'
+	option logqueries '1'
+	option cachesize '150'
+
+config domain
+	option ip '192.168.240.2'
+	option name 'Mango2'
+
+config domain
+	option ip '192.168.240.13'
+	option name 'TL-RE13-hall'
+
+config domain
+	option name 'Shadow14-sofa'
+	option ip '192.168.240.14'
+
+config domain
+	option name 'TL-WPA15-lounge'
+	option ip '192.168.240.15'
+
+config domain
+	option ip '192.168.240.17'
+	option name 'TL-WPA17-front'
+
+config domain
+	option name 'TL-WPA16-kitchen'
+	option ip '192.168.240.16'
+
+config domain
+	option ip '192.168.240.18'
+	option name 'TL-WPA18-boiler'
+
+config domain
+	option ip '192.168.240.19'
+	option name 'TL-WPA19-rear'
+
+config domain
+	option name 'ProtonVPN-A'
+	option ip '10.2.0.1'
+
+config domain
+	option name 'ProtonVPN-B'
+	option ip '10.2.0.2'
+
+config domain
+	option name '5GModem'
+	option ip '192.168.0.1'
+
+config host
+	option name 'time-capsule'
+	option mac 'B8:C7:5D:C9:41:84'
+	option ip '192.168.1.3'
+
+config host
+	option name 'Olfra-hue'
+	option mac 'EC:B5:FA:09:5D:46'
+	option ip '192.168.240.4'
+
+config host
+	option name 'SP9'
+	option mac '04:95:E6:B4:38:48'
+	option ip '192.168.240.5'
+
+config host
+	option name 'CanonMG5500'
+	option mac 'F4:81:39:89:DE:AE'
+	option ip '192.168.240.6'
+
+config host
+	option name 'LazyLazer'
+	option mac '30:C9:AB:96:88:85'
+	option ip '192.168.240.7'
+
+config host
+	option name 'QCA4002'
+	option mac '5C:D6:1F:E0:CC:7F'
+	option ip '192.168.240.8'
+
+config host
+	option name 'Living-room'
+	option mac '34:FD:6A:03:43:81'
+	option ip '192.168.240.9'
+
+config host
+	option name 'openmiko'
+	option mac 'C8:02:8F:77:0D:14'
+	option ip '192.168.240.10'
+
+config host
+	option name 'Levoit-Purifier'
+	option mac 'E8:9F:6D:7A:AB:C8'
+	option ip '192.168.240.11'
+
+config host
+	option name 'MattsBurner'
+	option mac '14:94:6C:0C:30:19'
+	option ip '192.168.240.101'
+
+config host
+	option name 'TopCat'
+	option mac '08:87:C7:79:6E:9E'
+	option ip '192.168.240.102'
+
+config host
+	option name 'surface2'
+	option mac '28:18:78:D1:27:FB'
+	option ip '192.168.240.103'
+
+config host
+	option name 'samsung'
+	option ip '192.168.240.104'
+	option mac '00:24:54:E3:83:31'
+
+config host
+	option name 'SonyVAIO'
+	option ip '192.168.240.108'
+	option mac '00:27:10:F3:73:F8'
+
+config dhcp '1_lan'
+	option interface '1_lan'
+	option start '101'
+	option limit '150'
+	list dhcp_option '6,192.168.240.1'
+	list dhcp_option '42,192.168.240.1'
+	option leasetime '1h'
+
+config dhcp '2_eth2'
+	option interface '2_eth2'
+	option start '2'
+	option limit '50'
+	list dhcp_option '6,192.168.240.1'
+	list dhcp_option '42,192.168.240.1'
+	option leasetime '12h'
+
+config dhcp '7_swlan'
+	option interface '7_swlan'
+	option start '101'
+	option limit '150'
+	list dhcp_option '6,192.168.240.1'
+	list dhcp_option '42,192.168.240.1'
+	option leasetime '8h'
+
+config host
+	option ip '192.168.240.105'
+	option mac '82:FC:E5:35:F0:08'
+	option name 'bob'
+	option dns '1'
+

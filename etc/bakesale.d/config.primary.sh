@@ -18,8 +18,8 @@ log_DEBUG_messages_to_syslog=1	# enable (1) or disable (0) logging of all DEBUG 
 ### sent by this instance of autorate actually travel through these interfaces.
 ### See ping_extra_args and ping_prefix_string
 
-#dl_if=ifb40_WIN1LDN71 # download interface
-#ul_if=0_WIN1LDN71     # upload interface
+#dl_if=ifb40_vpn # download interface
+#ul_if=0_vpn     # upload interface
 dl_if=wg-pbr-ingress   # download interface
 ul_if=eth0             # upload interface
 

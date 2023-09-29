@@ -44,6 +44,96 @@ table inet fw4 {
 		l3proto inet
 	}
 
+	set BBCSounds {
+		type ipv4_addr
+		flags interval
+		auto-merge
+		comment "these are the main streams"
+		elements = { 2.19.112.0/20, 18.164.0.0/15,
+			     18.172.0.0/15, 18.244.0.0/15,
+			     23.72.0.0/13, 92.123.140.0/22,
+			     104.86.110.0/23 }
+	}
+
+	set GlobalPlayer {
+		type ipv4_addr
+		flags interval
+		auto-merge
+		elements = { 81.20.48.0/20 }
+	}
+
+	set bad_ips {
+		type ipv4_addr
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 1d
+		comment "List of IPs that are persistently dropped for malicious activity."
+		elements = { 79.124.62.82 counter packets 2 bytes 88 timeout 1d expires 23h56m20s560ms, 89.248.163.104 counter packets 3 bytes 132 timeout 1d expires 23h57m10s890ms,
+			     110.35.224.69 counter packets 2 bytes 88 timeout 1d expires 23h55m32s650ms, 162.142.125.83 counter packets 2 bytes 88 timeout 1d expires 23h54m30s740ms,
+			     205.210.31.129 counter packets 2 bytes 88 timeout 1d expires 23h54m15s700ms }
+	}
+
+	set dropped_packets {
+		type ipv4_addr
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 1h
+		comment "Accumulates IPs from packets that are dropped."
+		elements = { 23.148.145.204 counter packets 1 bytes 44 timeout 1h expires 56m8s650ms, 35.203.210.87 counter packets 1 bytes 44 timeout 1h expires 59m48s20ms,
+			     35.203.210.189 counter packets 1 bytes 44 timeout 1h expires 55m15s690ms, 36.110.228.254 counter packets 1 bytes 44 timeout 1h expires 56m43s40ms,
+			     59.126.146.2 counter packets 1 bytes 44 timeout 1h expires 58m4s970ms, 64.62.197.167 counter packets 1 bytes 44 timeout 1h expires 58m38s120ms,
+			     67.205.131.196 counter packets 1 bytes 44 timeout 1h expires 56m4s970ms, 76.109.48.101 counter packets 1 bytes 60 timeout 1h expires 56m21s600ms,
+			     77.90.185.19 counter packets 1 bytes 44 timeout 1h expires 54m17s270ms, 77.90.185.172 counter packets 1 bytes 44 timeout 1h expires 55m48s,
+			     77.90.185.175 counter packets 1 bytes 44 timeout 1h expires 56m54s240ms, 77.90.185.202 counter packets 1 bytes 44 timeout 1h expires 57m27s560ms,
+			     79.124.58.130 counter packets 1 bytes 44 timeout 1h expires 53m31s750ms, 79.124.62.82 counter packets 2 bytes 88 timeout 1h expires 56m6s890ms,
+			     80.66.83.132 counter packets 1 bytes 44 timeout 1h expires 54m29s280ms, 89.248.163.104 counter packets 3 bytes 132 timeout 1h expires 53m29s570ms,
+			     89.248.168.42 counter packets 1 bytes 44 timeout 1h expires 55m29s990ms, 94.102.61.3 counter packets 1 bytes 44 timeout 1h expires 55m14s630ms,
+			     95.214.55.244 counter packets 1 bytes 44 timeout 1h expires 55m47s40ms, 103.56.61.139 counter packets 1 bytes 68 timeout 1h expires 54m34s730ms,
+			     109.205.213.18 counter packets 1 bytes 44 timeout 1h expires 56m46s570ms, 110.35.224.69 counter packets 2 bytes 88 timeout 1h expires 54m35s860ms,
+			     131.159.24.205 counter packets 1 bytes 64 timeout 1h expires 54m14s40ms, 137.184.183.61 counter packets 1 bytes 44 timeout 1h expires 56m14s240ms,
+			     143.198.109.156 counter packets 1 bytes 44 timeout 1h expires 55m48s, 147.78.47.67 counter packets 1 bytes 44 timeout 1h expires 56m38s200ms,
+			     162.142.125.83 counter packets 2 bytes 92 timeout 1h expires 54m21s720ms, 162.216.149.19 counter packets 1 bytes 44 timeout 1h expires 54m16s100ms,
+			     162.216.149.92 counter packets 1 bytes 44 timeout 1h expires 58m48s880ms, 162.216.149.164 counter packets 1 bytes 44 timeout 1h expires 57m2s140ms,
+			     162.216.150.52 counter packets 1 bytes 44 timeout 1h expires 54m25s760ms, 162.216.150.139 counter packets 1 bytes 44 timeout 1h expires 58m3s270ms,
+			     162.216.150.189 counter packets 1 bytes 44 timeout 1h expires 55m40s640ms, 167.94.138.149 counter packets 1 bytes 44 timeout 1h expires 59m1s280ms,
+			     167.94.145.89 counter packets 1 bytes 44 timeout 1h expires 55m23s680ms, 176.111.174.89 counter packets 1 bytes 44 timeout 1h expires 55m17s920ms,
+			     176.111.174.105 counter packets 1 bytes 44 timeout 1h expires 57m320ms, 179.43.163.130 counter packets 1 bytes 44 timeout 1h expires 54m14s260ms,
+			     192.241.207.79 counter packets 1 bytes 44 timeout 1h expires 56m56s540ms, 194.26.135.248 counter packets 1 bytes 44 timeout 1h expires 56m17s120ms,
+			     195.162.70.5 counter packets 1 bytes 44 timeout 1h expires 54m7s20ms, 198.199.101.111 counter packets 1 bytes 44 timeout 1h expires 58m11s740ms,
+			     198.235.24.237 counter packets 1 bytes 44 timeout 1h expires 54m26s400ms, 205.210.31.129 counter packets 2 bytes 88 timeout 1h expires 54m15s690ms,
+			     205.210.31.156 counter packets 1 bytes 44 timeout 1h expires 57m6s580ms }
+	}
+
+	chain drop_from_wan {
+		jump track_dropped_packets
+		jump log_dropped_packets
+		counter packets 51 bytes 2308 drop comment "Preemptive drop to avert syslog flood."
+		meta nfproto ipv4 iifname { "eth0", "eth5" } counter packets 0 bytes 0 log prefix "drop wan in: " drop comment "!fw4: drop wan IPv4 traffic"
+	}
+
+	chain track_dropped_packets {
+		ip saddr @dropped_packets goto track_bad_ips comment "Redirect to track_bad_ips, bypassing subsequent rules."
+		counter packets 45 bytes 2044 update @dropped_packets { ip saddr } comment "Add IP to @dropped_packets and update counters"
+	}
+
+	chain track_bad_ips {
+		ip saddr != @bad_ips counter packets 5 bytes 220 update @bad_ips { ip saddr } comment "Treat recurring IPs as Bad, add to @bad_ips and increment counter."
+		ip saddr @bad_ips comment "Increment counter (double count 2nd packet to allow for not counting 1st packet)"
+		jump log_bad_ips
+	}
+
+	chain log_dropped_packets {
+		limit rate 300/hour return comment "Dont log below threshold"
+		limit rate 12/hour counter packets 5 bytes 220 log prefix "Drop rate has exceeded 5/minute for last 5 minutes: " level alert comment "Log if wan traffic exceeds 300/hour for the last 5 minutes"
+	}
+
+	chain log_bad_ips {
+		limit rate 90/hour return comment "Dont log below threshold"
+		limit rate 12/minute counter packets 0 bytes 0 log prefix "Bad IP Traffic: " level alert comment "Log if traffic from bad IPs exceeds 90/hour for the last 5 seconds"
+	}
+
 	chain input {
 		type filter hook input priority filter; policy drop;
 		iifname "lo" accept comment "!fw4: Accept traffic from loopback"
@@ -52,6 +142,7 @@ table inet fw4 {
 		tcp flags syn / fin,syn,rst,ack jump syn_flood comment "!fw4: Rate limit TCP syn packets"
 		meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } jump input_lan comment "!fw4: Handle lan IPv4 input traffic"
 		meta nfproto ipv4 iifname { "eth0", "eth5" } jump input_wan comment "!fw4: Handle wan IPv4 input traffic"
+		meta nfproto ipv4 iifname "0_vpn" jump input_vpn comment "!fw4: Handle vpn IPv4 input traffic"
 		jump handle_reject
 	}
 
@@ -61,6 +152,7 @@ table inet fw4 {
 		ct state invalid drop comment "!fw4: Drop flows with invalid conntrack state"
 		meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } jump forward_lan comment "!fw4: Handle lan IPv4 forward traffic"
 		meta nfproto ipv4 iifname { "eth0", "eth5" } jump forward_wan comment "!fw4: Handle wan IPv4 forward traffic"
+		meta nfproto ipv4 iifname "0_vpn" jump forward_vpn comment "!fw4: Handle vpn IPv4 forward traffic"
 		jump upnp_forward comment "Hook into miniupnpd forwarding chain"
 		jump handle_reject
 	}
@@ -72,6 +164,7 @@ table inet fw4 {
 		ct state invalid drop comment "!fw4: Drop flows with invalid conntrack state"
 		meta nfproto ipv4 oifname { "br-lan", "br-swlan", "eth2" } jump output_lan comment "!fw4: Handle lan IPv4 output traffic"
 		meta nfproto ipv4 oifname { "eth0", "eth5" } jump output_wan comment "!fw4: Handle wan IPv4 output traffic"
+		meta nfproto ipv4 oifname "0_vpn" jump output_vpn comment "!fw4: Handle vpn IPv4 output traffic"
 		jump handle_reject
 	}
 
@@ -99,9 +192,8 @@ table inet fw4 {
 	}
 
 	chain forward_lan {
-		meta nfproto ipv4 jump accept_to_Net2Shield comment "!fw4: Accept lan to Net2Shield IPv4 forwarding"
 		meta nfproto ipv4 jump accept_to_wan comment "!fw4: Accept lan to wan IPv4 forwarding"
-		meta nfproto ipv4 jump accept_to_Proton1VPN comment "!fw4: Accept lan to Proton1VPN IPv4 forwarding"
+		meta nfproto ipv4 jump accept_to_vpn comment "!fw4: Accept lan to vpn IPv4 forwarding"
 		jump accept_to_lan
 		log prefix "reject lan forward: "
 	}
@@ -119,18 +211,18 @@ table inet fw4 {
 	}
 
 	chain accept_from_lan {
-		meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } counter packets 73303 bytes 5870400 accept comment "!fw4: accept lan IPv4 traffic"
+		meta nfproto ipv4 iifname { "br-lan", "br-swlan", "eth2" } counter packets 274 bytes 21874 accept comment "!fw4: accept lan IPv4 traffic"
 	}
 
 	chain accept_to_lan {
-		meta nfproto ipv4 oifname { "br-lan", "br-swlan", "eth2" } counter packets 65 bytes 21908 accept comment "!fw4: accept lan IPv4 traffic"
+		meta nfproto ipv4 oifname { "br-lan", "br-swlan", "eth2" } counter packets 1 bytes 360 accept comment "!fw4: accept lan IPv4 traffic"
 	}
 
 	chain input_wan {
 		meta nfproto ipv4 udp dport 68 counter packets 0 bytes 0 accept comment "!fw4: Allow-DHCP-Renew"
-		icmp type echo-request counter packets 53585 bytes 2416456 accept comment "!fw4: Allow-Ping"
+		icmp type echo-request counter packets 51 bytes 2060 accept comment "!fw4: Allow-Ping"
 		meta nfproto ipv4 meta l4proto igmp counter packets 0 bytes 0 accept comment "!fw4: Allow-IGMP"
-		jump reject_from_wan
+		jump drop_from_wan
 	}
 
 	chain output_wan {
@@ -145,59 +237,38 @@ table inet fw4 {
 	}
 
 	chain accept_to_wan {
-		meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 60807 bytes 5575954 accept comment "!fw4: accept wan IPv4 traffic"
-	}
-
-	chain reject_from_wan {
-		meta nfproto ipv4 iifname { "eth0", "eth5" } counter packets 13738 bytes 710937 log prefix "reject wan in: " jump handle_reject comment "!fw4: reject wan IPv4 traffic"
+		meta nfproto ipv4 oifname { "eth0", "eth5" } ct state invalid counter packets 0 bytes 0 log prefix "drop wan invalid ct state: " drop comment "!fw4: Prevent NAT leakage"
+		meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 455 bytes 35120 accept comment "!fw4: accept wan IPv4 traffic"
 	}
 
 	chain reject_to_wan {
 		meta nfproto ipv4 oifname { "eth0", "eth5" } counter packets 0 bytes 0 log prefix "reject wan out: " jump handle_reject comment "!fw4: reject wan IPv4 traffic"
 	}
 
-	chain input_Net2Shield {
-		jump reject_from_Net2Shield
+	chain input_vpn {
+		jump reject_from_vpn
 	}
 
-	chain output_Net2Shield {
-		jump accept_to_Net2Shield
+	chain output_vpn {
+		jump accept_to_vpn
 	}
 
-	chain forward_Net2Shield {
-		jump reject_to_Net2Shield
-		log prefix "reject Net2Shield forward: "
+	chain forward_vpn {
+		jump reject_to_vpn
+		log prefix "reject vpn forward: "
 	}
 
-	chain accept_to_Net2Shield {
+	chain accept_to_vpn {
+		meta nfproto ipv4 oifname "0_vpn" ct state invalid counter packets 0 bytes 0 log prefix "drop vpn invalid ct state: " drop comment "!fw4: Prevent NAT leakage"
+		meta nfproto ipv4 oifname "0_vpn" counter packets 435 bytes 33067 accept comment "!fw4: accept vpn IPv4 traffic"
 	}
 
-	chain reject_from_Net2Shield {
+	chain reject_from_vpn {
+		meta nfproto ipv4 iifname "0_vpn" counter packets 0 bytes 0 log prefix "reject vpn in: " jump handle_reject comment "!fw4: reject vpn IPv4 traffic"
 	}
 
-	chain reject_to_Net2Shield {
-	}
-
-	chain input_Proton1VPN {
-		jump reject_from_Proton1VPN
-	}
-
-	chain output_Proton1VPN {
-		jump accept_to_Proton1VPN
-	}
-
-	chain forward_Proton1VPN {
-		jump reject_to_Proton1VPN
-		log prefix "reject Proton1VPN forward: "
-	}
-
-	chain accept_to_Proton1VPN {
-	}
-
-	chain reject_from_Proton1VPN {
-	}
-
-	chain reject_to_Proton1VPN {
+	chain reject_to_vpn {
+		meta nfproto ipv4 oifname "0_vpn" counter packets 0 bytes 0 log prefix "reject vpn out: " jump handle_reject comment "!fw4: reject vpn IPv4 traffic"
 	}
 
 	chain dstnat {
@@ -208,6 +279,7 @@ table inet fw4 {
 	chain srcnat {
 		type nat hook postrouting priority srcnat; policy accept;
 		meta nfproto ipv4 oifname { "eth0", "eth5" } jump srcnat_wan comment "!fw4: Handle wan IPv4 srcnat traffic"
+		meta nfproto ipv4 oifname "0_vpn" jump srcnat_vpn comment "!fw4: Handle vpn IPv4 srcnat traffic"
 		jump upnp_postrouting comment "Hook into miniupnpd postrouting chain"
 	}
 
@@ -215,12 +287,8 @@ table inet fw4 {
 		meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 wan traffic"
 	}
 
-	chain srcnat_Net2Shield {
-		meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 Net2Shield traffic"
-	}
-
-	chain srcnat_Proton1VPN {
-		meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 Proton1VPN traffic"
+	chain srcnat_vpn {
+		meta nfproto ipv4 masquerade comment "!fw4: Masquerade IPv4 vpn traffic"
 	}
 
 	chain raw_prerouting {
@@ -233,24 +301,31 @@ table inet fw4 {
 
 	chain mangle_prerouting {
 		type filter hook prerouting priority mangle; policy accept;
+		jump pbr_prerouting comment "Jump into pbr prerouting chain"
 	}
 
 	chain mangle_postrouting {
 		type filter hook postrouting priority mangle; policy accept;
+		jump pbr_postrouting comment "Jump into pbr postrouting chain"
 	}
 
 	chain mangle_input {
 		type filter hook input priority mangle; policy accept;
+		jump pbr_input comment "Jump into pbr input chain"
 	}
 
 	chain mangle_output {
 		type route hook output priority mangle; policy accept;
+		jump pbr_output comment "Jump into pbr output chain"
 	}
 
 	chain mangle_forward {
 		type filter hook forward priority mangle; policy accept;
 		meta nfproto ipv4 iifname { "eth0", "eth5" } tcp flags syn tcp option maxseg size set rt mtu comment "!fw4: Zone wan IPv4 ingress MTU fixing"
 		meta nfproto ipv4 oifname { "eth0", "eth5" } tcp flags syn tcp option maxseg size set rt mtu comment "!fw4: Zone wan IPv4 egress MTU fixing"
+		meta nfproto ipv4 iifname "0_vpn" tcp flags syn tcp option maxseg size set rt mtu comment "!fw4: Zone vpn IPv4 ingress MTU fixing"
+		meta nfproto ipv4 oifname "0_vpn" tcp flags syn tcp option maxseg size set rt mtu comment "!fw4: Zone vpn IPv4 egress MTU fixing"
+		jump pbr_forward comment "Jump into pbr forward chain"
 	}
 
 	chain upnp_forward {
@@ -261,337 +336,19 @@ table inet fw4 {
 
 	chain upnp_postrouting {
 	}
-}
-table inet bakesale {
-	set threaded_clients {
-		type ipv4_addr . inet_service . inet_proto
-		size 65535
-		flags dynamic,timeout
+
+	chain pbr_forward {
 	}
 
-	set threaded_services {
-		type ipv4_addr . ipv4_addr . inet_service . inet_proto
-		size 65535
-		flags dynamic,timeout
+	chain pbr_input {
 	}
 
-	map ct_dscp {
-		type mark : verdict
-		elements = { 0x00000000 : goto dscp_set_cs0, 0x00000001 : goto dscp_set_le, 0x00000008 : goto dscp_set_cs1, 0x0000000a : goto dscp_set_af11, 0x0000000c : goto dscp_set_af12,
-			     0x0000000e : goto dscp_set_af13, 0x00000010 : goto dscp_set_cs2, 0x00000012 : goto dscp_set_af21, 0x00000014 : goto dscp_set_af22, 0x00000016 : goto dscp_set_af23,
-			     0x00000018 : goto dscp_set_cs3, 0x0000001a : goto dscp_set_af31, 0x0000001c : goto dscp_set_af32, 0x0000001e : goto dscp_set_af33, 0x00000020 : goto dscp_set_cs4,
-			     0x00000022 : goto dscp_set_af41, 0x00000024 : goto dscp_set_af42, 0x00000026 : goto dscp_set_af43, 0x00000028 : goto dscp_set_cs5, 0x0000002c : goto dscp_set_va,
-			     0x0000002e : goto dscp_set_ef, 0x00000030 : goto dscp_set_cs6, 0x00000038 : goto dscp_set_cs7 }
+	chain pbr_output {
 	}
 
-	map ct_wmm {
-		type mark : verdict
-		elements = { 0x00000000 : goto dscp_set_cs0, 0x00000001 : goto dscp_set_le, 0x00000008 : goto dscp_set_cs1, 0x0000000a : goto dscp_set_cs0, 0x0000000c : goto dscp_set_cs0,
-			     0x0000000e : goto dscp_set_cs0, 0x00000010 : goto dscp_set_cs0, 0x00000012 : goto dscp_set_cs3, 0x00000014 : goto dscp_set_cs3, 0x00000016 : goto dscp_set_cs3,
-			     0x00000018 : goto dscp_set_cs4, 0x0000001a : goto dscp_set_cs4, 0x0000001c : goto dscp_set_cs4, 0x0000001e : goto dscp_set_cs4, 0x00000020 : goto dscp_set_cs4,
-			     0x00000022 : goto dscp_set_cs4, 0x00000024 : goto dscp_set_cs4, 0x00000026 : goto dscp_set_cs4, 0x00000028 : goto dscp_set_cs5, 0x0000002c : goto dscp_set_cs6,
-			     0x0000002e : goto dscp_set_cs6, 0x00000030 : goto dscp_set_cs7, 0x00000038 : goto dscp_set_cs7 }
+	chain pbr_prerouting {
 	}
 
-	map dscp_ct {
-		type dscp : verdict
-		elements = { cs0 : goto ct_set_cs0,
-			     0x01 : goto ct_set_le,
-			     cs1 : goto ct_set_cs1,
-			     af11 : goto ct_set_af11,
-			     af12 : goto ct_set_af12,
-			     af13 : goto ct_set_af13,
-			     cs2 : goto ct_set_cs2,
-			     af21 : goto ct_set_af21,
-			     af22 : goto ct_set_af22,
-			     af23 : goto ct_set_af23,
-			     cs3 : goto ct_set_cs3,
-			     af31 : goto ct_set_af31,
-			     af32 : goto ct_set_af32,
-			     af33 : goto ct_set_af33,
-			     cs4 : goto ct_set_cs4,
-			     af41 : goto ct_set_af41,
-			     af42 : goto ct_set_af42,
-			     af43 : goto ct_set_af43,
-			     cs5 : goto ct_set_cs5,
-			     0x2c : goto ct_set_va,
-			     ef : goto ct_set_ef,
-			     cs6 : goto ct_set_cs6,
-			     cs7 : goto ct_set_cs7 }
-	}
-
-	set xcloud {
-		type ipv4_addr
-		flags interval
-		auto-merge
-		elements = { 13.104.0.0/14 }
-	}
-
-	set GeForceNOWIPv4 {
-		type ipv4_addr
-		flags interval
-		auto-merge
-		elements = { 80.84.160.0/20 }
-	}
-
-	chain dscp_set_cs0 {
-		ip dscp set cs0
-	}
-
-	chain dscp_set_le {
-		ip dscp set 0x01
-	}
-
-	chain dscp_set_cs1 {
-		ip dscp set cs1
-	}
-
-	chain dscp_set_af11 {
-		ip dscp set af11
-	}
-
-	chain dscp_set_af12 {
-		ip dscp set af12
-	}
-
-	chain dscp_set_af13 {
-		ip dscp set af13
-	}
-
-	chain dscp_set_cs2 {
-		ip dscp set cs2
-	}
-
-	chain dscp_set_af21 {
-		ip dscp set af21
-	}
-
-	chain dscp_set_af22 {
-		ip dscp set af22
-	}
-
-	chain dscp_set_af23 {
-		ip dscp set af23
-	}
-
-	chain dscp_set_cs3 {
-		ip dscp set cs3
-	}
-
-	chain dscp_set_af31 {
-		ip dscp set af31
-	}
-
-	chain dscp_set_af32 {
-		ip dscp set af32
-	}
-
-	chain dscp_set_af33 {
-		ip dscp set af33
-	}
-
-	chain dscp_set_cs4 {
-		ip dscp set cs4
-	}
-
-	chain dscp_set_af41 {
-		ip dscp set af41
-	}
-
-	chain dscp_set_af42 {
-		ip dscp set af42
-	}
-
-	chain dscp_set_af43 {
-		ip dscp set af43
-	}
-
-	chain dscp_set_cs5 {
-		ip dscp set cs5
-	}
-
-	chain dscp_set_va {
-		ip dscp set 0x2c
-	}
-
-	chain dscp_set_ef {
-		ip dscp set ef
-	}
-
-	chain dscp_set_cs6 {
-		ip dscp set cs6
-	}
-
-	chain dscp_set_cs7 {
-		ip dscp set cs7
-	}
-
-	chain ct_set_cs0 {
-		ct mark set ct mark & 0xffffff40 | 0x00000040
-	}
-
-	chain ct_set_le {
-		ct mark set ct mark & 0xffffff01 | 0x00000001
-	}
-
-	chain ct_set_cs1 {
-		ct mark set ct mark & 0xffffff08 | 0x00000008
-	}
-
-	chain ct_set_af11 {
-		ct mark set ct mark & 0xffffff0a | 0x0000000a
-	}
-
-	chain ct_set_af12 {
-		ct mark set ct mark & 0xffffff0c | 0x0000000c
-	}
-
-	chain ct_set_af13 {
-		ct mark set ct mark & 0xffffff0e | 0x0000000e
-	}
-
-	chain ct_set_cs2 {
-		ct mark set ct mark & 0xffffff10 | 0x00000010
-	}
-
-	chain ct_set_af21 {
-		ct mark set ct mark & 0xffffff12 | 0x00000012
-	}
-
-	chain ct_set_af22 {
-		ct mark set ct mark & 0xffffff14 | 0x00000014
-	}
-
-	chain ct_set_af23 {
-		ct mark set ct mark & 0xffffff16 | 0x00000016
-	}
-
-	chain ct_set_cs3 {
-		ct mark set ct mark & 0xffffff18 | 0x00000018
-	}
-
-	chain ct_set_af31 {
-		ct mark set ct mark & 0xffffff1a | 0x0000001a
-	}
-
-	chain ct_set_af32 {
-		ct mark set ct mark & 0xffffff1c | 0x0000001c
-	}
-
-	chain ct_set_af33 {
-		ct mark set ct mark & 0xffffff1e | 0x0000001e
-	}
-
-	chain ct_set_cs4 {
-		ct mark set ct mark & 0xffffff20 | 0x00000020
-	}
-
-	chain ct_set_af41 {
-		ct mark set ct mark & 0xffffff22 | 0x00000022
-	}
-
-	chain ct_set_af42 {
-		ct mark set ct mark & 0xffffff24 | 0x00000024
-	}
-
-	chain ct_set_af43 {
-		ct mark set ct mark & 0xffffff26 | 0x00000026
-	}
-
-	chain ct_set_cs5 {
-		ct mark set ct mark & 0xffffff28 | 0x00000028
-	}
-
-	chain ct_set_va {
-		ct mark set ct mark & 0xffffff2c | 0x0000002c
-	}
-
-	chain ct_set_ef {
-		ct mark set ct mark & 0xffffff2e | 0x0000002e
-	}
-
-	chain ct_set_cs6 {
-		ct mark set ct mark & 0xffffff30 | 0x00000030
-	}
-
-	chain ct_set_cs7 {
-		ct mark set ct mark & 0xffffff38 | 0x00000038
-	}
-
-	chain input {
-		type filter hook input priority mangle + 2; policy accept;
-		iifname "lo" return
-		ct mark & 0x000000ff == 0x00000000 ct direction original jump static_classify
-		ct mark & 0x00000080 == 0x00000080 jump dynamic_classify
-	}
-
-	chain postrouting {
-		type filter hook postrouting priority mangle + 2; policy accept;
-		oifname "lo" return
-		ct mark & 0x000000ff == 0x00000000 ct direction original jump static_classify
-		ct mark & 0x00000080 == 0x00000080 jump dynamic_classify
-		oifname { "br-lan", "br-swlan", "eth2" } ct mark & 0x0000003f vmap @ct_wmm
-		ct mark & 0x0000003f vmap @ct_dscp
-	}
-
-	chain static_classify {
-		ip daddr 88.82.11.0/24 udp sport 4500 udp dport 4500 counter packets 0 bytes 0 goto ct_set_ef comment "Vodafone UK WiFiCall ESP"
-		udp dport 3478 counter packets 0 bytes 0 goto ct_set_af41 comment "STUN various"
-		meta l4proto udp ip daddr 95.172.238.85 counter packets 0 bytes 0 goto ct_set_ef comment "Voipify VoIP"
-		udp dport != { 80, 443 } ip saddr 192.168.1.100 counter packets 0 bytes 0 goto ct_set_cs4 comment "Game Console non-HTTP"
-		meta l4proto icmp counter packets 0 bytes 0 goto ct_set_cs5 comment "ICMP"
-		ip daddr 17.0.0.0/8 th sport { 16384-16387, 16393-16402 } counter packets 0 bytes 0 goto ct_set_af41 comment "Apple FaceTime"
-		meta l4proto udp ip daddr { 66.22.196.0/22, 66.22.204.0/22, 66.22.246.0/24 } counter packets 0 bytes 0 goto ct_set_ef comment "Discord VoIP"
-		ip daddr { 13.107.64.0/18, 52.112.0.0/14, 52.122.0.0/15 } udp dport 3478-3481 udp sport 50040-50059 counter packets 0 bytes 0 goto ct_set_af21 comment "Microsoft Teams sharing"
-		ip daddr { 13.107.64.0/18, 52.112.0.0/14, 52.122.0.0/15 } udp dport 3478-3481 udp sport 50020-50039 counter packets 0 bytes 0 goto ct_set_af41 comment "Microsoft Teams video"
-		ip daddr { 13.107.64.0/18, 52.112.0.0/14, 52.122.0.0/15 } udp dport 3478-3481 udp sport 50000-50019 counter packets 0 bytes 0 goto ct_set_ef comment "Microsoft Teams voice"
-		ip daddr @GeForceNOWIPv4 udp sport 49003-49006 counter packets 0 bytes 0 goto ct_set_af41 comment "NVIDIA GFN"
-		ip daddr @xcloud udp dport { 1000-1150, 9002 } counter packets 0 bytes 0 goto ct_set_af41 comment "Xbox Cloud Gaming"
-		tcp dport 22 counter packets 0 bytes 0 goto ct_set_cs2 comment "SSH"
-		udp dport 123 counter packets 0 bytes 0 goto ct_set_cs5 comment "NTP"
-		udp dport { 67, 68 } counter packets 0 bytes 0 goto ct_set_cs5 comment "BOOTP/DHCP"
-		meta l4proto { tcp, udp } ip daddr { 1.0.0.1, 1.1.1.1, 8.8.4.4, 8.8.8.8, 9.9.9.9, 9.9.9.11, 94.140.14.0/24, 149.112.112.11, 149.112.112.112 } th dport 443 counter packets 0 bytes 0 goto ct_set_cs5 comment "DoH"
-		meta l4proto { tcp, udp } th dport { 53, 853, 5353 } counter packets 0 bytes 0 goto ct_set_cs5 comment "DNS"
-		ip dscp != { cs0, cs6, cs7 } iifname != { "eth0", "eth5" } (@nh,8,8 & 0xfc) >> 2 vmap @dscp_ct
-		meta l4proto != { tcp, udp } goto ct_set_cs0
-		ct mark set ct mark & 0xffffff80 | 0x00000080
-	}
-
-	chain dynamic_classify {
-		ct status & seen-reply != seen-reply return
-		ct direction reply goto dynamic_classify_reply
-		ip saddr . th sport . meta l4proto @threaded_clients goto threaded_client
-		ip saddr . ip daddr & 255.255.255.0 . th dport . meta l4proto @threaded_services goto threaded_service
-	}
-
-	chain dynamic_classify_reply {
-		ct reply packets 1 jump established_connection
-		ip daddr . th dport . meta l4proto @threaded_clients goto threaded_client_reply
-		ip daddr . ip saddr & 255.255.255.0 . th sport . meta l4proto @threaded_services goto threaded_service_reply
-	}
-
-	chain established_connection {
-		meter tc_detect size 65535 { ip daddr . th dport . meta l4proto timeout 5s limit rate over 9/minute } add @threaded_clients { ip daddr . th dport . meta l4proto timeout 30s }
-		meter ts_detect size 65535 { ip daddr . ip saddr & 255.255.255.0 . th sport . meta l4proto timeout 5s limit rate over 2/minute } add @threaded_services { ip daddr . ip saddr & 255.255.255.0 . th sport . meta l4proto timeout 30s }
-	}
-
-	chain threaded_client {
-		meter tc_orig_bulk size 65535 { ip saddr . th sport . meta l4proto timeout 5m limit rate over 9999 bytes/hour } update @threaded_clients { ip saddr . th sport . meta l4proto timeout 5m } goto ct_set_le
-	}
-
-	chain threaded_client_reply {
-		meter tc_reply_bulk size 65535 { ip daddr . th dport . meta l4proto timeout 5m limit rate over 9999 bytes/hour } update @threaded_clients { ip daddr . th dport . meta l4proto timeout 5m } goto ct_set_le
-	}
-
-	chain threaded_service {
-		ct original bytes < 1000000 return
-		update @threaded_services { ip saddr . ip daddr & 255.255.255.0 . th dport . meta l4proto timeout 5m }
-		goto ct_set_af13
-	}
-
-	chain threaded_service_reply {
-		ct reply bytes < 1000000 return
-		update @threaded_services { ip daddr . ip saddr & 255.255.255.0 . th sport . meta l4proto timeout 5m }
-		goto ct_set_af13
+	chain pbr_postrouting {
 	}
 }
