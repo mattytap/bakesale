@@ -44,6 +44,14 @@ table inet fw4 {
 		l3proto inet
 	}
 
+	set bad_subnets {
+		type ipv4_addr
+		flags interval
+		auto-merge
+		comment "gleaned from ips.nft"
+		elements = { 77.90.185.0/24, 167.94.144.0/23 }
+	}
+
 	set BBCSounds {
 		type ipv4_addr
 		flags interval
@@ -67,55 +75,75 @@ table inet fw4 {
 		size 65535
 		flags dynamic,timeout
 		counter
-		timeout 1d
-		comment "List of IPs that are persistently dropped for malicious activity."
-		elements = { 79.124.62.82 counter packets 2 bytes 88 timeout 1d expires 23h56m20s560ms, 89.248.163.104 counter packets 3 bytes 132 timeout 1d expires 23h57m10s890ms,
-			     110.35.224.69 counter packets 2 bytes 88 timeout 1d expires 23h55m32s650ms, 162.142.125.83 counter packets 2 bytes 88 timeout 1d expires 23h54m30s740ms,
-			     205.210.31.129 counter packets 2 bytes 88 timeout 1d expires 23h54m15s700ms }
+		timeout 7d
+		comment "IPs that are persistently being dropped for malicious activity."
 	}
 
-	set dropped_packets {
+	set banned_subnets {
+		type ipv4_addr
+		size 65535
+		flags interval
+		counter
+		comment "Subnets that are deemed by me to undertake malicious activity. manually added"
+		elements = { 77.90.185.0/24 counter packets 0 bytes 0, 167.94.144.0/23 counter packets 0 bytes 0 }
+	}
+
+	set banned_ports {
+		type inet_service
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 7d
+		comment "Ports that NOBODY should be using on the Interweb."
+		elements = { 21 counter packets 0 bytes 0 expires 6d23h59m48s730ms, 22 counter packets 0 bytes 0 expires 6d23h59m48s730ms, 23 counter packets 0 bytes 0 expires 6d23h59m48s730ms, 445 counter packets 0 bytes 0 expires 6d23h59m48s730ms, 3389 counter packets 0 bytes 0 expires 6d23h59m48s730ms }
+	}
+
+	set dropped_ips {
 		type ipv4_addr
 		size 65535
 		flags dynamic,timeout
 		counter
-		timeout 1h
+		timeout 1d
 		comment "Accumulates IPs from packets that are dropped."
-		elements = { 23.148.145.204 counter packets 1 bytes 44 timeout 1h expires 56m8s650ms, 35.203.210.87 counter packets 1 bytes 44 timeout 1h expires 59m48s20ms,
-			     35.203.210.189 counter packets 1 bytes 44 timeout 1h expires 55m15s690ms, 36.110.228.254 counter packets 1 bytes 44 timeout 1h expires 56m43s40ms,
-			     59.126.146.2 counter packets 1 bytes 44 timeout 1h expires 58m4s970ms, 64.62.197.167 counter packets 1 bytes 44 timeout 1h expires 58m38s120ms,
-			     67.205.131.196 counter packets 1 bytes 44 timeout 1h expires 56m4s970ms, 76.109.48.101 counter packets 1 bytes 60 timeout 1h expires 56m21s600ms,
-			     77.90.185.19 counter packets 1 bytes 44 timeout 1h expires 54m17s270ms, 77.90.185.172 counter packets 1 bytes 44 timeout 1h expires 55m48s,
-			     77.90.185.175 counter packets 1 bytes 44 timeout 1h expires 56m54s240ms, 77.90.185.202 counter packets 1 bytes 44 timeout 1h expires 57m27s560ms,
-			     79.124.58.130 counter packets 1 bytes 44 timeout 1h expires 53m31s750ms, 79.124.62.82 counter packets 2 bytes 88 timeout 1h expires 56m6s890ms,
-			     80.66.83.132 counter packets 1 bytes 44 timeout 1h expires 54m29s280ms, 89.248.163.104 counter packets 3 bytes 132 timeout 1h expires 53m29s570ms,
-			     89.248.168.42 counter packets 1 bytes 44 timeout 1h expires 55m29s990ms, 94.102.61.3 counter packets 1 bytes 44 timeout 1h expires 55m14s630ms,
-			     95.214.55.244 counter packets 1 bytes 44 timeout 1h expires 55m47s40ms, 103.56.61.139 counter packets 1 bytes 68 timeout 1h expires 54m34s730ms,
-			     109.205.213.18 counter packets 1 bytes 44 timeout 1h expires 56m46s570ms, 110.35.224.69 counter packets 2 bytes 88 timeout 1h expires 54m35s860ms,
-			     131.159.24.205 counter packets 1 bytes 64 timeout 1h expires 54m14s40ms, 137.184.183.61 counter packets 1 bytes 44 timeout 1h expires 56m14s240ms,
-			     143.198.109.156 counter packets 1 bytes 44 timeout 1h expires 55m48s, 147.78.47.67 counter packets 1 bytes 44 timeout 1h expires 56m38s200ms,
-			     162.142.125.83 counter packets 2 bytes 92 timeout 1h expires 54m21s720ms, 162.216.149.19 counter packets 1 bytes 44 timeout 1h expires 54m16s100ms,
-			     162.216.149.92 counter packets 1 bytes 44 timeout 1h expires 58m48s880ms, 162.216.149.164 counter packets 1 bytes 44 timeout 1h expires 57m2s140ms,
-			     162.216.150.52 counter packets 1 bytes 44 timeout 1h expires 54m25s760ms, 162.216.150.139 counter packets 1 bytes 44 timeout 1h expires 58m3s270ms,
-			     162.216.150.189 counter packets 1 bytes 44 timeout 1h expires 55m40s640ms, 167.94.138.149 counter packets 1 bytes 44 timeout 1h expires 59m1s280ms,
-			     167.94.145.89 counter packets 1 bytes 44 timeout 1h expires 55m23s680ms, 176.111.174.89 counter packets 1 bytes 44 timeout 1h expires 55m17s920ms,
-			     176.111.174.105 counter packets 1 bytes 44 timeout 1h expires 57m320ms, 179.43.163.130 counter packets 1 bytes 44 timeout 1h expires 54m14s260ms,
-			     192.241.207.79 counter packets 1 bytes 44 timeout 1h expires 56m56s540ms, 194.26.135.248 counter packets 1 bytes 44 timeout 1h expires 56m17s120ms,
-			     195.162.70.5 counter packets 1 bytes 44 timeout 1h expires 54m7s20ms, 198.199.101.111 counter packets 1 bytes 44 timeout 1h expires 58m11s740ms,
-			     198.235.24.237 counter packets 1 bytes 44 timeout 1h expires 54m26s400ms, 205.210.31.129 counter packets 2 bytes 88 timeout 1h expires 54m15s690ms,
-			     205.210.31.156 counter packets 1 bytes 44 timeout 1h expires 57m6s580ms }
+	}
+
+	set dropped_ports {
+		type inet_service
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 1d
+		comment "Accumulates Ports from packets that are dropped."
+	}
+
+	set dropped_packets {
+		type ipv4_addr . inet_service
+		size 65535
+		flags dynamic,timeout
+		counter
+		timeout 1d
+		comment "Accumulates TCP Connections from packets that are dropped."
 	}
 
 	chain drop_from_wan {
+		ip saddr @banned_subnets counter packets 0 bytes 0 drop comment "dont bother logging banned traffic. (Firewall still provides SYN Flood protection)"
+		tcp dport @banned_ports counter packets 0 bytes 0 drop comment "dont bother logging banned traffic. (Firewall still provides SYN Flood protection)"
 		jump track_dropped_packets
 		jump log_dropped_packets
-		counter packets 51 bytes 2308 drop comment "Preemptive drop to avert syslog flood."
+		counter packets 0 bytes 0 drop comment "Preemptive drop to avert syslog flood."
 		meta nfproto ipv4 iifname { "eth0", "eth5" } counter packets 0 bytes 0 log prefix "drop wan in: " drop comment "!fw4: drop wan IPv4 traffic"
 	}
 
 	chain track_dropped_packets {
-		ip saddr @dropped_packets goto track_bad_ips comment "Redirect to track_bad_ips, bypassing subsequent rules."
-		counter packets 45 bytes 2044 update @dropped_packets { ip saddr } comment "Add IP to @dropped_packets and update counters"
+		counter packets 0 bytes 0 update @dropped_ports { tcp dport } comment "Add IP to @dropped_ports and update counters"
+		counter packets 0 bytes 0 update @dropped_packets { ip saddr . tcp dport } comment "Add IP to @dropped_ports and update counters"
+		ip saddr @dropped_ips goto track_bad_ips comment "Redirect to track_bad_ips, bypassing subsequent rules."
+		counter packets 0 bytes 0 update @dropped_ips { ip saddr } comment "Add IP to @dropped_ips and update counters"
+	}
+
+	chain log_dropped_packets {
+		limit rate 5/minute return comment "Dont log below threshold"
+		limit rate 12/hour counter packets 0 bytes 0 log prefix "Drop rate has exceeded 5/minute for last 5 minutes: " level alert comment "Log if wan traffic exceeds 5/minute for the last 5 minutes"
 	}
 
 	chain track_bad_ips {
@@ -124,14 +152,9 @@ table inet fw4 {
 		jump log_bad_ips
 	}
 
-	chain log_dropped_packets {
-		limit rate 300/hour return comment "Dont log below threshold"
-		limit rate 12/hour counter packets 5 bytes 220 log prefix "Drop rate has exceeded 5/minute for last 5 minutes: " level alert comment "Log if wan traffic exceeds 300/hour for the last 5 minutes"
-	}
-
 	chain log_bad_ips {
-		limit rate 90/hour return comment "Dont log below threshold"
-		limit rate 12/minute counter packets 0 bytes 0 log prefix "Bad IP Traffic: " level alert comment "Log if traffic from bad IPs exceeds 90/hour for the last 5 seconds"
+		limit rate 1/minute return comment "Dont log below threshold"
+		limit rate 12/hour counter packets 0 bytes 0 log prefix "Bad IP Traffic: " level alert comment "Log if traffic from bad IPs exceeds 1/minute for the last 5 minutes"
 	}
 
 	chain input {
