@@ -2,7 +2,7 @@
 
 # Script: /etc/init.d/bakesale
 
-START=21
+START=80
 USE_PROCD=1
 
 DSCP_SERVICE_STATUS="/etc/init.d/bakesale"
