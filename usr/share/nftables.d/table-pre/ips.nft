@@ -1,34 +1,40 @@
+set packet_level {
+	type ether_addr
+	flags dynamic, timeout
+	timeout 500ms
+}
+
 chain drop_from_wan {
-	jump log_dropped_packets
-	counter drop comment "Drop before fw4 to prevent syslog overflow."
+	counter jump log_dropped_packets
+	counter drop comment "Prevent syslog overflow, drop before fw4."
 }
 
 chain log_dropped_packets {
-	limit rate over 20/second counter goto log_20_per_sec comment "Ignore below 20/sec threshold."
-	limit rate over 2/second counter goto log_2_per_sec  comment "Ignore below 100/min threshold."
-	limit rate over 10/minute counter goto log_10_per_min comment "Ignore below 10/min threshold."
-	limit rate over 1/minute counter goto log_1_per_min  comment "Ignore below 1/min threshold."
+	counter limit rate over 240/minute jump log_critical_high comment "Critical: >240/min."
+	counter limit rate over 120/minute jump log_critical_medium comment "Critical: >120/min."
+	counter limit rate over 20/minute jump log_alert comment "Alert: >20/min."
+	counter return comment "Background rate consistently <20/min."
 }
 
-chain log_20_per_sec {
-	meta mark set 1200
-	limit rate 12/minute counter log prefix "Exceeded 20/sec: " level crit comment "Log if rate is exceeded."
-}
-
-chain log_2_per_sec {
-	meta mark == 1200 return
-	meta mark set 120
-	limit rate 1/minute counter log prefix "Exceeded 2/sec: " level alert comment "Log if rate is exceeded."
-}
-
-chain log_10_per_min {
-	meta mark == 1200 return
-	meta mark == 120 return
-	meta mark set 10
-	limit rate 6/hour counter log prefix "Exceeded 10/min: " level warn comment "Log if rate is exceeded."
-}
-
-chain log_1_per_min {
+chain log_critical_high {
 	meta mark != 0 return
-	limit rate 1/hour counter log prefix "Exceeded 1/min: " level info comment "Log if rate is exceeded."
+	meta mark set 240
+	update @packet_level { ether saddr } comment "Record log level"
+	counter limit rate 1/second log prefix "Exceeded 240/min: " level crit
+}
+
+chain log_critical_medium {
+	meta mark != 0 return
+	meta mark set 120
+	ether saddr @packet_level return comment "Prevent medium critical log during high critical periods"
+	update @packet_level { ether daddr } comment "Record log level"
+	counter limit rate 1/second log prefix "Exceeded 120/min: " level crit
+}
+
+chain log_alert {
+	meta mark != 0 return
+	meta mark set 20
+	ether saddr @packet_level return comment "Prevent alert log during critical periods"
+	ether daddr @packet_level return comment "Prevent alert log during critical periods"
+	counter limit rate 30/minute log prefix "Exceeded  20/min: " level alert
 }
