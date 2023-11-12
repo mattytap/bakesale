@@ -1,0 +1,31 @@
+#!/bin/sh /etc/rc.common
+
+# Script: /etc/init.d/nft-ruleset
+
+# Description: dumps ruleset for luci-statistics every 5 seconds.
+
+START=80
+USE_PROCD=1
+PIDFILE="/var/run/nft-ruleset.pid"
+
+start_service() {
+    procd_open_instance
+    procd_set_param command /bin/sh -c "
+    while true
+    do
+        /usr/sbin/nft -j list table inet fw4 | /usr/bin/jq '.nftables[].rule | select(.chain==\"drop_from_wan\" or .chain==\"syn_flood\")' > /tmp/nft-statistics.json
+        sleep 5
+    done & echo \$! > $PIDFILE"
+    procd_close_instance
+}
+
+stop_service() {
+    if [ -f "$PIDFILE" ]; then
+        kill -9 $(cat $PIDFILE) && rm -f $PIDFILE
+    fi
+}
+
+restart_service() {
+    stop_service
+    start_service
+}

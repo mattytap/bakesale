@@ -49,6 +49,7 @@ config device
 config device
 	option name 'eth5'
 	option ipv6 '0'
+	option mtu '1450'
 
 config device
 	option name 'sweth3'
@@ -75,6 +76,7 @@ config interface '0_wan'
 	option proto 'dhcp'
 	option delegate '0'
 	option metric '1023'
+	option peerdns '0'
 
 config interface '1_lan'
 	option device 'br-lan'
@@ -100,10 +102,9 @@ config interface '7_swlan'
 config interface 'tether'
 	option device 'eth5'
 	option proto 'dhcp'
-	option force_link '1'
-	option peerdns '0'
 	option delegate '0'
 	option metric '2047'
+	option peerdns '0'
 
 config interface 'WIN2LDN137'
 	option proto 'wireguard'

@@ -1,0 +1,9 @@
+chain drop_from_wan {
+	meta nfproto ipv4 iifname { "eth0", "eth5" } tcp flags syn / fin,syn,rst,ack counter drop comment "Drop wan IPv4 SYN packets, no syslog"
+    meta nfproto ipv4 iifname { "eth0", "eth5" } counter drop comment "Drop any remaining wan IPv4 packets, no syslog"
+}
+
+chain syn_flood {
+	limit rate 25/second burst 50 packets counter return comment "Rate-limit SYN packets, count"
+	counter drop comment "Drop excess SYN packets, count"
+}

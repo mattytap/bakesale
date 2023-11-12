@@ -3,8 +3,8 @@ config defaults
 	option input 'REJECT'
 	option output 'REJECT'
 	option forward 'REJECT'
-	option synflood_protect '1'
 	option drop_invalid '1'
+	option synflood_protect '1'
 
 config zone
 	option name 'lan'
@@ -26,7 +26,8 @@ config zone
 	option family 'ipv4'
 	list network '0_wan'
 	list network 'tether'
-	option input 'REJECT'
+	option input 'DROP'
+	option log '1'
 
 config forwarding
 	option src 'lan'
@@ -47,6 +48,7 @@ config zone
 	list network 'WIN2LDN92'
 	list network 'WIN2LDN122'
 	list network 'WIN2LDN137'
+	option log '1'
 
 config forwarding
 	option src 'lan'
@@ -96,13 +98,6 @@ config include 'miniupnpd'
 	option type 'script'
 	option path '/usr/share/miniupnpd/firewall.include'
 
-config ipset
-	option name 'BBCSounds'
-	option family 'ipv4'
-	list match 'dest_net'
-	list entry '212.58.0.0/16'
-	option counters '1'
-
 config include 'opennds'
 	option type 'script'
 	option path '/usr/lib/opennds/restart.sh'
@@ -111,4 +106,52 @@ config include 'pbr'
 	option fw4_compatible '1'
 	option type 'script'
 	option path '/usr/share/pbr/pbr.firewall.include'
+
+config ipset
+	option name 'BBCSounds'
+	option family 'ipv4'
+	list match 'dest_net'
+	list entry '2.19.112.0/20'
+	list entry '18.164.0.0/15'
+	list entry '18.172.0.0/15'
+	list entry '18.244.0.0/15'
+	list entry '23.72.0.0/13'
+	list entry '92.123.140.0/22'
+	list entry '104.86.110.0/23'
+	option counters '1'
+	option comment 'these are the main streams'
+
+config ipset
+	option name 'GlobalPlayer'
+	option family 'ipv4'
+	list match 'dest_net'
+	list entry '81.20.48.0/20'
+	option counters '1'
+
+config redirect 'adblock_lan53'
+	option name 'Adblock DNS (lan, 53)'
+	option src 'lan'
+	option proto 'tcp udp'
+	option src_dport '53'
+	option dest_port '53'
+	option target 'DNAT'
+	option family 'any'
+
+config redirect 'adblock_lan853'
+	option name 'Adblock DNS (lan, 853)'
+	option src 'lan'
+	option proto 'tcp udp'
+	option src_dport '853'
+	option dest_port '853'
+	option target 'DNAT'
+	option family 'any'
+
+config redirect 'adblock_lan5353'
+	option name 'Adblock DNS (lan, 5353)'
+	option src 'lan'
+	option proto 'tcp udp'
+	option src_dport '5353'
+	option dest_port '5353'
+	option target 'DNAT'
+	option family 'any'
 

@@ -16,6 +16,22 @@ config queue
 	option enabled '1'
 
 config queue
+	option interface 'eth5'
+	option qdisc 'cake'
+	option debug_logging '0'
+	option verbosity '5'
+	option qdisc_advanced '1'
+	option ingress_ecn 'ECN'
+	option squash_dscp '0'
+	option squash_ingress '0'
+	option egress_ecn 'NOECN'
+	option linklayer 'none'
+	option script 'bakesale.qos'
+	option download '2000'
+	option upload '6000'
+	option enabled '1'
+
+config queue
 	option interface '0_vpn'
 	option qdisc 'cake'
 	option debug_logging '0'
