@@ -1,7 +1,0 @@
-bakesale qos script
-- diffserv3 (optionally set diffserv4 in Dangerous Options)
-- WatchGuard + PBR two stage SQM
-- can be run alongside autorate (on the wan interface)
-- restores DSCP marks upon packet ingress from its conntrack mark.
-
-Requires the kmod-sched-ctinfo package.
