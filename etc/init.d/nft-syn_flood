@@ -13,7 +13,8 @@ start_service() {
     procd_set_param command /bin/sh -c "
     while true
     do
-        /usr/sbin/nft -j list table inet fw4 | /usr/bin/jq '.nftables[].rule | select(.chain==\"drop_from_wan\" or .chain==\"syn_flood\")' > /tmp/nft-statistics.json
+        /usr/sbin/nft -j list chain inet fw4 drop_from_wan > /tmp/nft-drop_from_wan.json
+        /usr/sbin/nft -j list chain inet fw4 syn_flood > /tmp/nft-syn_flood.json
         sleep 5
     done & echo \$! > $PIDFILE"
     procd_close_instance
