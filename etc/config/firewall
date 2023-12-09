@@ -98,15 +98,6 @@ config include 'miniupnpd'
 	option type 'script'
 	option path '/usr/share/miniupnpd/firewall.include'
 
-config include 'opennds'
-	option type 'script'
-	option path '/usr/lib/opennds/restart.sh'
-
-config include 'pbr'
-	option fw4_compatible '1'
-	option type 'script'
-	option path '/usr/share/pbr/pbr.firewall.include'
-
 config ipset
 	option name 'BBCSounds'
 	option family 'ipv4'
@@ -154,4 +145,8 @@ config redirect 'adblock_lan5353'
 	option dest_port '5353'
 	option target 'DNAT'
 	option family 'any'
+
+config include 'opennds'
+	option type 'script'
+	option path '/usr/lib/opennds/restart.sh'
 
