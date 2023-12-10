@@ -4,7 +4,31 @@ Bits and pieces related to OpenWrt deployments
 
 ## Installation
 
-Assuming that SQM is already installed and running, you will then need to install the following and then configure /etc/config/sqm to use the new cake_ct script:
+Instructions from DSCPClassify repo for convenience:
+
+```bash
+repo="https://raw.githubusercontent.com/mattytap/dscpclassify/mattytap"
+opkg update
+opkg install kmod-sched-ctinfo
+wget "$repo/usr/lib/sqm/autorate-ct.qos" -O "/usr/lib/sqm/autorate-ct.qos"
+wget "$repo/usr/lib/sqm/autorate-ct.qos.help" -O "/usr/lib/sqm/autorate-ct.qos.help"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos" -O "/usr/lib/sqm/layer_cake_ct.qos"
+wget "$repo/usr/lib/sqm/layer_cake_ct.qos.help" -O "/usr/lib/sqm/layer_cake_ct.qos.help"
+
+```
+
+Instructions from Cake-Autorate repo for convenience:
+
+```bash
+  wget "https://raw.githubusercontent.com/mattytap/dscpclassify/mattytap/usr/lib/sqm/autorate-ct.qos" -O "/usr/lib/sqm/autorate-ct.qos"
+  wget "https://raw.githubusercontent.com/mattytap/dscpclassify/mattytap/usr/lib/sqm/autorate-ct.qos.help" -O "/usr/lib/sqm/autorate-ct.qos.help"
+  wget "https://raw.githubusercontent.com/mattytap/cake-autorate/mattytap/setup.sh" -O "/tmp/cake-autorate_setup.sh"
+
+  sh /tmp/cake-autorate_setup.sh
+
+```
+
+Assuming that SQM is already installed and running, you will then need to install the following and then configure /etc/config/sqm to use the new autorate_ct script:
 
 ```bash
 repo="https://raw.githubusercontent.com/mattytap/bakesale/mattytap"
