@@ -1,6 +1,6 @@
 # BakeSale
 
-Bits and pieces related to OpenWrt running on a powerful PowerPC router/switch
+Bits and pieces related to OpenWrt deployments
 
 ## Installation
 
@@ -9,28 +9,25 @@ Assuming that SQM is already installed and running, you will then need to instal
 ```bash
 repo="https://raw.githubusercontent.com/mattytap/bakesale/mattytap"
 
-mkdir -p "/usr/lib/bakesale"
-mkdir -p "/usr/libexec/collectd"
+# Download files using uclient-fetch
+uclient-fetch -O "/usr/lib/bakesale" "$repo/usr/lib/bakesale/*"
+uclient-fetch -O "/usr/libexec/collectd" "$repo/usr/libexec/collectd/*"
+uclient-fetch -O "/etc/init.d" "$repo/etc/init.d/*"
+uclient-fetch -O "/usr/share/collectd" "$repo/usr/share/collectd/*"
+uclient-fetch -O "/usr/share/nftables.d/table-pre" "$repo/usr/share/nftables.d/table-pre/*"
+uclient-fetch -O "/www/luci-static/resources/statistics" "$repo/www/luci-static/resources/statistics/*"
+uclient-fetch -O "/www/luci-static/resources/statistics/rrdtool/definitions" "$repo/www/luci-static/resources/statistics/rrdtool/definitions/*"
 
-wget "$repo/usr/lib/bakesale/*" -P "/usr/lib/bakesale"
-wget "$repo/usr/libexec/collectd/*" -P "/usr/libexec/collectd"
-wget "$repo/etc/init.d/nft-syn_flood" -O "/etc/init.d"
-
-wget "$repo/usr/share/collectd/*" -P "/usr/share/collectd"
-wget "$repo/usr/share/nftables.d/table-pre/*" -P "/usr/share/nftables.d/table-pre"
-
-wget "$repo/www/luci-static/resources/statistics/rdtool.js" -O "/www/luci-static/resources/statistics"
-wget "$repo/www/luci-static/resources/statistics/rrdtool/definitions/*" -P "/www/luci-static/resources/statistics/rrdtool/definitions"
-
+# Set execute permissions
 chmod +x "/usr/lib/bakesale"/*
 chmod +x "/usr/libexec/collectd"/*
 chmod +x "/etc/init.d/nft-syn_flood"
 
+# Enable and start the service
 /etc/init.d/nft-syn_flood enable
 /etc/init.d/nft-syn_flood start
 
 ```
-
 
 ## Acknowledgements and Thanks
 
