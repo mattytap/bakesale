@@ -47,20 +47,16 @@ return baseclass.extend({
       totals_format: "%7.0lf",
       data: {
         types: ["autorate"],
-        sources: { autorate: ["12", "13a", "13", "14", "15", "16", "17", "18a", "18", "19", "20", "21"] },
+        sources: { autorate: ["12", "13", "15", "16", "17", "18", "20", "21"] },
         options: {
-          autorate__12: { title: "DL_OWD_BASELINE:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
-          autorate__13a: { title: "DL_OWD_EWMA_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
-          autorate__13: { title: "DL_OWD_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
-          autorate__14: { title: "DL_OWD_DELTA_EWMA_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/" },
-          autorate__15: { title: "DL_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
-          autorate__16: { title: "DL_ADJ_DELAY_THR:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
-          autorate__17: { title: "UL_OWD_BASELINE:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
-          autorate__18a: { title: "UL_OWD_EWMA_US:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
-          autorate__18: { title: "UL_OWD_US:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
-          autorate__19: { title: "UL_OWD_DELTA_EWMA_US:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/" },
-          autorate__20: { title: "UL_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
-          autorate__21: { title: "UL_ADJ_DELAY_THR:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
+          autorate__12: { color: "008080", title: "DL_OWD_BASELINE:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
+          autorate__13: { color: "009999", title: "DL_OWD_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
+          autorate__15: { color: "80CCCC", title: "DL_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
+          autorate__16: { color: "006666", title: "DL_ADJ_DELAY_THR:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
+          autorate__17: { color: "C2B280", title: "UL_OWD_BASELINE:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
+          autorate__18: { color: "D3C095", title: "UL_OWD_US:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
+          autorate__20: { color: "E1D4B0", title: "UL_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
+          autorate__21: { color: "A68F59", title: "UL_ADJ_DELAY_THR:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
         },
       },
     };
@@ -74,11 +70,10 @@ return baseclass.extend({
       totals_format: "%7.0lf",
       data: {
         types: ["autorate"],
-        sources: { autorate: ["12", "13", "14", "15", "16"] },
+        sources: { autorate: ["12", "13", "15", "16"] },
         options: {
           autorate__12: { title: "DL_OWD_BASELINE:", overlay: true, noavg: true, noarea: true },
           autorate__13: { title: "DL_OWD_US:", overlay: true, noavg: true, noarea: true },
-          autorate__14: { title: "DL_OWD_DELTA_EWMA_US:", overlay: true, noavg: true, noarea: true },
           autorate__15: { title: "DL_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true },
           autorate__16: { title: "DL_ADJ_DELAY_THR:", overlay: true, noavg: true, noarea: true },
         },
@@ -94,11 +89,10 @@ return baseclass.extend({
       totals_format: "%7.0lf",
       data: {
         types: ["autorate"],
-        sources: { autorate: ["17", "18", "19", "20", "21"] },
+        sources: { autorate: ["17", "18", "20", "21"] },
         options: {
           autorate__17: { title: "UL_OWD_BASELINE:", overlay: true, noavg: true, noarea: true, flip: true },
           autorate__18: { title: "UL_OWD_US:", overlay: true, noavg: true, noarea: true, flip: true },
-          autorate__19: { title: "UL_OWD_DELTA_EWMA_US:", overlay: true, noavg: true, noarea: true },
           autorate__20: { title: "UL_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true, flip: true },
           autorate__21: { title: "UL_ADJ_DELAY_THR:", overlay: true, noavg: true, noarea: true, flip: true },
         },
@@ -113,31 +107,20 @@ return baseclass.extend({
       totals_format: "%7.0lf",
       data: {
         types: ["autorate"],
-        sources: { autorate: ["11", "5", "6", "7", "8", "12", "13a", "13", "14", "15", "16", "17", "18a", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"] },
+        sources: { autorate: ["11", "5", "6", "12", "13", "15", "16", "17", "18", "20", "21", "28", "29", "30", "31"] },
         options: {
           autorate: { title: "Backlog:", overlay: true, color: "0000ff" },
           autorate__11: { title: "SEQUENCE:", overlay: true, noavg: true, noarea: true },
           autorate__5: { title: "DL_ACHIEVED_RATE_KBPS:", overlay: true, noavg: true, noarea: true },
           autorate__6: { title: "UL_ACHIEVED_RATE_KBPS:", overlay: true, noavg: true, noarea: true },
-          autorate__7: { title: "DL_LOAD_PERCENT:", overlay: true, noavg: true, noarea: true },
-          autorate__8: { title: "UL_LOAD_PERCENT:", overlay: true, noavg: true, noarea: true },
           autorate__12: { title: "DL_OWD_BASELINE:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
-          autorate__13a: { title: "DL_OWD_EWMA_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
           autorate__13: { title: "DL_OWD_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
-          autorate__14: { title: "DL_OWD_DELTA_EWMA_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/" },
           autorate__15: { title: "DL_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
           autorate__16: { title: "DL_ADJ_DELAY_THR:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/"  },
           autorate__17: { title: "UL_OWD_BASELINE:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
-          autorate__18a: { title: "UL_OWD_EWMA_US:", overlay: true, noavg: true, noarea: true, flip: true, transform_rpn: "1000,/"  },
-          autorate__19: { title: "UL_OWD_DELTA_EWMA_US:", overlay: true, noavg: true, noarea: true },
+          autorate__18: { title: "UL_OWD_US:", overlay: true, noavg: true, noarea: true, transform_rpn: "1000,/" },
           autorate__20: { title: "UL_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true },
           autorate__21: { title: "UL_ADJ_DELAY_THR:", overlay: true, noavg: true, noarea: true },
-          autorate__22: { title: "DL_SUM_DELAYS:", overlay: true, noavg: true, noarea: true },
-          autorate__23: { title: "DL_AVG_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true },
-          autorate__24: { title: "DL_ADJ_AVG_OWD_DELTA_THR_US:", overlay: true, noavg: true, noarea: true },
-          autorate__25: { title: "UL_SUM_DELAYS:", overlay: true, noavg: true, noarea: true },
-          autorate__26: { title: "UL_AVG_OWD_DELTA_US:", overlay: true, noavg: true, noarea: true },
-          autorate__27: { title: "UL_ADJ_AVG_OWD_DELTA_THR_US:", overlay: true, noavg: true, noarea: true },
           autorate__28: { title: "DL_LOAD_CONDITION:", overlay: true, noavg: true, noarea: true },
           autorate__29: { title: "UL_LOAD_CONDITION:", overlay: true, noavg: true, noarea: true },
           autorate__30: { title: "CAKE_DL_RATE_KBPS:", overlay: true, noavg: true, noarea: true },
@@ -145,7 +128,7 @@ return baseclass.extend({
         },
       },
     };
-    return [control,bandwidth,latency,dl_us,ul_us];
+    return [control,bandwidth,latency];
   },
 });
 
