@@ -8,6 +8,26 @@ Instructions from DSCPClassify repo for convenience:
 
 ```bash
 repo="https://raw.githubusercontent.com/mattytap/dscpclassify/mattytap"
+mkdir -p "/etc/dscpclassify.d"
+if [ ! -f "/etc/config/dscpclassify" ]; then
+    wget "$repo/etc/config/dscpclassify" -O "/etc/config/dscpclassify"
+else
+    wget "$repo/etc/config/dscpclassify" -O "/etc/config/dscpclassify_git"
+fi
+wget "$repo/etc/dscpclassify.d/main.nft" -O "/etc/dscpclassify.d/main.nft"
+wget "$repo/etc/dscpclassify.d/maps.nft" -O "/etc/dscpclassify.d/maps.nft"
+wget "$repo/etc/dscpclassify.d/verdicts.nft" -O "/etc/dscpclassify.d/verdicts.nft"
+wget "$repo/etc/hotplug.d/iface/21-dscpclassify" -O "/etc/hotplug.d/iface/21-dscpclassify"
+wget "$repo/etc/init.d/dscpclassify" -O "/etc/init.d/dscpclassify"
+chmod +x "/etc/init.d/dscpclassify"
+/etc/init.d/dscpclassify enable
+/etc/init.d/dscpclassify start
+```
+
+Instructions from DSCPClassify repo for use with Cake-Autorate:
+
+```bash
+repo="https://raw.githubusercontent.com/mattytap/dscpclassify/mattytap"
 opkg update
 opkg install kmod-sched-ctinfo
 wget "$repo/usr/lib/sqm/autorate-ct.qos" -O "/usr/lib/sqm/autorate-ct.qos"
