@@ -11,8 +11,8 @@ config queue
 	option egress_ecn 'NOECN'
 	option linklayer 'none'
 	option script 'autorate-ct.qos'
-	option download '80000'
-	option upload '40000'
+	option download '85000'
+	option upload '20000'
 	option enabled '1'
 
 config queue
@@ -43,7 +43,7 @@ config queue
 	option egress_ecn 'NOECN'
 	option linklayer 'none'
 	option script 'autorate-ct.qos'
-	option download '80000'
-	option upload '60000'
+	option download '85000'
+	option upload '50000'
 	option enabled '1'
 

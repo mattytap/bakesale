@@ -15,15 +15,15 @@ config device
 	list ports 'eth1'
 
 config device
-	option name 'br-swlan'
 	option type 'bridge'
-	option ipv6 '0'
-	option bridge_empty '1'
+	option name 'br-swlan'
 	list ports 'sweth3'
 	list ports 'sweth4'
 	list ports 'sweth5'
 	list ports 'sweth6'
 	list ports 'sweth7'
+	option bridge_empty '1'
+	option ipv6 '0'
 
 config device
 	option name 'eth0'
@@ -74,9 +74,12 @@ config device
 config interface '0_wan'
 	option device 'eth0'
 	option proto 'dhcp'
+	option peerdns '0'
+	list dns '1.0.0.1'
+	list dns '1.1.1.1'
+	list dns '8.8.4.4'
 	option delegate '0'
 	option metric '1023'
-	option peerdns '0'
 
 config interface '1_lan'
 	option device 'br-lan'
@@ -93,11 +96,11 @@ config interface '2_eth2'
 	option delegate '0'
 
 config interface '7_swlan'
-	option device 'br-swlan'
 	option proto 'static'
+	option device 'br-swlan'
 	option ipaddr '192.168.240.1'
 	option netmask '255.255.255.0'
-	option delegate '0'
+option delegate '0'
 
 config interface 'tether'
 	option device 'eth5'
@@ -274,12 +277,6 @@ config device
 	option ipv6 '0'
 	option mtu '1300'
 
-config device
-	option name 'wg-pbr-ingress'
-	option mtu '1300'
-	option txqueuelen '1000'
-	option macaddr 'CA:6D:CE:E0:F7:59'
-
 config route
 	option interface '0_wan'
 	option target '81.20.48.0/20'
@@ -319,4 +316,8 @@ config route
 config route
 	option interface '0_wan'
 	option target '104.86.110.0/23'
+
+config device
+	option name 'ifb-ingress'
+	option ipv6 '0'
 

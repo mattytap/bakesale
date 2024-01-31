@@ -42,12 +42,12 @@ config domain
 	option ip '192.168.240.15'
 
 config domain
-	option ip '192.168.240.17'
-	option name 'TL-WPA17-front'
-
-config domain
 	option name 'TL-WPA16-kitchen'
 	option ip '192.168.240.16'
+
+config domain
+	option ip '192.168.240.17'
+	option name 'TL-WPA17-front'
 
 config domain
 	option ip '192.168.240.18'
@@ -100,9 +100,10 @@ config host
 	option ip '192.168.240.8'
 
 config host
-	option name 'Living-room'
+	option name 'AppleTV'
 	option mac '34:FD:6A:03:43:81'
 	option ip '192.168.240.9'
+	option dns '1'
 
 config host
 	option name 'openmiko'

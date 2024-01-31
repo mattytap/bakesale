@@ -101,9 +101,8 @@ while true; do
 
         if ((field13 > 3 * median13)); then
             dodgy_records["$reflector"]+=" $index"
-        else
-            ip_arrays["$reflector"]+=" $index"
         fi
+        ip_arrays["$reflector"]+=" $index"
     done
 
     #debug_output_array "ip_arrays"
@@ -173,10 +172,22 @@ while true; do
         line=${line%:}
         #echo $line
 
-        # Output the final line
-        echo "PUTVAL \"$HOSTNAME/autorate-$reflector/autorate\" interval=$INTERVAL N:$line"
-        if [ "$counter" -eq "$selected_iteration" ]; then
-            echo "PUTVAL \"$HOSTNAME/autorate-all/autorate\" interval=$INTERVAL N:$line"
+	    # Determine if field13 is an outlier
+	    is_outlier=0  # Assume it's not an outlier by default
+	    if [[ -n "${dodgy_records[$reflector]}" ]]; then
+	        read -r -a dodgy_indexes <<<"${dodgy_records[$reflector]}"
+	        for dodgy_index in "${dodgy_indexes[@]}"; do
+	            if [[ "$dodgy_index" -eq "$index" ]]; then
+	                is_outlier=1  # It's an outlier
+	                break
+	            fi
+	        done
+	    fi
+
+	    # Output the final line
+	    echo "PUTVAL \"$HOSTNAME/autorate-$reflector/autorate\" interval=$INTERVAL N:$line"
+	    if [[ "$counter" -eq "$selected_iteration" ]] && [[ "$is_outlier" -eq 0 ]]; then
+	        echo "PUTVAL \"$HOSTNAME/autorate-0/autorate\" interval=$INTERVAL N:$line"
         fi
 
         # Increment the counter

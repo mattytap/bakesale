@@ -3,8 +3,8 @@ config defaults
 	option input 'REJECT'
 	option output 'REJECT'
 	option forward 'REJECT'
-	option drop_invalid '1'
 	option synflood_protect '1'
+	option drop_invalid '1'
 
 config zone
 	option name 'lan'
@@ -12,13 +12,14 @@ config zone
 	option output 'ACCEPT'
 	option forward 'ACCEPT'
 	option family 'ipv4'
-	option log '1'
 	list network '1_lan'
 	list network '2_eth2'
 	list network '7_swlan'
+	option log '1'
 
 config zone
 	option name 'wan'
+	option input 'DROP'
 	option output 'ACCEPT'
 	option forward 'REJECT'
 	option masq '1'
@@ -26,7 +27,6 @@ config zone
 	option family 'ipv4'
 	list network '0_wan'
 	list network 'tether'
-	option input 'DROP'
 	option log '1'
 
 config forwarding
@@ -146,7 +146,30 @@ config redirect 'adblock_lan5353'
 	option target 'DNAT'
 	option family 'any'
 
-config include 'opennds'
-	option type 'script'
-	option path '/usr/lib/opennds/restart.sh'
+config redirect 'adblock_vpn53'
+	option name 'Adblock DNS (vpn, 53)'
+	option src 'vpn'
+	option proto 'tcp udp'
+	option src_dport '53'
+	option dest_port '53'
+	option target 'DNAT'
+	option family 'any'
+
+config redirect 'adblock_vpn853'
+	option name 'Adblock DNS (vpn, 853)'
+	option src 'vpn'
+	option proto 'tcp udp'
+	option src_dport '853'
+	option dest_port '853'
+	option target 'DNAT'
+	option family 'any'
+
+config redirect 'adblock_vpn5353'
+	option name 'Adblock DNS (vpn, 5353)'
+	option src 'vpn'
+	option proto 'tcp udp'
+	option src_dport '5353'
+	option dest_port '5353'
+	option target 'DNAT'
+	option family 'any'
 
