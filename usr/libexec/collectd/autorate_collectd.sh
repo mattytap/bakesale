@@ -2,7 +2,7 @@
 
 logfile="/var/log/cake-autorate.primary.log"
 records_per_batch=55
-num_fields=31
+num_fields=32
 
 declare -a records
 declare -a trimmed_records
@@ -133,7 +133,7 @@ while true; do
         count_array=()
 
         # Initialize sum and count arrays for the fields of interest
-        for field in 11 5 6 12 13 15 16 17 18 20 21 28 29 30 31; do
+        for field in 11 5 6 12 13 15 16 17 18 20 21 28 29 30 31 32; do
             sum_array[field]=0
             count_array[field]=0
         done
@@ -144,12 +144,12 @@ while true; do
             fields=($(echo "$record" | awk -F'; ' '{
             $28=(substr($28,length($28)-2)=="_bb")?10:0  # Adjusted index for $28
             $29=(substr($29,length($29)-2)=="_bb")?10:0  # Adjusted index for $29
-            print $11, $5,$6,$12,$13,$15,$16,$17,$18,$20,$21,$28,$29,$30,$31
+            print $11, $5,$6,$12,$13,$15,$16,$17,$18,$20,$21,$28,$29,$30,$31,$32
             }'))
             #debug_output_array "fields"
 
             index=0
-            for field in 11 5 6 12 13 15 16 17 18 20 21 28 29 30 31; do
+            for field in 11 5 6 12 13 15 16 17 18 20 21 28 29 30 31 32; do
                 if [[ "${fields[index]}" =~ ^[0-9]+$ ]]; then
                     ((sum_array[field] += "${fields[index]}"))
                     ((count_array[field]++))
@@ -159,7 +159,7 @@ while true; do
         done
 
         line=""
-        for field in 11 5 6 12 13 15 16 17 18 20 21 28 29 30 31; do
+        for field in 11 5 6 12 13 15 16 17 18 20 21 28 29 30 31 32; do
             if [ "${count_array[field]}" -gt 0 ]; then
                 average=$((100 * sum_array[field] / count_array[field]))
                 line+="$((average / 100)):"

@@ -379,7 +379,7 @@ wan_packets             value:DERIVE:0:U
 flood_packets           value:DERIVE:0:U
 syn_flood_limit         value:GAUGE:0:U
 
-autorate                11:GAUGE:0:U, 5:GAUGE:0:U, 6:GAUGE:0:U, 12:GAUGE:0:U, 13:GAUGE:0:U, 15:GAUGE:0:U, 16:GAUGE:0:U, 17:GAUGE:0:U, 18:GAUGE:0:U, 20:GAUGE:0:U, 21:GAUGE:0:U, 28:GAUGE:0:U, 29:GAUGE:0:U, 30:GAUGE:0:U, 31:GAUGE:0:U
+autorate                11:GAUGE:0:U, 5:GAUGE:0:U, 6:GAUGE:0:U, 12:GAUGE:0:U, 13:GAUGE:0:U, 15:GAUGE:0:U, 16:GAUGE:0:U, 17:GAUGE:0:U, 18:GAUGE:0:U, 20:GAUGE:0:U, 21:GAUGE:0:U, 28:GAUGE:0:U, 29:GAUGE:0:U, 30:GAUGE:0:U, 31:GAUGE:0:U, 32:GAUGE:0:U
 
 #
 # Legacy types

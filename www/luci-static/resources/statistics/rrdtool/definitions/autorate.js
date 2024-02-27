@@ -45,8 +45,8 @@ return baseclass.extend({
           sources: { autorate: ["11", "28", "29"] },
           options: {
             autorate__11: { title: "SEQUENCE:", overlay: true, noavg: true, noarea: true },
-            autorate__28: { title: "DL BUFFERBLOAT:", overlay: true, noavg: true, noarea: true },
-            autorate__29: { title: "UL BUFFERBLOAT:", overlay: true, noavg: true, noarea: true },
+            autorate__28: { color: "008080", title: "DL BUFFERBLOAT:", overlay: true, noavg: true, noarea: true },
+            autorate__29: { color: "C2B280", title: "UL BUFFERBLOAT:", overlay: true, noavg: true, noarea: true },
           },
         },
       };
